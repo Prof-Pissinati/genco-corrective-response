@@ -1,0 +1,8 @@
+{
+  "network": "case118_ieee",
+  "modelo": "GENCO Tiny (treino reduzido: 3200 amostras, 100 épocas)",
+  "genco_gpu_ms_por_cenario": 2.34,
+  "genco_cpu_ms_por_cenario": 7.43,
+  "melhor_lote_gpu": 160,
+  "nota": "Medido com tools/measure_genco_inference.py sobre os 320 cenários de teste (RTX 5060 Laptop; CPU 24 núcleos). Inclui ler os dados do disco, montar os lotes e o forward; passagem de aquecimento descartada. GPU com lote 32: 3,23 ms; lote 64: 3,08; lote 160: 2,34; lote 320: 2,66."
+}

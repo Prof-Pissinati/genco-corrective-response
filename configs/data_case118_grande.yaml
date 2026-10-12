@@ -1,0 +1,47 @@
+# Dataset GRANDE do IEEE 118 para o treino final do GENCO (modo PF, contingências até N-10): 10000 cenários de carga x 4 variantes = 40000 amostras.
+# Diferenças em relação a data_case118.yaml: mais amostras, k=10 (a restauração envolve muitas linhas fora), N-0 incluído (estado reparado), seed 42.
+network:
+  name: "case118_ieee"
+  source: "pglib"
+
+load:
+  generator: "agg_load_profile"
+  agg_profile: "default"
+  scenarios: 10000
+  sigma: 0.2
+  change_reactive_power: true
+  global_range: 0.4
+  max_scaling_factor: 4.0
+  step_size: 0.1
+  start_scaling_factor: 1.0
+
+topology_perturbation:
+  type: "random"
+  k: 10
+  # probabilidade de 0,1,...,10 linhas/geradores fora (11 valores, soma 1): N-0 10%, N-1 13%, N-2 13%, N-3..N-10 8% cada
+  outage_count_probabilities: [0.10, 0.13, 0.13, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08]
+  n_topology_variants: 4
+  elements: [branch, gen]
+
+generation_perturbation:
+  type: "cost_permutation"
+  sigma: 1.0
+
+admittance_perturbation:
+  type: "random_perturbation"
+  sigma: 0.2
+
+settings:
+  num_processes: 16
+  data_dir: "./data/case118_grande"
+  large_chunk_size: 100
+  overwrite: true
+  mode: "pf"
+  include_dc_res: true
+  enable_solver_logs: true
+  pf_fast: true
+  dcpf_fast: true
+  pf_solver: "powermodel"
+  opf_formulation: "polar"
+  max_iter: 200
+  seed: 42

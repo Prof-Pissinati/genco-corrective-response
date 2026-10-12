@@ -1,0 +1,21 @@
+# ambiente e artefatos pesados: nunca versionar
+.venv/
+genco-env/
+__pycache__/
+.pytest_cache/
+*.pyc
+# dados/artefatos de treino: so na RAIZ do repositorio (nao pegar interface/src/data/)
+/data/
+/data_out/
+/mlruns/
+*.parquet
+*.pt
+!models/**/*.pt
+*.ckpt
+node_modules/
+dist/
+.DS_Store
+desktop.ini
+
+# versao estatica gerada por "npm run build:replay" (CI publica; nao versionar)
+interface/standalone/

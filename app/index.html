@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Contingências</title>
+<style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #1c2330; --muted: #667085; --line: #d9dde5;
+  --ok: #5b8c6e; --warn: #d99a2b; --bad: #d64545; --off: #98a2b3; --accent: #2f5fd0; --accent-soft: #e6edfb;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161d; --card: #1b212b; --ink: #e6e9ef; --muted: #9aa4b5; --line: #2c3442;
+    --ok: #6fb088; --warn: #e3ae48; --bad: #ef6a6a; --off: #6b7587; --accent: #7aa2ff; --accent-soft: #223056;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161d; --card: #1b212b; --ink: #e6e9ef; --muted: #9aa4b5; --line: #2c3442;
+  --ok: #6fb088; --warn: #e3ae48; --bad: #ef6a6a; --off: #6b7587; --accent: #7aa2ff; --accent-soft: #223056;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { padding: 20px 16px 8px; max-width: 1280px; margin: 0 auto; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0; max-width: 780px; }
+.note { margin: 12px 0 0; padding: 8px 12px; background: var(--accent-soft); border-radius: 8px; font-size: 13px; max-width: 780px; }
+main { max-width: 1280px; margin: 0 auto; padding: 8px 16px 32px; display: grid; gap: 16px; grid-template-columns: 300px minmax(0, 1fr); }
+@media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+#list { max-height: 560px; overflow: auto; display: grid; gap: 6px; margin-top: 8px; }
+.item { text-align: left; border: 1px solid var(--line); background: transparent; color: inherit; border-radius: 8px; padding: 8px 10px; cursor: pointer; font: inherit; }
+.item:hover { border-color: var(--accent); }
+.item.sel { border-color: var(--accent); background: var(--accent-soft); }
+.item b { font-weight: 600; }
+.item small { display: block; color: var(--muted); }
+.badge { float: right; font-size: 12px; padding: 1px 8px; border-radius: 99px; background: var(--bad); color: #fff; }
+.badge.okb { background: var(--ok); }
+.right { display: grid; gap: 16px; min-width: 0; }
+.stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.stat .v { font-size: 24px; font-weight: 650; }
+.stat .l { color: var(--muted); font-size: 13px; }
+svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+td.na { color: var(--muted); }
+.tag { font-size: 12px; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--line); }
+.tag.bad { color: var(--bad); border-color: var(--bad); }
+.tag.warn { color: var(--warn); border-color: var(--warn); }
+.tag.good { color: var(--ok); border-color: var(--ok); }
+.scroll { overflow-x: auto; }
+label { font-size: 13px; color: var(--muted); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.hover-tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); padding: 4px 8px; border-radius: 6px; font-size: 12px; display: none; z-index: 9; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Painel de contingências</h1>
+  <p class="sub">E se esta linha falhar? Compara o cálculo exato (AC), o simplificado (DC) e a previsão do GENCO: quanto cada linha fica carregada e quais ficariam sobrecarregadas.</p>
+  <p class="note" id="note"></p>
+</header>
+<main>
+  <section class="card">
+    <h2>Cenários</h2>
+    <label>Filtro
+      <select id="filter" style="width:100%;margin-top:4px;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)">
+        <option value="all">Todos</option>
+        <option value="n0">Rede intacta (N-0)</option>
+        <option value="n1">1 linha fora (N-1)</option>
+        <option value="n2">2 linhas fora (N-2)</option>
+        <option value="over">Só com sobrecarga</option>
+      </select>
+    </label>
+    <div style="margin-top:12px">
+      <label>Limiar de sobrecarga: <b id="thv">100%</b> da capacidade
+        <input id="th" type="range" min="60" max="120" value="100">
+      </label>
+    </div>
+    <div style="margin-top:12px">
+      <label>Margem de confirmação AC: <b id="mv">5</b> pontos % abaixo do limiar
+        <input id="mg" type="range" min="0" max="30" value="5">
+      </label>
+      <p style="font-size:12px;color:var(--muted);margin:4px 0 0">Híbrido: o GENCO calcula tudo; as linhas que ele põe a partir de (limiar − margem) são confirmadas pelo cálculo exato.</p>
+    </div>
+    <div style="margin-top:12px">
+      <label>Colorir o mapa pelo método
+        <select id="view" style="width:100%;margin-top:4px;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)">
+          <option value="exact">Exato (AC): a verdade</option>
+          <option value="hybrid">Híbrido (GENCO + AC)</option>
+          <option value="genco">GENCO sozinho</option>
+          <option value="dc">DC sozinho</option>
+        </select>
+      </label>
+    </div>
+    <div id="list"></div>
+  </section>
+  <div class="right">
+    <div class="stats" id="stats"></div>
+    <section class="card">
+      <h2 id="mapTitle">Rede</h2>
+      <svg id="map" viewBox="0 0 900 640" role="img" aria-label="Mapa da rede elétrica"></svg>
+      <div class="legend">
+        <span><i style="background:var(--ok)"></i>até 70%</span>
+        <span><i style="background:var(--warn)"></i>70% ao limiar</span>
+        <span><i style="background:var(--bad)"></i>sobrecarregada (AC)</span>
+        <span><i style="background:var(--off);height:2px"></i>linha fora de serviço</span>
+        <span><i style="background:var(--accent);opacity:.5;height:8px"></i>confirmada pelo AC (modo híbrido)</span>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Linhas mais carregadas neste cenário</h2>
+      <div class="scroll"><table id="tbl"></table></div>
+    </section>
+  </div>
+</main>
+<div class="hover-tip" id="tip"></div>
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (x, d = 0) => x.toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
+let D, sel = 0, T = 1, M = 0.05, view = "exact";
+
+// valor de carregamento (fração da capacidade) de cada método para a linha i do cenário s
+function methodValue(s, i, m) {
+  const a = ratio(s.ac[i], i);
+  const g = s.genco ? ratio(s.genco[i], i) : null;
+  if (m === "exact") return a;
+  if (m === "dc") return ratio(s.dc[i], i);
+  if (m === "genco") return g;
+  return g !== null && g >= T - M ? a : g; // híbrido: AC nas linhas que o GENCO põe perto do limiar
+}
+const flagged = (s, i) => s.genco && ratio(s.genco[i], i) >= T - M;
+
+fetch("data.json").then(r => r.json()).then(d => { D = d; init(); }).catch(() => {
+  $("note").textContent = "Não foi possível carregar data.json. Gere-o com app/export_data.py e sirva a pasta app/ por HTTP.";
+});
+
+function label(s) {
+  if (!s.out.length) return "Rede intacta";
+  return "Fora: " + s.out.map(i => { const l = D.lines[i]; return `${l.from}–${l.to}`; }).join(", ");
+}
+const kOf = s => s.out.length;
+const ratio = (v, i) => v / D.lines[i].rate;
+const overs = (arr, T) => arr.map((v, i) => ratio(v, i) >= T);
+
+function init() {
+  sel = D.scenarios[0].id;
+  $("note").textContent = `Protótipo com dados reais do ${D.network.replace("case", "IEEE ").replace("_ieee", "")}: ${D.scenarios.length} cenários gerados pelo gridfm-datakit. ` +
+    (D.genco_available ? "O GENCO (modelo Tiny, treino reduzido) foi avaliado só em cenários que nunca viu no treino." : "A coluna GENCO aparece como “–” até o modelo ser treinado nesta rede.");
+  $("th").oninput = e => { T = e.target.value / 100; $("thv").textContent = e.target.value + "%"; render(); };
+  $("mg").oninput = e => { M = e.target.value / 100; $("mv").textContent = e.target.value; render(); };
+  $("view").onchange = e => { view = e.target.value; render(); };
+  if (!D.genco_available) { $("mg").disabled = true; [...$("view").options].forEach(o => { if (o.value === "hybrid" || o.value === "genco") o.disabled = true; }); }
+  $("filter").onchange = renderList;
+  render();
+}
+
+function render() { renderList(); renderStats(); renderMap(); renderTable(); }
+
+function renderList() {
+  const f = $("filter").value;
+  const items = D.scenarios.filter(s => {
+    if (f === "n0") return kOf(s) === 0;
+    if (f === "n1") return kOf(s) === 1;
+    if (f === "n2") return kOf(s) === 2;
+    if (f === "over") return overs(s.ac, T).some(Boolean);
+    return true;
+  });
+  $("list").innerHTML = "";
+  items.forEach(s => {
+    const n = overs(s.ac, T).filter(Boolean).length;
+    const b = document.createElement("button");
+    b.className = "item" + (s.id === sel ? " sel" : "");
+    b.innerHTML = `<span class="badge ${n ? "" : "okb"}">${n ? n + " sobrecarga" + (n > 1 ? "s" : "") : "ok"}</span><b>Cenário ${s.id}</b><small>${label(s)}</small>`;
+    b.onclick = () => { sel = s.id; render(); };
+    $("list").appendChild(b);
+  });
+  if (!items.length) $("list").textContent = "Nenhum cenário com este filtro.";
+}
+
+function confusion(key) {
+  let tp = 0, fn = 0, fp = 0;
+  D.scenarios.forEach(s => {
+    const a = overs(s.ac, T), p = overs(s[key], T);
+    s.ac.forEach((_, i) => { if (s.out.includes(i)) return; if (a[i] && p[i]) tp++; else if (a[i]) fn++; else if (p[i]) fp++; });
+  });
+  return { tp, fn, fp, recall: tp + fn ? tp / (tp + fn) : null };
+}
+
+function renderStats() {
+  const s = D.scenarios.find(x => x.id === sel);
+  const dc = confusion("dc");
+  const gc = D.genco_available ? confusion("genco") : null;
+  const avg = k => D.scenarios.reduce((a, x) => a + x[k], 0) / D.scenarios.length;
+  const nOver = overs(s.ac, T).filter(Boolean).length;
+  const card = (v, l, c) => `<div class="card stat"><div class="v" ${c ? `style="color:var(--${c})"` : ""}>${v}</div><div class="l">${l}</div></div>`;
+  const pc = r => r === null ? "–" : fmt(r * 100) + "%";
+
+  // Híbrido: todas as linhas passam pelo GENCO; as "duvidosas" (GENCO ≥ limiar − margem) são confirmadas pelo AC.
+  let hy = null;
+  if (D.genco_available) {
+    let tp = 0, fn = 0, fp = 0, crit = 0, critCaught = 0, toAC = 0;
+    D.scenarios.forEach(sc => {
+      let anyFlag = false, anyCrit = false;
+      sc.ac.forEach((_, i) => {
+        if (sc.out.includes(i)) return;
+        const truth = ratio(sc.ac[i], i) >= T, pred = methodValue(sc, i, "hybrid") >= T;
+        if (flagged(sc, i)) anyFlag = true;
+        if (truth) anyCrit = true;
+        if (truth && pred) tp++; else if (truth) fn++; else if (pred) fp++;
+      });
+      if (anyFlag) toAC++;
+      if (anyCrit) { crit++; if (anyFlag) critCaught++; }
+    });
+    const n = D.scenarios.length, tm = D.timing || {};
+    const tG = tm.genco_gpu_ms_por_cenario ?? null;
+    hy = { tp, fn, fp, recall: tp + fn ? tp / (tp + fn) : null, share: toAC / n, crit, critCaught, tG,
+           tH: tG === null ? null : tG + (toAC / n) * avg("ac_ms") };
+  }
+
+  $("stats").innerHTML =
+    card(nOver, "linhas sobrecarregadas neste cenário (cálculo exato AC)", nOver ? "bad" : "ok") +
+    card(pc(dc.recall), `sobrecargas que o DC deteta (perde ${dc.fn}, falsos alarmes ${dc.fp}) em todos os cenários`, dc.fn ? "warn" : "ok") +
+    card(gc ? pc(gc.recall) : "–", gc ? `sobrecargas que o GENCO deteta (perde ${gc.fn}, falsos alarmes ${gc.fp})` : "GENCO: aguarda modelo treinado") +
+    card(hy ? pc(hy.recall) : "–", hy ? `sobrecargas que o híbrido deteta (perde ${hy.fn}, falsos alarmes ${hy.fp}); ${pc(hy.share)} dos cenários vão ao cálculo exato, e ${hy.critCaught} de ${hy.crit} cenários críticos são confirmados` : "Híbrido: precisa do GENCO", hy && hy.fn ? "warn" : "ok") +
+    card(`${fmt(avg("dc_ms"), 1)} · ${hy && hy.tG !== null ? fmt(hy.tG, 1) : "–"} · ${hy && hy.tH !== null ? fmt(hy.tH, 1) : "–"} · ${fmt(avg("ac_ms"), 1)} ms`,
+      "tempo por cenário: DC · GENCO (GPU) · híbrido · AC exato" + (hy && hy.tH !== null && hy.tH > avg("ac_ms") ? ". Nesta rede o híbrido sai mais lento que o AC sozinho." : ""));
+}
+
+function renderMap() {
+  const s = D.scenarios.find(x => x.id === sel);
+  $("mapTitle").textContent = `Cenário ${s.id} · ${label(s)}`;
+  const W = 900, H = 640, P = 30;
+  const xs = D.buses.map(b => b.x), ys = D.buses.map(b => b.y);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const px = b => P + (b.x - x0) / (x1 - x0) * (W - 2 * P), py = b => P + (b.y - y0) / (y1 - y0) * (H - 2 * P);
+  const pos = {}; D.buses.forEach(b => pos[b.id] = [px(b), py(b)]);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+  let svg = "";
+  D.lines.forEach((l, i) => {
+    const [ax, ay] = pos[l.from], [bx, by] = pos[l.to];
+    const out = s.out.includes(i), r = methodValue(s, i, view);
+    const col = out ? css("off") : r >= T ? css("bad") : r >= 0.7 ? css("warn") : css("ok");
+    const w = out ? 1.5 : r >= T ? 4 : 2.2;
+    if (view === "hybrid" && !out && flagged(s, i)) // halo nas linhas confirmadas pelo cálculo exato
+      svg += `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${css("accent")}" stroke-width="${w + 5}" opacity=".35" stroke-linecap="round"/>`;
+    svg += `<line data-i="${i}" x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="${w}" ${out ? 'stroke-dasharray="5 4"' : ""} stroke-linecap="round"/>`;
+    svg += `<line data-i="${i}" x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="transparent" stroke-width="10" class="hit"/>`;
+  });
+  D.buses.forEach(b => { svg += `<circle cx="${pos[b.id][0]}" cy="${pos[b.id][1]}" r="3" fill="${css("ink")}" opacity=".55"/>`; });
+  $("map").innerHTML = svg;
+  $("map").querySelectorAll(".hit").forEach(el => {
+    el.onmousemove = e => {
+      const i = +el.dataset.i, l = D.lines[i], t = $("tip");
+      t.style.display = "block"; t.style.left = e.clientX + 12 + "px"; t.style.top = e.clientY + 12 + "px";
+      t.textContent = s.out.includes(i) ? `Linha ${l.from}–${l.to}: fora de serviço` : `Linha ${l.from}–${l.to}: AC ${fmt(ratio(s.ac[i], i) * 100)}% · DC ${fmt(ratio(s.dc[i], i) * 100)}%` + (s.genco ? ` · GENCO ${fmt(ratio(s.genco[i], i) * 100)}%` : "");
+    };
+    el.onmouseleave = () => $("tip").style.display = "none";
+  });
+}
+
+function renderTable() {
+  const s = D.scenarios.find(x => x.id === sel);
+  const rows = D.lines.map((l, i) => ({ i, l, a: ratio(s.ac[i], i), d: ratio(s.dc[i], i), g: s.genco ? ratio(s.genco[i], i) : null }))
+    .filter(r => !s.out.includes(r.i)).sort((x, y) => y.a - x.a).slice(0, 10);
+  const pct = v => v === null ? "–" : fmt(v * 100) + "%";
+  const verdict = (name, r, x) => {
+    if (x === null) return "";
+    const a = r.a >= T, p = x >= T;
+    if (a && p) return `<span class="tag good">${name} acertou</span>`;
+    if (a) return `<span class="tag bad">${name} não viu</span>`;
+    if (p) return `<span class="tag warn">falso alarme ${name}</span>`;
+    return "";
+  };
+  const hyb = r => r.g === null ? null : (r.g >= T - M ? r.a : r.g);
+  const decision = r => r.g === null ? "" : r.g >= T - M ? '<span class="tag" style="color:var(--accent);border-color:var(--accent)">confirmado por AC</span>' : '<span class="tag">GENCO basta</span>';
+  $("tbl").innerHTML = `<tr><th>Linha</th><th>Capacidade (MVA)</th><th>AC (exato)</th><th>DC</th><th>GENCO</th><th>Híbrido</th><th>Decisão híbrida</th><th>Veredicto DC</th><th>Veredicto GENCO</th></tr>` +
+    rows.map(r => `<tr><td>${r.l.from}–${r.l.to}</td><td>${fmt(r.l.rate)}</td><td><b>${pct(r.a)}</b></td><td>${pct(r.d)}</td><td class="${r.g === null ? "na" : ""}">${pct(r.g)}</td><td>${pct(hyb(r))}</td><td>${decision(r)}</td><td>${verdict("DC", r, r.d)}</td><td>${verdict("GENCO", r, r.g)}</td></tr>`).join("");
+}
+</script>
+</body>
+</html>

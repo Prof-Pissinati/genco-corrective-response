@@ -1,0 +1,26 @@
+# Valida que a interface compila no Linux (o Windows ignora maiúsculas/minúsculas em imports; o Linux não).
+name: Interface (build)
+
+on:
+  push:
+    paths: ['interface/**', '.github/workflows/interface.yml']
+  pull_request:
+    paths: ['interface/**', '.github/workflows/interface.yml']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: interface
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: interface/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npm run build:replay

@@ -1,0 +1,56 @@
+# Gera o demo estático (replay) da interface: um único HTML com resultados pré-calculados do IEEE 118.
+# Em cada push na main (e manualmente) publica o arquivo como artefato; "Run workflow" também o publica no GitHub Pages
+# (exige Pages habilitado: Settings > Pages > Source: GitHub Actions, e repositório público ou plano que permita).
+name: Replay (demo estatico)
+
+on:
+  push:
+    branches: [main]
+    paths: ['interface/**', '.github/workflows/replay.yml']
+  workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: 'Publicar no GitHub Pages'
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: interface
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: interface/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:replay
+      - name: Prepara a pasta do Pages
+        run: mkdir -p pages && cp standalone/genco-replay.html pages/index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: genco-replay
+          path: interface/standalone/genco-replay.html
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ inputs.deploy_pages }}
+        with:
+          path: interface/pages
+
+  deploy:
+    if: ${{ inputs.deploy_pages }}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

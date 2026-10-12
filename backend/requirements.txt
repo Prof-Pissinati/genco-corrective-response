@@ -1,0 +1,5 @@
+# Requisitos para RODAR o backend (ambiente leve, funciona com o Python do sistema, inclusive 3.14).
+fastapi
+uvicorn
+numpy
+scipy

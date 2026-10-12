@@ -1,0 +1,7 @@
+# Requisitos para TESTAR e validar (inclui os de execução). Python 3.12 recomendado (numba).
+-r requirements.txt
+pandapower>=3.5      # referência de validação do AC e gerador do caso (export_case.py)
+matpowercaseframes
+numba                # sem ele o pandapower avisa a cada chamada e roda mais devagar
+pytest
+httpx

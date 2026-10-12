@@ -1,0 +1,389 @@
+:root {
+  /* --- CORES --- */
+  --eng-green:  #2e7d32; --eng-orange: #e65100; --eng-purple: #7b1fa2;
+  --eng-gray:   #9e9e9e; --eng-red:    #d50000; --eng-yellow: #ffd600;
+  --bg-color: #f0f2f5; --sidebar-bg: #ffffff; --text-color: #333333;
+  --border-color: #dddddd; --card-bg: #ffffff; --hover-bg: rgba(0,0,0,0.03);
+  --sub-101: #2e7d32; --sub-102: #e65100; --sub-104: #7b1fa2;
+  --color-de: #9e9e9e; --color-fault: #d50000; --color-loop: #ffd600;
+  --highlight-blue: #2962ff;
+  --btn-reset-bg: #1b5e20;
+  --btn-label-active: #0d47a1;
+
+  /* --- DIMENSÕES RESPONSIVAS --- */
+  --sidebar-width: clamp(100px, 20vw, 230px);
+  --right-sidebar-width: clamp(100px, 16vw, 230px);
+}
+
+/* Modo Retrato (Monitor Vertical) */
+@media (orientation: portrait) {
+  :root {
+    --sidebar-width: clamp(170px, 25vw, 230px); 
+    --right-sidebar-width: clamp(220px, 25vw, 230px);
+  }
+}
+
+body.dark-mode {
+  --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #e0e0e0;
+  --border-color: #333; --card-bg: #2a2a2a; --hover-bg: rgba(255,255,255,0.05);
+  --sub-101: #00e676; --sub-102: #ff9100; --sub-104: #d500f9;
+  --color-de: #444; --color-loop: #ffea00; --color-fault: #ff5252;
+  --highlight-blue: #448aff;
+}
+
+@keyframes flow-dash {
+    from { stroke-dashoffset: 24; }
+    to   { stroke-dashoffset: 0;  }
+}
+.edge-flow        { stroke-dasharray: 8 6; animation: flow-dash 0.6s linear infinite; }
+.edge-flow-rev    { stroke-dasharray: 8 6; animation: flow-dash 0.6s linear infinite reverse; }
+
+/* --- MOBILE (Smartphone) --- */
+@media (max-width: 768px) {
+  :root {
+    /* No celular: 85% da tela, com limite de 350px */
+    --sidebar-width: min(85vw, 350px) !important;
+    --right-sidebar-width: min(85vw, 350px) !important;
+  }
+  .sidebar, .right-sidebar {
+    position: absolute !important; height: 100% !important; z-index: 999 !important;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5) !important;
+  }
+  .sidebar.mini { width: 0 !important; border: none !important; }
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body, html { width: 100%; height: 100%; overflow: hidden; }
+/* Previne zoom na página inteira e bounce no iOS */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); touch-action: none; }
+
+#root { width: 100%; height: 100%; }
+.app-container { display: flex; width: 100%; height: 100%; position: relative; }
+
+/* SIDEBAR ESQUERDA */
+.sidebar { 
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg); 
+    border-right: 1px solid var(--border-color); 
+    display: flex; flex-direction: column; 
+    transition: width 0.3s ease, transform 0.3s ease; 
+    overflow: hidden; white-space: nowrap; height: 100%; 
+}
+.sidebar.hidden { width: 0; border: none; }
+
+/* --- SIDEBAR MINI (Compacta) --- */
+.sidebar.mini { width: 85px; }
+.sidebar.mini .sidebar-header { padding: 15px 5px; }
+.sidebar.mini .load-display { padding: 10px 5px; }
+.sidebar.mini .load-card { padding: 8px 2px; }
+.sidebar.mini .sidebar-action-btn { padding: 10px 0; font-size: 16px; }
+
+/* Botão Toggle Esquerdo */
+.sidebar-toggle { 
+    position: absolute; 
+    left: var(--sidebar-width); 
+    top: 20px; z-index: 25; 
+    background: #333; color: white;
+    border: 2px solid #333; border-left: none; 
+    padding: 12px 8px; cursor: pointer; border-radius: 0 8px 8px 0; 
+    transition: left 0.3s ease; 
+}
+.sidebar.mini + .sidebar-toggle { left: 100px; }
+.sidebar.hidden + .sidebar-toggle { left: 0; }
+
+/* SIDEBAR DIREITA */
+.right-sidebar { 
+    position: absolute; right: 0; top: 0; 
+    width: var(--right-sidebar-width);
+    height: 100%; 
+    background: var(--sidebar-bg); border-left: 1px solid var(--border-color); 
+    z-index: 30; 
+    transform: translateX(100%); transition: transform 0.3s ease; 
+    display: flex; flex-direction: column; 
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1); 
+    overflow: visible;
+}
+.right-sidebar.open { transform: translateX(0); }
+
+/* Botão Toggle Direito */
+.right-sidebar-toggle { 
+    position: absolute; right: 100%; top: 20px; z-index: 31; 
+    background: var(--sidebar-bg); border: 2px solid var(--border-color); border-right: none; 
+    padding: 12px 8px; cursor: pointer; border-radius: 8px 0 0 8px; 
+    display: flex; align-items: center; justify-content: center; 
+    color: var(--text-color);
+}
+
+/* --- LEGENDA (CORRIGIDA) --- */
+.legend { 
+    position: absolute; 
+    bottom: 20px; 
+    right: 20px; /* <--- ERA ISSO QUE ESTAVA ERRADO (estava 100%) */
+    
+    background: var(--sidebar-bg); 
+    padding: 12px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    font-size: 11px; 
+    pointer-events: none; 
+    z-index: 10; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    
+    transition: right 0.3s ease;
+}
+
+/* Quando a sidebar abre (Desktop) */
+.legend.shifted { 
+    right: calc(var(--right-sidebar-width) + 20px); 
+}
+
+/* Quando está no Mobile */
+.legend.mobile-legend { 
+    bottom: 80px !important; 
+    right: 10px !important; 
+    left: auto !important; 
+    transform: none !important; 
+}
+
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* GRAPH CONTAINER (Crucial para Mobile) */
+.graph-container { 
+    flex: 1; 
+    position: relative; 
+    overflow: hidden; 
+    background: var(--bg-color); 
+    height: 100%; 
+    touch-action: none; /* Bloqueia scroll da página ao tocar no gráfico */
+}
+.graph-svg { width: 100%; height: 100%; cursor: grab; }
+.graph-svg:active { cursor: grabbing; }
+
+/* Resto dos estilos (Mantidos) */
+.node-circle { transition: all 0.2s; cursor: pointer; }
+.node-circle:hover { stroke-width: 4; filter: brightness(1.2); }
+.node-rect { transition: all 0.2s; cursor: pointer; }
+.node-rect:hover { filter: brightness(1.2); stroke-width: 3; }
+.edge-line { transition: all 0.2s; cursor: pointer; }
+.edge-line:hover { stroke-width: 6 !important; filter: brightness(1.2); }
+.node-label { font-size: 10px; font-weight: 700; pointer-events: none; fill: white; text-anchor: middle; dominant-baseline: central; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.sidebar-header { padding: 20px; border-bottom: 2px solid var(--border-color); flex-shrink: 0; }
+.sidebar-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+.control-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.btn-ui { padding: 8px 6px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); cursor: pointer; border-radius: 8px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: all 0.2s; justify-content: center; flex: 1 1 auto; min-width: 70px; }
+.btn-ui:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.btn-ui.active-label { background: var(--btn-label-active); color: white; border-color: var(--btn-label-active); }
+.btn-reset { background: var(--btn-reset-bg) !important; color: white !important; border-color: var(--btn-reset-bg) !important; }
+.btn-icon { font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.btn-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.load-display { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 8px; padding: 15px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+.load-card { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; min-width: 0; }
+.load-card.lc-101 { border-top: 4px solid var(--sub-101); }
+.load-card.lc-102 { border-top: 4px solid var(--sub-102); }
+.load-card.lc-104 { border-top: 4px solid var(--sub-104); }
+.load-card-title { font-size: 10px; font-weight: 700; color: var(--eng-gray); margin-bottom: 4px; text-transform: uppercase; }
+.load-card-value { font-size: 16px; font-weight: 700; color: var(--text-color); display: block; margin: 2px 0; }
+.load-card-subtitle { font-size: 10px; color: var(--eng-gray); }
+.stats-panel { padding: 15px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); flex-shrink: 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.stat-item { padding: 8px; background: var(--hover-bg); border-radius: 6px; text-align: center; }
+.stat-label { font-size: 9px; color: var(--eng-gray); margin-bottom: 2px; white-space: normal; line-height: 1.1; }
+.stat-value { font-size: 14px; font-weight: 700; color: var(--text-color); }
+.stat-value.good { color: var(--eng-green); } .stat-value.warning { color: var(--eng-yellow); } .stat-value.bad { color: var(--eng-red); }
+.inspector { padding: 20px; background: var(--hover-bg); border-bottom: 1px solid var(--border-color); height: 260px; overflow-y: auto; font-size: 13px; flex-shrink: 0; }
+.inspector-row { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.05); align-items: center;}
+.inspector-row span { color: var(--eng-gray); font-size: 12px; }
+.inspector-row b { color: var(--text-color); font-size: 13px; }
+.inspector-title { font-weight: 700; font-size: 16px; margin-bottom: 12px; color: var(--sub-102); padding-bottom: 8px; border-bottom: 2px solid var(--sub-102); }
+.inspector-empty { text-align: center; color: var(--eng-gray); padding: 30px 10px; }
+.current-bar-container { width: 100%; height: 24px; background: rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-top: 8px; position: relative; }
+.current-bar { height: 100%; border-radius: 12px; transition: width 0.4s ease, background 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); min-width: 40px; }
+.current-info { font-size: 12px; color: var(--eng-gray); margin-top: 6px; display: flex; align-items: center; gap: 6px; font-weight: 500; margin-bottom: 12px; }
+.switch-list { flex: 1; overflow-y: auto; padding: 10px; min-height: 0; }
+.switch-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 5px; cursor: pointer; transition: background 0.2s; }
+.switch-item:hover { background: var(--hover-bg); border-color: var(--sub-102); }
+.switch-btn { padding: 4px 10px; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; min-width: 45px; }
+.switch-btn.on { background: var(--sub-101); color: black; } 
+.switch-btn.off { background: var(--color-de); color: white; }
+.fault-list { flex: 1; overflow-y: auto; padding: 15px; min-height: 0; }
+.fault-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; flex-wrap: wrap; gap: 5px; }
+.fault-item:hover, .fault-item.selected { background: var(--hover-bg); border-color: var(--highlight-blue); }
+.fault-btn-rect { padding: 4px 10px; border: none; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; min-width: 90px; text-align: center; transition: all 0.2s; }
+.fault-btn-rect:hover { opacity: 0.9; }
+.fault-btn-rect.is-fault { background: var(--color-fault) !important; animation: pulseRed 1.5s infinite; }
+.toast { position: absolute; top: 20px; right: 50%; transform: translateX(50%); background: var(--card-bg); border: 2px solid var(--sub-101); border-radius: 8px; padding: 12px 20px; z-index: 1000; animation: slideIn 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 600; font-size: 13px; }
+@keyframes slideIn { from { transform: translateX(50%) translateY(-20px); opacity: 0; } to { transform: translateX(50%) translateY(0); opacity: 1; } }
+.alert-banner { background: #fff3cd; color: #856404; padding: 10px; font-size: 12px; font-weight: bold; border-bottom: 2px solid #ffeeba; }
+body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color: #ffc107; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--eng-gray); }
+
+/* --- BOTÕES FLUTUANTES LATERAIS --- */
+.floating-toggles {
+    position: absolute;
+    left: var(--sidebar-width);
+    top: 20px;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: left 0.3s ease;
+}
+.sidebar.mini ~ .floating-toggles { left: 100px; }
+.sidebar.hidden ~ .floating-toggles { left: 0; }
+
+.sidebar-toggle-btn {
+    background: #333; color: white;
+    border: 2px solid #333; border-left: none;
+    padding: 12px 8px; cursor: pointer; 
+    border-radius: 0 8px 8px 0;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+.sidebar-toggle-btn:hover { background: #444; }
+
+.edit-toggle-btn {
+    background: #ff9800; color: #000;
+    border: 2px solid #ff9800; border-left: none;
+    padding: 10px 8px; cursor: pointer; 
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+.edit-toggle-btn:hover { background: #ffb74d; }
+
+.edit-sidebar { background: var(--sidebar-bg); border-right: 2px solid #ff9800; }
+
+/* ================== MOBILE UI ================== */
+.mobile-header {
+    position: absolute; top: 0; left: 0; width: 100%;
+    padding: 10px; z-index: 1000;
+    display: flex; justify-content: space-between;
+    pointer-events: none;
+}
+.mobile-header > * { pointer-events: auto; }
+
+.mobile-bottom-sheet {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    background: var(--card-bg);
+    border-top: 2px solid var(--border-color);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+    z-index: 2000;
+    padding: 15px; /* Reduzi de 20px */
+    padding-bottom: 30px; /* Reduzi de 40px */
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.1, 0.7, 0.1, 1);
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.mobile-bottom-sheet.visible {
+    transform: translateY(0);
+}
+
+.mobile-actions {
+    display: flex; gap: 8px; margin-top: 12px; /* Gap menor */
+}
+
+/* BOTÕES REDUZIDOS */
+.mobile-btn-action {
+    flex: 1;
+    padding: 8px 12px; /* Reduzido de 12px */
+    border-radius: 8px; /* Reduzido de 12px */
+    border: none;
+    font-weight: 700;
+    font-size: 12px; /* Reduzido de 14px */
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+}
+
+.mobile-bottom-sheet::-webkit-scrollbar { display: none; }
+
+/* --- CONFIGURAÇÃO PERFEITA PARA EXPORTAÇÃO DE PDF --- */
+@media print {
+    @page {
+        size: landscape; /* Força a folha na horizontal */
+        margin: 0mm; /* Tira as margens brancas do papel */
+    }
+
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Esconde os painéis e botões que não devem ir pro PDF */
+    .sidebar, .edit-sidebar, .fault-panel, .floating-toggles, .mobile-header, .toast {
+        display: none !important;
+    }
+
+    /* Estica o contêiner do simulador para preencher a folha */
+    .app-container {
+        display: block !important;
+    }
+
+    .graph-container {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+
+    /* Garante que a legenda original HTML fique visível e posicionada no PDF */
+    .legend {
+        display: block !important;
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
+        page-break-inside: avoid;
+    }
+    .hide-on-print {
+        display: none !important;
+    }
+}
+
+/* --- BOTÕES MODERNOS DO SIDEBAR (GHOST BUTTONS) --- */
+.sidebar-action-btn {
+    background-color: transparent;
+    border: 1.5px solid var(--btn-color);
+    color: var(--btn-color);
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 8px 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease-in-out;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-action-btn:hover {
+    background-color: var(--btn-color);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-action-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .sidebar-action-btn {
+    background-color: rgba(0, 0, 0, 0.15);
+}

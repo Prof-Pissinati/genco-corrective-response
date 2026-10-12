@@ -1,0 +1,83 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* ESTILOS MODERNOS PARA OS BOTÕES DA SIDEBAR */
+.sidebar-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: transparent;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+}
+
+/* Cores Semânticas */
+.btn-undo {
+    border: 1px solid #6c757d; /* Cinza */
+    color: #6c757d;
+}
+.btn-undo:hover { background-color: #6c757d; color: #fff; }
+
+.btn-reset {
+    border: 1px solid #dc3545; /* Vermelho */
+    color: #dc3545;
+}
+.btn-reset:hover { background-color: #dc3545; color: #fff; }
+
+.btn-import {
+    border: 1px solid #198754; /* Verde */
+    color: #198754;
+}
+.btn-import:hover { background-color: #198754; color: #fff; }
+
+.btn-export {
+    border: 1px solid #0d6efd; /* Azul */
+    color: #0d6efd;
+}
+.btn-export:hover { background-color: #0d6efd; color: #fff; }
