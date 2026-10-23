@@ -1,5 +1,5 @@
 :root {
-  /* --- CORES --- */
+  /* --- COLORS --- */
   --eng-green:  #2e7d32; --eng-orange: #e65100; --eng-purple: #7b1fa2;
   --eng-gray:   #9e9e9e; --eng-red:    #d50000; --eng-yellow: #ffd600;
   --bg-color: #f0f2f5; --sidebar-bg: #ffffff; --text-color: #333333;
@@ -10,12 +10,12 @@
   --btn-reset-bg: #1b5e20;
   --btn-label-active: #0d47a1;
 
-  /* --- DIMENSÕES RESPONSIVAS --- */
+  /* --- RESPONSIVE DIMENSIONS --- */
   --sidebar-width: clamp(100px, 20vw, 230px);
   --right-sidebar-width: clamp(100px, 16vw, 230px);
 }
 
-/* Modo Retrato (Monitor Vertical) */
+/* Portrait Mode (Vertical Monitor) */
 @media (orientation: portrait) {
   :root {
     --sidebar-width: clamp(170px, 25vw, 230px); 
@@ -41,7 +41,7 @@ body.dark-mode {
 /* --- MOBILE (Smartphone) --- */
 @media (max-width: 768px) {
   :root {
-    /* No celular: 85% da tela, com limite de 350px */
+    /* On phones: 85% of the screen, capped at 350px */
     --sidebar-width: min(85vw, 350px) !important;
     --right-sidebar-width: min(85vw, 350px) !important;
   }
@@ -54,13 +54,13 @@ body.dark-mode {
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body, html { width: 100%; height: 100%; overflow: hidden; }
-/* Previne zoom na página inteira e bounce no iOS */
+/* Prevents whole-page zoom and bounce on iOS */
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); touch-action: none; }
 
 #root { width: 100%; height: 100%; }
 .app-container { display: flex; width: 100%; height: 100%; position: relative; }
 
-/* SIDEBAR ESQUERDA */
+/* LEFT SIDEBAR */
 .sidebar { 
     width: var(--sidebar-width);
     background: var(--sidebar-bg); 
@@ -71,14 +71,14 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 }
 .sidebar.hidden { width: 0; border: none; }
 
-/* --- SIDEBAR MINI (Compacta) --- */
+/* --- MINI SIDEBAR (Compact) --- */
 .sidebar.mini { width: 85px; }
 .sidebar.mini .sidebar-header { padding: 15px 5px; }
 .sidebar.mini .load-display { padding: 10px 5px; }
 .sidebar.mini .load-card { padding: 8px 2px; }
 .sidebar.mini .sidebar-action-btn { padding: 10px 0; font-size: 16px; }
 
-/* Botão Toggle Esquerdo */
+/* Left Toggle Button */
 .sidebar-toggle { 
     position: absolute; 
     left: var(--sidebar-width); 
@@ -91,7 +91,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .sidebar.mini + .sidebar-toggle { left: 100px; }
 .sidebar.hidden + .sidebar-toggle { left: 0; }
 
-/* SIDEBAR DIREITA */
+/* RIGHT SIDEBAR */
 .right-sidebar { 
     position: absolute; right: 0; top: 0; 
     width: var(--right-sidebar-width);
@@ -105,7 +105,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 }
 .right-sidebar.open { transform: translateX(0); }
 
-/* Botão Toggle Direito */
+/* Right Toggle Button */
 .right-sidebar-toggle { 
     position: absolute; right: 100%; top: 20px; z-index: 31; 
     background: var(--sidebar-bg); border: 2px solid var(--border-color); border-right: none; 
@@ -114,11 +114,11 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
     color: var(--text-color);
 }
 
-/* --- LEGENDA (CORRIGIDA) --- */
+/* --- LEGEND (FIXED) --- */
 .legend { 
     position: absolute; 
     bottom: 20px; 
-    right: 20px; /* <--- ERA ISSO QUE ESTAVA ERRADO (estava 100%) */
+    right: 20px; /* <--- THIS WAS WRONG (it was 100%) */
     
     background: var(--sidebar-bg); 
     padding: 12px; 
@@ -132,12 +132,12 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
     transition: right 0.3s ease;
 }
 
-/* Quando a sidebar abre (Desktop) */
+/* When the sidebar opens (Desktop) */
 .legend.shifted { 
     right: calc(var(--right-sidebar-width) + 20px); 
 }
 
-/* Quando está no Mobile */
+/* When on Mobile */
 .legend.mobile-legend { 
     bottom: 80px !important; 
     right: 10px !important; 
@@ -148,19 +148,19 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
 
-/* GRAPH CONTAINER (Crucial para Mobile) */
+/* GRAPH CONTAINER (Crucial for Mobile) */
 .graph-container { 
     flex: 1; 
     position: relative; 
     overflow: hidden; 
     background: var(--bg-color); 
     height: 100%; 
-    touch-action: none; /* Bloqueia scroll da página ao tocar no gráfico */
+    touch-action: none; /* Blocks page scroll when touching the chart */
 }
 .graph-svg { width: 100%; height: 100%; cursor: grab; }
 .graph-svg:active { cursor: grabbing; }
 
-/* Resto dos estilos (Mantidos) */
+/* Remaining styles (Kept) */
 .node-circle { transition: all 0.2s; cursor: pointer; }
 .node-circle:hover { stroke-width: 4; filter: brightness(1.2); }
 .node-rect { transition: all 0.2s; cursor: pointer; }
@@ -192,9 +192,9 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .stat-value { font-size: 14px; font-weight: 700; color: var(--text-color); }
 .stat-value.good { color: var(--eng-green); } .stat-value.warning { color: var(--eng-yellow); } .stat-value.bad { color: var(--eng-red); }
 .inspector { padding: 20px; background: var(--hover-bg); border-bottom: 1px solid var(--border-color); height: 260px; overflow-y: auto; font-size: 13px; flex-shrink: 0; }
-.inspector-row { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.05); align-items: center;}
-.inspector-row span { color: var(--eng-gray); font-size: 12px; }
-.inspector-row b { color: var(--text-color); font-size: 13px; }
+.inspector-row { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.05); align-items: baseline; flex-wrap: wrap; column-gap: 8px; white-space: normal; }
+.inspector-row span { color: var(--eng-gray); font-size: 12px; flex-shrink: 0; }
+.inspector-row b { color: var(--text-color); font-size: 13px; margin-left: auto; text-align: right; min-width: 0; overflow-wrap: anywhere; }
 .inspector-title { font-weight: 700; font-size: 16px; margin-bottom: 12px; color: var(--sub-102); padding-bottom: 8px; border-bottom: 2px solid var(--sub-102); }
 .inspector-empty { text-align: center; color: var(--eng-gray); padding: 30px 10px; }
 .current-bar-container { width: 100%; height: 24px; background: rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin-top: 8px; position: relative; }
@@ -221,7 +221,7 @@ body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--eng-gray); }
 
-/* --- BOTÕES FLUTUANTES LATERAIS --- */
+/* --- SIDE FLOATING BUTTONS --- */
 .floating-toggles {
     position: absolute;
     left: var(--sidebar-width);
@@ -289,17 +289,17 @@ body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color
 }
 
 .mobile-actions {
-    display: flex; gap: 8px; margin-top: 12px; /* Gap menor */
+    display: flex; gap: 8px; margin-top: 12px; /* Smaller gap */
 }
 
-/* BOTÕES REDUZIDOS */
+/* REDUCED BUTTONS */
 .mobile-btn-action {
     flex: 1;
-    padding: 8px 12px; /* Reduzido de 12px */
-    border-radius: 8px; /* Reduzido de 12px */
+    padding: 8px 12px; /* Reduced from 12px */
+    border-radius: 8px; /* Reduced from 12px */
     border: none;
     font-weight: 700;
-    font-size: 12px; /* Reduzido de 14px */
+    font-size: 12px; /* Reduced from 14px */
     color: white;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -308,10 +308,10 @@ body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color
 
 .mobile-bottom-sheet::-webkit-scrollbar { display: none; }
 
-/* --- CONFIGURAÇÃO PERFEITA PARA EXPORTAÇÃO DE PDF --- */
+/* --- PERFECT CONFIGURATION FOR PDF EXPORT --- */
 @media print {
     @page {
-        size: landscape; /* Força a folha na horizontal */
+        size: landscape; /* Forces the sheet to landscape */
         margin: 0mm; /* Tira as margens brancas do papel */
     }
 
@@ -322,12 +322,12 @@ body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color
         print-color-adjust: exact !important;
     }
 
-    /* Esconde os painéis e botões que não devem ir pro PDF */
+    /* Hides the panels and buttons that must not go into the PDF */
     .sidebar, .edit-sidebar, .fault-panel, .floating-toggles, .mobile-header, .toast {
         display: none !important;
     }
 
-    /* Estica o contêiner do simulador para preencher a folha */
+    /* Stretches the simulator container to fill the sheet */
     .app-container {
         display: block !important;
     }
@@ -340,7 +340,7 @@ body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color
         height: 100vh !important;
     }
 
-    /* Garante que a legenda original HTML fique visível e posicionada no PDF */
+    /* Ensures the original HTML legend stays visible and positioned in the PDF */
     .legend {
         display: block !important;
         position: fixed !important;
@@ -354,7 +354,7 @@ body.dark-mode .alert-banner { background: #3d3000; color: #ffeb3b; border-color
     }
 }
 
-/* --- BOTÕES MODERNOS DO SIDEBAR (GHOST BUTTONS) --- */
+/* --- MODERN SIDEBAR BUTTONS (GHOST BUTTONS) --- */
 .sidebar-action-btn {
     background-color: transparent;
     border: 1.5px solid var(--btn-color);

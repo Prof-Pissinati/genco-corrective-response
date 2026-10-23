@@ -5,7 +5,7 @@ export const exportSVG = (svgId, filename = 'diagrama_sistema.svg', calcMethod =
     const svgElement = document.getElementById(svgId);
     
     if (!svgElement) {
-        alert(`❌ Erro: Não encontrei o gráfico na tela. Verifique se o <svg> tem o id="${svgId}".`);
+        alert(`❌ Error: I could not find the chart on the screen. Check that the <svg> has the id="${svgId}".`);
         return;
     }
 
@@ -14,12 +14,12 @@ export const exportSVG = (svgId, filename = 'diagrama_sistema.svg', calcMethod =
         clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
-        // Pega as dimensões reais do SVG na tela para ancorar a legenda no canto inferior direito
+        // Gets the real SVG dimensions on screen to anchor the legend in the bottom-right corner
         const svgRect = svgElement.getBoundingClientRect();
         const svgWidth = svgRect.width || 800;
         const svgHeight = svgRect.height || 600;
 
-        // Estilos essenciais que não são capturados nativamente
+        // Essential styles that are not captured natively
         const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
         styleElement.textContent = `
             .node-label { fill: ${darkMode ? '#ffffff' : '#333333'} !important; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
@@ -29,28 +29,28 @@ export const exportSVG = (svgId, filename = 'diagrama_sistema.svg', calcMethod =
         clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
 
         // ==========================================================
-        // DESENHA A LEGENDA VETORIZADA (Agora Dinâmica e Tematizada)
+        // DRAWS THE VECTORIZED LEGEND (now Dynamic and Themed)
         // ==========================================================
         const allRoots = [...sources, ...feedersList];
         const legendData = [];
         
         sources.forEach(s => legendData.push({ color: getBaseColor(s, allRoots, darkMode), text: `SUB ${s}` }));
-        feedersList.forEach(f => legendData.push({ color: getBaseColor(f, allRoots, darkMode), text: `ALIM ${f}` }));
+        feedersList.forEach(f => legendData.push({ color: getBaseColor(f, allRoots, darkMode), text: `FEEDER ${f}` }));
         
-        legendData.push({ color: THEME[darkMode ? 'dark' : 'light'].fault,  text: "Falta/Sobrecarga" });
+        legendData.push({ color: THEME[darkMode ? 'dark' : 'light'].fault,  text: "Fault/Overload" });
         legendData.push({ color: THEME[darkMode ? 'dark' : 'light'].loop,   text: "Loop" });
-        legendData.push({ color: THEME[darkMode ? 'dark' : 'light'].de,     text: "Desenergizado" });
+        legendData.push({ color: THEME[darkMode ? 'dark' : 'light'].de,     text: "De-energized" });
 
         const legendG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         legendG.setAttribute('class', 'export-legend');
         
-        // Posicionamento Dinâmico: 160px da borda direita, 30px + altura da legenda da borda inferior
+        // Dynamic positioning: 160px from the right edge, 30px + legend height from the bottom edge
         const legendHeight = 15 + (legendData.length * 22);
         const posX = svgWidth - 160;
         const posY = svgHeight - legendHeight - 30;
         legendG.setAttribute('transform', `translate(${posX}, ${posY})`); 
 
-        // Tema Dinâmico para a Legenda
+        // Dynamic Theme for the Legend
         const bgFill = darkMode ? '#1e1e1e' : '#ffffff';
         const bgStroke = darkMode ? '#444444' : '#cccccc';
         const textFill = darkMode ? '#ffffff' : '#333333';
@@ -84,7 +84,7 @@ export const exportSVG = (svgId, filename = 'diagrama_sistema.svg', calcMethod =
 
         clonedSvg.appendChild(legendG);
 
-        // 5. SERIALIZA E BAIXA
+        // 5. SERIALIZES AND DOWNLOADS
         const serializer = new XMLSerializer();
         let source = '<?xml version="1.0" standalone="no"?>\r\n' + serializer.serializeToString(clonedSvg);
 
@@ -100,7 +100,7 @@ export const exportSVG = (svgId, filename = 'diagrama_sistema.svg', calcMethod =
         setTimeout(() => URL.revokeObjectURL(url), 500);
 
     } catch (error) {
-        console.error("Erro ao gerar SVG:", error);
-        alert("Houve um erro ao gerar a imagem. Verifique o console.");
+        console.error("Error generating SVG:", error);
+        alert("There was an error generating the image. Check the console.");
     }
 };

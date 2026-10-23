@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="pt">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Painel de Contingências</title>
+<title>Contingency Panel</title>
 <style>
 :root {
   --bg: #f6f7f9; --card: #ffffff; --ink: #1c2330; --muted: #667085; --line: #d9dde5;
@@ -61,40 +61,40 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 </head>
 <body>
 <header>
-  <h1>Painel de contingências</h1>
-  <p class="sub">E se esta linha falhar? Compara o cálculo exato (AC), o simplificado (DC) e a previsão do GENCO: quanto cada linha fica carregada e quais ficariam sobrecarregadas.</p>
+  <h1>Contingency panel</h1>
+  <p class="sub">What if this line fails? Compares the exact calculation (AC), the simplified one (DC) and the GENCO prediction: how loaded each line gets and which ones would be overloaded.</p>
   <p class="note" id="note"></p>
 </header>
 <main>
   <section class="card">
-    <h2>Cenários</h2>
-    <label>Filtro
+    <h2>Scenarios</h2>
+    <label>Filter
       <select id="filter" style="width:100%;margin-top:4px;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)">
-        <option value="all">Todos</option>
-        <option value="n0">Rede intacta (N-0)</option>
-        <option value="n1">1 linha fora (N-1)</option>
-        <option value="n2">2 linhas fora (N-2)</option>
-        <option value="over">Só com sobrecarga</option>
+        <option value="all">All</option>
+        <option value="n0">Intact network (N-0)</option>
+        <option value="n1">1 line out (N-1)</option>
+        <option value="n2">2 lines out (N-2)</option>
+        <option value="over">Only with overload</option>
       </select>
     </label>
     <div style="margin-top:12px">
-      <label>Limiar de sobrecarga: <b id="thv">100%</b> da capacidade
+      <label>Overload threshold: <b id="thv">100%</b> of the capacity
         <input id="th" type="range" min="60" max="120" value="100">
       </label>
     </div>
     <div style="margin-top:12px">
-      <label>Margem de confirmação AC: <b id="mv">5</b> pontos % abaixo do limiar
+      <label>AC confirmation margin: <b id="mv">5</b> % points below the threshold
         <input id="mg" type="range" min="0" max="30" value="5">
       </label>
-      <p style="font-size:12px;color:var(--muted);margin:4px 0 0">Híbrido: o GENCO calcula tudo; as linhas que ele põe a partir de (limiar − margem) são confirmadas pelo cálculo exato.</p>
+      <p style="font-size:12px;color:var(--muted);margin:4px 0 0">Hybrid: GENCO computes everything; the lines it puts at or above (threshold − margin) are confirmed by the exact calculation.</p>
     </div>
     <div style="margin-top:12px">
-      <label>Colorir o mapa pelo método
+      <label>Color the map by method
         <select id="view" style="width:100%;margin-top:4px;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)">
-          <option value="exact">Exato (AC): a verdade</option>
-          <option value="hybrid">Híbrido (GENCO + AC)</option>
-          <option value="genco">GENCO sozinho</option>
-          <option value="dc">DC sozinho</option>
+          <option value="exact">Exact (AC): the ground truth</option>
+          <option value="hybrid">Hybrid (GENCO + AC)</option>
+          <option value="genco">GENCO alone</option>
+          <option value="dc">DC alone</option>
         </select>
       </label>
     </div>
@@ -103,18 +103,18 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   <div class="right">
     <div class="stats" id="stats"></div>
     <section class="card">
-      <h2 id="mapTitle">Rede</h2>
-      <svg id="map" viewBox="0 0 900 640" role="img" aria-label="Mapa da rede elétrica"></svg>
+      <h2 id="mapTitle">Network</h2>
+      <svg id="map" viewBox="0 0 900 640" role="img" aria-label="Power network map"></svg>
       <div class="legend">
-        <span><i style="background:var(--ok)"></i>até 70%</span>
-        <span><i style="background:var(--warn)"></i>70% ao limiar</span>
-        <span><i style="background:var(--bad)"></i>sobrecarregada (AC)</span>
-        <span><i style="background:var(--off);height:2px"></i>linha fora de serviço</span>
-        <span><i style="background:var(--accent);opacity:.5;height:8px"></i>confirmada pelo AC (modo híbrido)</span>
+        <span><i style="background:var(--ok)"></i>up to 70%</span>
+        <span><i style="background:var(--warn)"></i>70% to the threshold</span>
+        <span><i style="background:var(--bad)"></i>overloaded (AC)</span>
+        <span><i style="background:var(--off);height:2px"></i>line out of service</span>
+        <span><i style="background:var(--accent);opacity:.5;height:8px"></i>confirmed by the AC (hybrid mode)</span>
       </div>
     </section>
     <section class="card">
-      <h2>Linhas mais carregadas neste cenário</h2>
+      <h2>Most loaded lines in this scenario</h2>
       <div class="scroll"><table id="tbl"></table></div>
     </section>
   </div>
@@ -125,24 +125,24 @@ const $ = (id) => document.getElementById(id);
 const fmt = (x, d = 0) => x.toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
 let D, sel = 0, T = 1, M = 0.05, view = "exact";
 
-// valor de carregamento (fração da capacidade) de cada método para a linha i do cenário s
+// loading value (fraction of the capacity) of each method for line i of scenario s
 function methodValue(s, i, m) {
   const a = ratio(s.ac[i], i);
   const g = s.genco ? ratio(s.genco[i], i) : null;
   if (m === "exact") return a;
   if (m === "dc") return ratio(s.dc[i], i);
   if (m === "genco") return g;
-  return g !== null && g >= T - M ? a : g; // híbrido: AC nas linhas que o GENCO põe perto do limiar
+  return g !== null && g >= T - M ? a : g; // hybrid: AC on the lines that GENCO puts near the threshold
 }
 const flagged = (s, i) => s.genco && ratio(s.genco[i], i) >= T - M;
 
 fetch("data.json").then(r => r.json()).then(d => { D = d; init(); }).catch(() => {
-  $("note").textContent = "Não foi possível carregar data.json. Gere-o com app/export_data.py e sirva a pasta app/ por HTTP.";
+  $("note").textContent = "Could not load data.json. Generate it with app/export_data.py and serve the app/ folder over HTTP.";
 });
 
 function label(s) {
-  if (!s.out.length) return "Rede intacta";
-  return "Fora: " + s.out.map(i => { const l = D.lines[i]; return `${l.from}–${l.to}`; }).join(", ");
+  if (!s.out.length) return "Intact network";
+  return "Out: " + s.out.map(i => { const l = D.lines[i]; return `${l.from}–${l.to}`; }).join(", ");
 }
 const kOf = s => s.out.length;
 const ratio = (v, i) => v / D.lines[i].rate;
@@ -150,8 +150,8 @@ const overs = (arr, T) => arr.map((v, i) => ratio(v, i) >= T);
 
 function init() {
   sel = D.scenarios[0].id;
-  $("note").textContent = `Protótipo com dados reais do ${D.network.replace("case", "IEEE ").replace("_ieee", "")}: ${D.scenarios.length} cenários gerados pelo gridfm-datakit. ` +
-    (D.genco_available ? "O GENCO (modelo Tiny, treino reduzido) foi avaliado só em cenários que nunca viu no treino." : "A coluna GENCO aparece como “–” até o modelo ser treinado nesta rede.");
+  $("note").textContent = `Prototype with real data from ${D.network.replace("case", "IEEE ").replace("_ieee", "")}: ${D.scenarios.length} scenarios generated by gridfm-datakit. ` +
+    (D.genco_available ? "GENCO (Tiny model, reduced training) was evaluated only on scenarios it never saw in training." : "The GENCO column shows “–” until the model is trained on this network.");
   $("th").oninput = e => { T = e.target.value / 100; $("thv").textContent = e.target.value + "%"; render(); };
   $("mg").oninput = e => { M = e.target.value / 100; $("mv").textContent = e.target.value; render(); };
   $("view").onchange = e => { view = e.target.value; render(); };
@@ -176,11 +176,11 @@ function renderList() {
     const n = overs(s.ac, T).filter(Boolean).length;
     const b = document.createElement("button");
     b.className = "item" + (s.id === sel ? " sel" : "");
-    b.innerHTML = `<span class="badge ${n ? "" : "okb"}">${n ? n + " sobrecarga" + (n > 1 ? "s" : "") : "ok"}</span><b>Cenário ${s.id}</b><small>${label(s)}</small>`;
+    b.innerHTML = `<span class="badge ${n ? "" : "okb"}">${n ? n + " overload" + (n > 1 ? "s" : "") : "ok"}</span><b>Scenario ${s.id}</b><small>${label(s)}</small>`;
     b.onclick = () => { sel = s.id; render(); };
     $("list").appendChild(b);
   });
-  if (!items.length) $("list").textContent = "Nenhum cenário com este filtro.";
+  if (!items.length) $("list").textContent = "No scenario with this filter.";
 }
 
 function confusion(key) {
@@ -201,7 +201,7 @@ function renderStats() {
   const card = (v, l, c) => `<div class="card stat"><div class="v" ${c ? `style="color:var(--${c})"` : ""}>${v}</div><div class="l">${l}</div></div>`;
   const pc = r => r === null ? "–" : fmt(r * 100) + "%";
 
-  // Híbrido: todas as linhas passam pelo GENCO; as "duvidosas" (GENCO ≥ limiar − margem) são confirmadas pelo AC.
+  // Hybrid: all lines go through GENCO; the "doubtful" ones (GENCO ≥ threshold − margin) are confirmed by the AC.
   let hy = null;
   if (D.genco_available) {
     let tp = 0, fn = 0, fp = 0, crit = 0, critCaught = 0, toAC = 0;
@@ -224,17 +224,17 @@ function renderStats() {
   }
 
   $("stats").innerHTML =
-    card(nOver, "linhas sobrecarregadas neste cenário (cálculo exato AC)", nOver ? "bad" : "ok") +
-    card(pc(dc.recall), `sobrecargas que o DC deteta (perde ${dc.fn}, falsos alarmes ${dc.fp}) em todos os cenários`, dc.fn ? "warn" : "ok") +
-    card(gc ? pc(gc.recall) : "–", gc ? `sobrecargas que o GENCO deteta (perde ${gc.fn}, falsos alarmes ${gc.fp})` : "GENCO: aguarda modelo treinado") +
-    card(hy ? pc(hy.recall) : "–", hy ? `sobrecargas que o híbrido deteta (perde ${hy.fn}, falsos alarmes ${hy.fp}); ${pc(hy.share)} dos cenários vão ao cálculo exato, e ${hy.critCaught} de ${hy.crit} cenários críticos são confirmados` : "Híbrido: precisa do GENCO", hy && hy.fn ? "warn" : "ok") +
+    card(nOver, "overloaded lines in this scenario (exact AC calculation)", nOver ? "bad" : "ok") +
+    card(pc(dc.recall), `overloads that the DC detects (misses ${dc.fn}, false alarms ${dc.fp}) in all scenarios`, dc.fn ? "warn" : "ok") +
+    card(gc ? pc(gc.recall) : "–", gc ? `overloads that GENCO detects (misses ${gc.fn}, false alarms ${gc.fp})` : "GENCO: awaiting a trained model") +
+    card(hy ? pc(hy.recall) : "–", hy ? `overloads that the hybrid detects (misses ${hy.fn}, false alarms ${hy.fp}); ${pc(hy.share)} of the scenarios go to the exact calculation, and ${hy.critCaught} of ${hy.crit} critical scenarios are confirmed` : "Hybrid: needs GENCO", hy && hy.fn ? "warn" : "ok") +
     card(`${fmt(avg("dc_ms"), 1)} · ${hy && hy.tG !== null ? fmt(hy.tG, 1) : "–"} · ${hy && hy.tH !== null ? fmt(hy.tH, 1) : "–"} · ${fmt(avg("ac_ms"), 1)} ms`,
-      "tempo por cenário: DC · GENCO (GPU) · híbrido · AC exato" + (hy && hy.tH !== null && hy.tH > avg("ac_ms") ? ". Nesta rede o híbrido sai mais lento que o AC sozinho." : ""));
+      "time per scenario: DC · GENCO (GPU) · hybrid · exact AC" + (hy && hy.tH !== null && hy.tH > avg("ac_ms") ? ". On this network the hybrid is slower than the AC alone." : ""));
 }
 
 function renderMap() {
   const s = D.scenarios.find(x => x.id === sel);
-  $("mapTitle").textContent = `Cenário ${s.id} · ${label(s)}`;
+  $("mapTitle").textContent = `Scenario ${s.id} · ${label(s)}`;
   const W = 900, H = 640, P = 30;
   const xs = D.buses.map(b => b.x), ys = D.buses.map(b => b.y);
   const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
@@ -247,7 +247,7 @@ function renderMap() {
     const out = s.out.includes(i), r = methodValue(s, i, view);
     const col = out ? css("off") : r >= T ? css("bad") : r >= 0.7 ? css("warn") : css("ok");
     const w = out ? 1.5 : r >= T ? 4 : 2.2;
-    if (view === "hybrid" && !out && flagged(s, i)) // halo nas linhas confirmadas pelo cálculo exato
+    if (view === "hybrid" && !out && flagged(s, i)) // halo on the lines confirmed by the exact calculation
       svg += `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${css("accent")}" stroke-width="${w + 5}" opacity=".35" stroke-linecap="round"/>`;
     svg += `<line data-i="${i}" x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="${w}" ${out ? 'stroke-dasharray="5 4"' : ""} stroke-linecap="round"/>`;
     svg += `<line data-i="${i}" x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="transparent" stroke-width="10" class="hit"/>`;
@@ -258,7 +258,7 @@ function renderMap() {
     el.onmousemove = e => {
       const i = +el.dataset.i, l = D.lines[i], t = $("tip");
       t.style.display = "block"; t.style.left = e.clientX + 12 + "px"; t.style.top = e.clientY + 12 + "px";
-      t.textContent = s.out.includes(i) ? `Linha ${l.from}–${l.to}: fora de serviço` : `Linha ${l.from}–${l.to}: AC ${fmt(ratio(s.ac[i], i) * 100)}% · DC ${fmt(ratio(s.dc[i], i) * 100)}%` + (s.genco ? ` · GENCO ${fmt(ratio(s.genco[i], i) * 100)}%` : "");
+      t.textContent = s.out.includes(i) ? `Line ${l.from}–${l.to}: out of service` : `Line ${l.from}–${l.to}: AC ${fmt(ratio(s.ac[i], i) * 100)}% · DC ${fmt(ratio(s.dc[i], i) * 100)}%` + (s.genco ? ` · GENCO ${fmt(ratio(s.genco[i], i) * 100)}%` : "");
     };
     el.onmouseleave = () => $("tip").style.display = "none";
   });
@@ -273,13 +273,13 @@ function renderTable() {
     if (x === null) return "";
     const a = r.a >= T, p = x >= T;
     if (a && p) return `<span class="tag good">${name} acertou</span>`;
-    if (a) return `<span class="tag bad">${name} não viu</span>`;
-    if (p) return `<span class="tag warn">falso alarme ${name}</span>`;
+    if (a) return `<span class="tag bad">${name} did not see</span>`;
+    if (p) return `<span class="tag warn">false alarm ${name}</span>`;
     return "";
   };
   const hyb = r => r.g === null ? null : (r.g >= T - M ? r.a : r.g);
-  const decision = r => r.g === null ? "" : r.g >= T - M ? '<span class="tag" style="color:var(--accent);border-color:var(--accent)">confirmado por AC</span>' : '<span class="tag">GENCO basta</span>';
-  $("tbl").innerHTML = `<tr><th>Linha</th><th>Capacidade (MVA)</th><th>AC (exato)</th><th>DC</th><th>GENCO</th><th>Híbrido</th><th>Decisão híbrida</th><th>Veredicto DC</th><th>Veredicto GENCO</th></tr>` +
+  const decision = r => r.g === null ? "" : r.g >= T - M ? '<span class="tag" style="color:var(--accent);border-color:var(--accent)">confirmed by AC</span>' : '<span class="tag">GENCO is enough</span>';
+  $("tbl").innerHTML = `<tr><th>Line</th><th>Capacity (MVA)</th><th>AC (exact)</th><th>DC</th><th>GENCO</th><th>Hybrid</th><th>Hybrid decision</th><th>DC verdict</th><th>GENCO verdict</th></tr>` +
     rows.map(r => `<tr><td>${r.l.from}–${r.l.to}</td><td>${fmt(r.l.rate)}</td><td><b>${pct(r.a)}</b></td><td>${pct(r.d)}</td><td class="${r.g === null ? "na" : ""}">${pct(r.g)}</td><td>${pct(hyb(r))}</td><td>${decision(r)}</td><td>${verdict("DC", r, r.d)}</td><td>${verdict("GENCO", r, r.g)}</td></tr>`).join("");
 }
 </script>

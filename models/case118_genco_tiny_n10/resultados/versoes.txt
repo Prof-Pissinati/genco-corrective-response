@@ -1,0 +1,15 @@
+Training: 2026-10-19  (local machine, Windows 11, RTX 5060 Laptop)
+gridfm-datakit==1.1.0
+juliacall==0.9.36
+lightning==2.6.6
+lightning-utilities==0.15.3
+numpy==2.5.3
+pandas==3.0.6
+pytorch-lightning==2.6.6
+torch==2.8.0+cu128
+torch-geometric==2.8.0.post1
+torchaudio==2.11.0
+torchmetrics==1.9.0
+torchvision==0.23.0
+gridfm-graphkit commit: 95b90eecc7f5c2c86a9dd776f0c3f40434def22f
+python: Python 3.12.14

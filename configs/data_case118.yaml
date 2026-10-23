@@ -1,4 +1,4 @@
-# Dataset reduzido do IEEE 118 para treino do GENCO Tiny (modo PF, contingências até N-2): 800 cenários de carga x 4 variantes = 3200 amostras
+# Reduced IEEE 118 dataset to train GENCO Tiny (PF mode, contingencies up to N-2): 800 load scenarios x 4 variants = 3200 samples
 network:
   name: "case118_ieee"
   source: "pglib"

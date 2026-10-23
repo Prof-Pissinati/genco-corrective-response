@@ -11,6 +11,8 @@ __pycache__/
 *.parquet
 *.pt
 !models/**/*.pt
+# identical copy of best_model_state_dict.pt (the model card says to use last.pt; it is already saved under the other name)
+models/case10000_goc_genco_tiny_autores/last.pt
 *.ckpt
 node_modules/
 dist/

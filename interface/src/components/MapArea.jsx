@@ -5,10 +5,10 @@ import { fetchStreetRoute } from '../utils/geoRouting';
 import { useGridInteraction } from '../hooks/useGridInteraction';
 import GeoImportModal from './GeoImportModal';
 
-// 👇 IMPORTAMOS O SEU COMPONENTE INTACTO 👇
+// 👇 WE IMPORT YOUR COMPONENT UNTOUCHED 👇
 import SvgTooltips from './SvgTooltips'; 
 
-// 👇 MAPA BLINDADO: Agora ele checa a trava antes de limpar a seleção!
+// 👇 HARDENED MAP: now it checks the latch before clearing the selection!
 function MapBackgroundEvents({ setSelectedElement, isEditMode, ignoreMapClickRef }) {
     useMapEvents({
         click: () => {
@@ -22,11 +22,11 @@ function MapBackgroundEvents({ setSelectedElement, isEditMode, ignoreMapClickRef
     return null;
 }
 
-// 👇 COMPONENTE NOVO: Rastreia o mouse para a "antena" do SvgTooltips
+// 👇 NEW COMPONENT: tracks the mouse for the SvgTooltips "antenna"
 function MapMouseTracker({ setMouseSvgPt }) {
     useMapEvents({
         mousemove: (e) => {
-            // Usa os pixels da tela (containerPoint) em vez de Lat/Lng
+            // Uses screen pixels (containerPoint) instead of Lat/Lng
             setMouseSvgPt(e.containerPoint); 
         }
     });
@@ -38,7 +38,7 @@ export default function MapArea({
     getEdgeColor, setSelectedElement, toggleSwitch, toggleFault,
     nodeData, lineCurrents, systemShunts, children, isEditMode,
     selectedElement, hoveredLineId, setHoveredLineId, hoveredNodeId, setHoveredNodeId,
-    // 👇 Novas props necessárias para o SvgTooltips 👇
+    // 👇 New props needed for SvgTooltips 👇
     loads, systemLoads, sses, allNodes, svgPositions, geoPositions, setGeoPositions, routedPaths, setRoutedPaths,
     manualWaypoints, setManualWaypoints, straightSegments, setStraightSegments,
     systemGD, toggleGD
@@ -47,16 +47,16 @@ export default function MapArea({
     const [showGeoModal, setShowGeoModal] = useState(false);
 
     useEffect(() => {
-        // Se a rede estiver vazia, não faz nada
+        // If the network is empty, does nothing
         if (!allNodes || allNodes.length === 0) return;
 
-        // Conta quantas barras atuais possuem latitude/longitude válidas
+        // Counts how many current buses have valid latitude/longitude
         const covered = allNodes.filter(id => geoPositions[String(id)] || geoPositions[id]).length;
         const coverage = covered / allNodes.length;
 
-        // Se menos da metade da rede tiver coordenadas geográficas...
+        // If fewer than half of the network has geographic coordinates...
         if (coverage < 0.5) {
-            setShowGeoModal(true); // 🚨 Abre o modal pedindo ajuda ao usuário!
+            setShowGeoModal(true); // 🚨 Opens the modal asking the user for help!
         }
     }, [allNodes, geoPositions]);
 
@@ -68,9 +68,9 @@ export default function MapArea({
     const [recalculatingBranchId, setRecalculatingBranchId] = useState(null);
     const fileInputRef = useRef(null);
 
-    // TRAVA DE CLIQUE (LATCH)
+    // CLICK LATCH
     const ignoreMapClickRef = useRef(false);
-    const containerRef = useRef(null); // Ref para medir o tamanho da tela
+    const containerRef = useRef(null); // Ref to measure the screen size
 
     // ==========================================
     // 💡 ESTADOS DO SCADA (TOOLTIPS E POST-ITS)
@@ -87,11 +87,11 @@ export default function MapArea({
         }
     }, [isEditMode]);
 
-    // 👇 SOLUÇÃO DO OFFSET: Força o Leaflet a recalcular a tela toda vez que ela muda 👇
+    // 👇 OFFSET FIX: forces Leaflet to recompute the screen every time it changes 👇
     useEffect(() => {
         const resizeObserver = new ResizeObserver(() => {
             if (containerRef.current) {
-                // Acessa a instância interna do mapa escondida pelo React-Leaflet (se disponível)
+                // Accesses the internal map instance hidden by React-Leaflet (if available)
                 const mapInstance = containerRef.current.querySelector('.leaflet-container')?._leaflet_map;
                 if (mapInstance) {
                     mapInstance.invalidateSize();
@@ -106,13 +106,13 @@ export default function MapArea({
         return () => resizeObserver.disconnect();
     }, []);
 
-    // 👇 Função chamada pelo Hook ao usar Shift+Click
+    // 👇 Function called by the Hook when using Shift+Click
     const handlePinCard = (type, id, event) => {
-        const pt = event.containerPoint; // Ponto da tela onde ocorreu o clique
+        const pt = event.containerPoint; // Screen point where the click happened
         setPinnedCards(prev => {
             const exists = prev.find(p => String(p.id) === String(id) && p.type === type);
-            if (exists) return prev.filter(p => !(String(p.id) === String(id) && p.type === type)); // Remove se já existir
-            return [...prev, { id, type, x: pt.x + 20, y: pt.y + 20 }]; // Cria deslocado para o lado
+            if (exists) return prev.filter(p => !(String(p.id) === String(id) && p.type === type)); // Removes if it already exists
+            return [...prev, { id, type, x: pt.x + 20, y: pt.y + 20 }]; // Creates it offset to the side
         });
     };
 
@@ -121,7 +121,7 @@ export default function MapArea({
     });
 
     // ==========================================
-    // 💡 MOTOR DE ARRASTO DOS POST-ITS
+    // 💡 POST-IT DRAG ENGINE
     // ==========================================
     const handleSvgMouseDown = (e) => {
         const closestCard = e.target.closest('.pinned-card');
@@ -217,13 +217,13 @@ export default function MapArea({
             try {
                 const data = JSON.parse(e.target.result);
                 const routes = data.routes || data; 
-                if (Object.keys(routes).length === 0) { alert("❌ Arquivo vazio."); return; }
+                if (Object.keys(routes).length === 0) { alert("❌ Empty file."); return; }
                 
                 setRoutedPaths(routes);
                 setManualWaypoints(data.waypoints || {});
                 setStraightSegments(data.straightSegments || {});
-                alert(`✅ Sucesso! Rotas importadas.`);
-            } catch (err) { alert("❌ Arquivo JSON inválido."); }
+                alert(`✅ Success! Routes imported.`);
+            } catch (err) { alert("❌ Invalid JSON file."); }
         };
         reader.readAsText(file);
         event.target.value = ''; 
@@ -310,7 +310,7 @@ export default function MapArea({
         else if (type === 'shunt') shape = `<polygon points="10,2 18,10 10,18 2,10" fill="${color}" stroke="${strokeColor}" stroke-width="2.5" ${glowStyle}/>`;
         else shape = `<rect x="3" y="6" width="14" height="8" rx="1.5" fill="${color}" stroke="${strokeColor}" stroke-width="1.5" ${glowStyle}/>`;
 
-        // Badge GD — mesmo padrão visual do GraphArea: círculo teal + raio SVG
+        // DG badge — same visual pattern as GraphArea: teal circle + SVG lightning bolt
         const gdBadge = hasGD ? `
             <circle cx="18" cy="2" r="5"
                 fill="${gdActive ? 'rgba(212, 212, 0, 0.2)' : 'rgba(80,80,80,0.2)'}"
@@ -320,7 +320,7 @@ export default function MapArea({
                 fill="${gdActive ? '#ffee00' : '#666'}"/>
         ` : '';
 
-        // Badge Shunt — círculo azul + número de passos
+        // Shunt badge — blue circle + number of steps
         const shuntBadge = hasShunt ? `
             <circle cx="${hasGD ? 25 : 18}" cy="2" r="5"
                 fill="rgba(0,188,212,0.2)"
@@ -344,7 +344,7 @@ export default function MapArea({
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative', zIndex: 1 }}>
             
-            {/* 👇 O MODAL GEOGRÁFICO ENTRA AQUI 👇 */}
+            {/* 👇 THE GEOGRAPHIC MODAL GOES HERE 👇 */}
             {showGeoModal && (
                 <GeoImportModal
                     isOpen={showGeoModal}
@@ -365,18 +365,18 @@ export default function MapArea({
                 
                 {isEditMode && (
                     <>
-                        <button onClick={() => fileInputRef.current.click()} style={{ background: '#2196f3', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>📥 Importar systemRoutes.json</button>
-                        <button onClick={handleExportRoutes} style={{ background: '#ff9800', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>💾 Exportar Rotas</button>
-                        <button onClick={() => { const formattedPositions = "{\n" + Object.keys(geoPositions).sort((a,b)=>parseInt(a)-parseInt(b)).map(k => `    "${k}": { "lat": ${geoPositions[k].lat}, "lng": ${geoPositions[k].lng} }`).join(",\n") + "\n}"; console.log(formattedPositions); alert("Coordenadas no Console! Aperte F12 para copiar."); }} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>💾 Exportar Posições</button>
+                        <button onClick={() => fileInputRef.current.click()} style={{ background: '#2196f3', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>📥 Import systemRoutes.json</button>
+                        <button onClick={handleExportRoutes} style={{ background: '#ff9800', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>💾 Export Routes</button>
+                        <button onClick={() => { const formattedPositions = "{\n" + Object.keys(geoPositions).sort((a,b)=>parseInt(a)-parseInt(b)).map(k => `    "${k}": { "lat": ${geoPositions[k].lat}, "lng": ${geoPositions[k].lng} }`).join(",\n") + "\n}"; console.log(formattedPositions); alert("Coordinates in the Console! Press F12 to copy."); }} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>💾 Export Positions</button>
                     </>
                 )}
             </div>
 
             {recalculatingBranchId !== null && (
-                <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, background: '#e91e63', color: 'white', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold', fontSize: '13px', boxShadow: '0 4px 10px rgba(233,30,99,0.4)', animation: 'pulse 1.5s infinite' }}>🛰️ Roteando trecho...</div>
+                <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, background: '#e91e63', color: 'white', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold', fontSize: '13px', boxShadow: '0 4px 10px rgba(233,30,99,0.4)', animation: 'pulse 1.5s infinite' }}>🛰️ Routing stretch...</div>
             )}
 
-            {/* 👇 OVERLAY SVG INVISÍVEL PARA OS TOOLTIPS E POST-ITS 👇 */}
+            {/* 👇 INVISIBLE SVG OVERLAY FOR THE TOOLTIPS AND POST-ITS 👇 */}
             {!isEditMode && (
                 <div 
                     onMouseDown={handleSvgMouseDown}
@@ -387,14 +387,14 @@ export default function MapArea({
                 >
                     <svg style={{ width: '100%', height: '100%' }}>
                         <SvgTooltips 
-                            isHoveringSVG={true} // Força ativo no mapa
+                            isHoveringSVG={true} // Forced active on the map
                             localHoveredLine={hoveredLineId}
                             hoveredBranch={branches.find(b => b.id === hoveredLineId)}
                             hoveredLineData={lineCurrents[hoveredLineId]}
                             localHoveredNode={hoveredNodeId}
                             hoveredNodeInfo={nodeData[hoveredNodeId]}
-                            manualPositions={{}} // HUD não usa grid SVG
-                            animPositions={{}}   // HUD não usa grid SVG
+                            manualPositions={{}} // HUD does not use the SVG grid
+                            animPositions={{}}   // HUD does not use the SVG grid
                             sources={sources}
                             branches={branches}
                             lineCurrents={lineCurrents}
@@ -416,10 +416,10 @@ export default function MapArea({
 
                 <ZoomControl position="topright" />
                 
-                {/* 👇 MAPA OUVE CLIQUES VAZIOS (E RESPEITA A TRAVA) */}
+                {/* 👇 THE MAP LISTENS TO EMPTY CLICKS (AND RESPECTS THE LATCH) */}
                 <MapBackgroundEvents setSelectedElement={setSelectedElement} isEditMode={isEditMode} ignoreMapClickRef={ignoreMapClickRef} />
                 
-                {/* O RASTREADOR ALIMENTA A ANTENA DO SCADA */}
+                {/* THE TRACKER FEEDS THE SCADA ANTENNA */}
                 {!isEditMode && <MapMouseTracker setMouseSvgPt={setMouseSvgPt} />}
 
                 <TileLayer url={mapTileUrl} attribution='&copy; OSM' />
@@ -471,7 +471,7 @@ export default function MapArea({
                                 mouseout: () => { if (setHoveredLineId) setHoveredLineId(null); },
 
                                 click: async (e) => { 
-                                    // 👇 FECHA O SEMÁFORO! O clique no mapa será ignorado.
+                                    // 👇 CLOSES THE TRAFFIC LIGHT! The click on the map will be ignored.
                                     ignoreMapClickRef.current = true;
                                     setTimeout(() => { ignoreMapClickRef.current = false; }, 100);
 
@@ -495,12 +495,12 @@ export default function MapArea({
                                 contextmenu: (e) => handleAddWaypoint(e, branch) 
                             }}
                         >
-                            {/* O Tooltip antigo só aparece no Modo de Edição agora */}
+                            {/* The old Tooltip now only appears in Edit Mode */}
                             {isEditMode && (
                                 <Tooltip direction="center" sticky>
                                     <div style={{ textAlign: 'center' }}>
-                                        <strong>Linha {branch.from}-{branch.to}</strong><br/>
-                                        <span style={{fontSize: '10px', color: '#00bcd4'}}><strong>Ctrl+Click:</strong> Linha Reta NESTE trecho<br/><strong>Click Simples:</strong> Rota de Rua NESTE trecho</span>
+                                        <strong>Line {branch.from}-{branch.to}</strong><br/>
+                                        <span style={{fontSize: '10px', color: '#00bcd4'}}><strong>Ctrl+Click:</strong> Straight Line on THIS stretch<br/><strong>Simple Click:</strong> Street Route on THIS stretch</span>
                                     </div>
                                 </Tooltip>
                             )}
@@ -517,7 +517,7 @@ export default function MapArea({
                                 dragend: (e) => handleUpdateWaypoint(branchObj, wp.id, e.target.getLatLng()),
                                 click: () => handleRemoveWaypoint(branchObj, wp.id) 
                             }}
-                        ><Tooltip direction="top">Arraste para mover<br/>Clique p/ apagar</Tooltip></Marker>
+                        ><Tooltip direction="top">Drag to move<br/>Click to delete</Tooltip></Marker>
                     ));
                 })}
 
@@ -565,7 +565,7 @@ export default function MapArea({
                                         }
                                         return;
                                     }
-                                    // Alt+Click: toggle GD (se existir)
+                                    // Alt+Click: toggle DG (if it exists)
                                     if (e.originalEvent.altKey && hasGD && toggleGD) {
                                         toggleGD(numId);
                                         return;
@@ -574,12 +574,12 @@ export default function MapArea({
                                 }
                             }}
                         >
-                            {/* O Tooltip antigo só aparece no Modo de Edição agora */}
+                            {/* The old Tooltip now only appears in Edit Mode */}
                             {isEditMode && (
                                 <Tooltip direction="top" offset={[0, -8]}>
                                     <div style={{ textAlign: 'center' }}>
-                                        <strong style={{ color: color }}>{type === 'shunt' ? 'CAPACITOR' : (isSource ? 'SUB' : (isFeeder ? 'ALIM' : 'BARRA'))} {nodeId}</strong><br/>
-                                        <br/><span style={{fontSize: '9px', color: '#00bcd4'}}>Ctrl+Click: Recalcular Ruas conectadas</span>
+                                        <strong style={{ color: color }}>{type === 'shunt' ? 'CAPACITOR' : (isSource ? 'SUB' : (isFeeder ? 'FEEDER' : 'BUS'))} {nodeId}</strong><br/>
+                                        <br/><span style={{fontSize: '9px', color: '#00bcd4'}}>Ctrl+Click: Recompute connected Streets</span>
                                     </div>
                                 </Tooltip>
                             )}

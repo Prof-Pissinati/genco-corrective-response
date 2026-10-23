@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 const CanvasOverlay = ({ 
     allNodes, branches, activePositions, activeWaypoints, 
     transform, getNodeColor, getEdgeColor, width, height, darkMode,
-    sources = [], feedersList = [], systemShunts = {}, generatorBuses = null,
+    sources = [], feedersList = [], systemShunts = {}, generatorBuses = null, getNodeShed = null, getEdgePoints = null,
     draggedNodeId, isEditMode, draggedWaypointKey
 }) => {
     const canvasRef = useRef(null);
@@ -27,7 +27,7 @@ const CanvasOverlay = ({
         const dragIdNum = draggedNodeId ? Number(draggedNodeId) : null;
         const draggedBranchIdStr = draggedWaypointKey ? draggedWaypointKey.substring(0, draggedWaypointKey.lastIndexOf('-')) : null;
 
-        // 1. DESENHAR LINHAS
+        // 1. DRAW LINES
         branches.forEach(b => {
             if (dragIdNum !== null && (Number(b.from) === dragIdNum || Number(b.to) === dragIdNum)) return;
             if (draggedBranchIdStr !== null && String(b.id) === draggedBranchIdStr) return;
@@ -37,10 +37,16 @@ const CanvasOverlay = ({
             if (!p1 || !p2) return;
 
             ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            const wps = activeWaypoints[b.id] || [];
-            wps.forEach(wp => ctx.lineTo(wp.x, wp.y));
-            ctx.lineTo(p2.x, p2.y);
+            const pts = getEdgePoints ? getEdgePoints(b) : null;      // effective path (with bends and, on parallel lines, offset)
+            if (pts && pts.length > 1) {
+                ctx.moveTo(pts[0].x, pts[0].y);
+                for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+            } else {
+                ctx.moveTo(p1.x, p1.y);
+                const wps = activeWaypoints[b.id] || [];
+                wps.forEach(wp => ctx.lineTo(wp.x, wp.y));
+                ctx.lineTo(p2.x, p2.y);
+            }
 
             ctx.strokeStyle = getEdgeColor(b);
             ctx.lineWidth = 4;
@@ -51,7 +57,7 @@ const CanvasOverlay = ({
             ctx.stroke();
         });
 
-        // 2. DESENHAR WAYPOINTS (MODO EDIÇÃO)
+        // 2. DRAW WAYPOINTS (EDIT MODE)
         if (isEditMode) {
             branches.forEach(b => {
                 if (draggedBranchIdStr !== null && String(b.id) === draggedBranchIdStr) return;
@@ -70,7 +76,7 @@ const CanvasOverlay = ({
             });
         }
 
-        // 3. DESENHAR BARRAS (GEOMETRIA PADRONIZADA E BLINDADA)
+        // 3. DRAW BUSES (STANDARDIZED, HARDENED GEOMETRY)
         allNodes.forEach(nodeId => {
             const numId = Number(nodeId);
             if (dragIdNum !== null && numId === dragIdNum) return;
@@ -78,22 +84,24 @@ const CanvasOverlay = ({
             const pos = activePositions[nodeId];
             if (!pos) return;
 
-            // BLINDAGEM DE TIPOS: Converte tudo para número antes de comparar
+            // TYPE HARDENING: converts everything to number before comparing
             const isSource = sources.some(s => Number(s) === numId);
             const isFeeder = feedersList.some(f => Number(f) === numId);
-            const hasShunt = !!systemShunts[nodeId] || !!systemShunts[numId] || !!(generatorBuses && generatorBuses.has(Number(nodeId))); // gerador (transmissão): losango
+            const hasShunt = !!systemShunts[nodeId] || !!systemShunts[numId] || !!(generatorBuses && generatorBuses.has(Number(nodeId))); // generator (transmission): diamond
             
             const baseR = 10 / transform.scale;
-            // ... (código do isSource, isFeeder, hasShunt)
+            // ... (isSource, isFeeder, hasShunt code)
 
-            ctx.fillStyle = getNodeColor(nodeId);
+            const baseColor = getNodeColor(nodeId);
+            const shed = getNodeShed ? getNodeShed(nodeId) : 0;      // load shed: stays energized; full shed = hollow, always with a dashed outline
+            ctx.fillStyle = shed >= 0.99 ? (darkMode ? '#101014' : '#ffffff') : baseColor;
             ctx.beginPath();
 
             if (isSource) {
-                // SUBESTAÇÃO: Círculo (Raio 42 -> vira exatos 25px no zoom 0.6)
+                // SUBSTATION: Circle (radius 42 -> exactly 25px at zoom 0.6)
                 ctx.arc(pos.x, pos.y, 42, 0, Math.PI * 2);
             } else if (isFeeder) {
-                // ALIMENTADOR: Hexágono (Raio 42)
+                // FEEDER: Hexagon (radius 42)
                 for (let i = 0; i < 6; i++) {
                     const angle = (Math.PI / 3) * i - (Math.PI / 6);
                     const px = pos.x + 42 * Math.cos(angle);
@@ -103,15 +111,15 @@ const CanvasOverlay = ({
                 }
                 ctx.closePath();
             } else if (hasShunt) {
-                // SHUNT: Losango (Raio 34)
+                // SHUNT: Diamond (radius 34)
                 ctx.moveTo(pos.x, pos.y - 34);
                 ctx.lineTo(pos.x + 34, pos.y);
                 ctx.lineTo(pos.x, pos.y + 34);
                 ctx.lineTo(pos.x - 34, pos.y);
                 ctx.closePath();
             } else {
-                // BARRA COMUM: Retângulo Arredondado 
-                // (50x28 -> vira exatos 30x16px no zoom 0.6)
+                // REGULAR BUS: Rounded Rectangle 
+                // (50x28 -> exactly 30x16px at zoom 0.6)
                 const w = 50;
                 const h = 28;
                 const radius = 14;
@@ -124,17 +132,18 @@ const CanvasOverlay = ({
             
             ctx.fill();
             
-            // Contorno das barras
-            ctx.strokeStyle = darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.15)';
+            // Bus outline
+            ctx.strokeStyle = shed > 0 ? (shed >= 0.99 ? baseColor : (darkMode ? '#ffffff' : '#222222')) : (darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.15)');
             
-            ctx.lineWidth = 3; 
-            
+            ctx.lineWidth = shed > 0 ? 5 : 3; 
+            if (shed > 0) ctx.setLineDash([9, 6]);
             ctx.stroke();
+            ctx.setLineDash([]);
         });
 
         ctx.restore();
         
-    }, [allNodes, branches, activePositions, activeWaypoints, transform, getNodeColor, getEdgeColor, width, height, darkMode, sources, feedersList, systemShunts, draggedNodeId, isEditMode, draggedWaypointKey]);
+    }, [allNodes, branches, activePositions, activeWaypoints, transform, getNodeColor, getNodeShed, getEdgePoints, getEdgeColor, width, height, darkMode, sources, feedersList, systemShunts, draggedNodeId, isEditMode, draggedWaypointKey]);
 
     return <canvas ref={canvasRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }} />;
 };

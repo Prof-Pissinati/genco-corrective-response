@@ -1,59 +1,62 @@
-# Backend (FastAPI) — Fase 2
+# Backend (FastAPI) — Phase 2
 
-Serviço local que avalia topologias de uma rede de transmissão e responde no formato de `../docs/CONTRATO_API.md`.
+Local service that evaluates topologies of a transmission network and answers in the format of `../docs/CONTRATO_API.md`.
 
-| Endpoint | O que faz |
+| Endpoint | What it does |
 |---|---|
-| `GET /health` | estado do serviço, casos e solvers disponíveis |
-| `GET /cases` | nomes dos casos (arquivos `*.json` de `interface/src/data`) |
-| `POST /evaluate` | estado elétrico de **uma ou várias topologias** (lote, até 2000), solver `ac` ou `dc` |
-| `POST /verify` | igual a `/evaluate` com o solver AC (confirmação exata) |
-| `POST /corrective` | **resposta corretiva** às falhas (linhas e/ou barras): redespacho da geração e corte mínimo de carga, verificado pelo AC (`app/corrective.py`) |
+| `GET /health` | service state, cases and available solvers |
+| `GET /cases` | case names (the `*.json` files of `interface/src/data`) |
+| `POST /evaluate` | electrical state of **one or several topologies** (batch, up to 2000), solver `ac` or `dc` |
+| `POST /verify` | same as `/evaluate` with the AC solver (exact confirmation) |
+| `POST /corrective` | **corrective response** to the faults (lines and/or buses): generation redispatch and minimum load shedding, verified by the AC (`app/corrective.py`) |
+| `POST /screen` | N-1 screening of every line and bus (`app/screening.py`) |
+| `POST /recovery` | repair order and block-by-block load reconnection (`app/recovery.py`) |
 
-O solver `genco` retorna 501 até os pesos serem integrados (Fase 5). `/restore`, `/plan` e `/scenario` foram substituídos por `/corrective` (ver `docs/CONTRATO_API.md` §8).
+The `genco` solver returns 501 until the weights are integrated (Phase 5). `/restore`, `/plan` and `/scenario` were replaced by `/corrective` (see `docs/CONTRATO_API.md` §8). The optional generator voltage adjustment by GENCO-OPF lives in `app/voltage.py` (`docs/TENSAO_GENCO_OPF.md`).
 
 ## Solvers
-- **AC:** Newton-Raphson em coordenadas polares (`app/acpf.py`, numpy/scipy esparso), barra de referência absorve desbalanço e perdas, geradores PV mantêm P e |V|, sem limites de Q (como o `compute_ac_pf` do PowerModels usado nos dados do GENCO; as violações de Q são reportadas). Só a ilha com a barra de referência é calculada.
-- **DC:** despacho fixo, a referência absorve o desbalanço (mesma formulação do solver em JS da interface).
-- **Validação:** o AC bate com o **PowerModels** (6 cenários do gridfm-datakit, 0 a 7 linhas fora: diferença de tensão ~1e-12 pu e de fluxo < 1e-6 MW) e com o **pandapower** (tensões, caso base). Tempo típico no IEEE 118: ~10 a 30 ms por topologia.
-- **Decisão de 2026-10-08:** o plano previa o pandapower como solver AC; o backend usa um Newton-Raphson próprio (simples, esparso e com mapeamento direto dos ramos da tabela MATPOWER e das ilhas) e mantém o **pandapower como referência de validação** (nos testes) junto com o PowerModels.
+- **AC:** Newton-Raphson in polar coordinates (`app/acpf.py`, numpy/scipy sparse), the reference bus absorbs the imbalance and the losses, PV generators keep P and |V|, no Q limits (like PowerModels' `compute_ac_pf`, used in the GENCO data; Q violations are reported). Only the island with the reference bus is computed.
+- **DC:** fixed dispatch, the reference absorbs the imbalance (same formulation as the interface's JS solver).
+- **Validation:** the AC matches **PowerModels** (6 gridfm-datakit scenarios, 0 to 7 lines out: voltage difference ~1e-12 pu and flow difference < 1e-6 MW) and **pandapower** (voltages, base case). Typical time on IEEE 118: ~10 to 30 ms per topology.
+- **Decision of 2026-10-08:** the plan foresaw pandapower as the AC solver; the backend uses its own Newton-Raphson (simple, sparse and with a direct mapping of the MATPOWER table branches and of the islands) and keeps **pandapower as a validation reference** (in the tests) together with PowerModels.
 
-## Rodar
-**Mais fácil (Windows):** dê duplo clique em `iniciar-local.bat` (na raiz do repositório). Ele abre duas janelas (backend na porta 8000 e interface na 5173) e o navegador. Para parar, feche as janelas.
+## Run
+**Easiest (Windows):** double-click `start-local.bat` (at the repository root). It opens two windows (backend on port 8000 and interface on 5173) and the browser. To stop, close the windows.
 
-**Passo a passo manual**, com o ambiente leve `..\backend-run`, que usa o Python do sistema (Python 3.12 ou mais novo):
+**Manual step by step**, with the lightweight environment `..\backend-run`, which uses the system Python (Python 3.12 or newer):
 ```powershell
-# uma vez, a partir da pasta do projeto (concurso-genco):
+# once, from the project folder (concurso-genco):
 python -m venv ..\backend-run
 ..\backend-run\Scripts\python.exe -m pip install -r backend\requirements.txt
 
-# toda vez:
+# every time:
 cd backend
 ..\..\backend-run\Scripts\python.exe -m uvicorn app.main:app --port 8000
 ```
-Atenção: **não use um Python baixado pelo `uv`** (fica na pasta de instalação do `uv`, em `AppData`) para ambientes que outras pessoas vão executar; em alguns casos essa pasta não é visível ao PowerShell do usuário. Use o Python instalado no sistema.
+Warning: **do not use a Python downloaded by `uv`** (it sits in `uv`'s installation folder, under `AppData`) for environments that other people will run; in some cases that folder is not visible to the user's PowerShell. Use the Python installed on the system.
 
-Variáveis: `GENCO_CASES_DIR` (pasta dos casos; padrão `interface/src/data`), `GENCO_CORS` (origens permitidas; padrão `*`, uso local).
+Variables: `GENCO_CASES_DIR` (cases folder; default `interface/src/data`), `GENCO_CORS` (allowed origins; default `*`, local use).
 
-Exemplo (caso base e faltas nas barras 81 e 100, ambos pelo AC):
+Example (base case and faults at buses 81 and 100, both by the AC):
 ```bash
 curl -s localhost:8000/evaluate -H "Content-Type: application/json" \
   -d '{"grid":"case118_ieee","solver":"ac","topologies":[{}, {"busOut":[81,100]}]}'
 ```
-A interface chama o backend pelo botão **AC** (barra lateral). Sem o backend, ela continua com o **DC local** (o botão mostra `DC*` e a dica explica o motivo). Endereço do backend: `VITE_BACKEND_URL` (padrão `http://127.0.0.1:8000`).
+The interface calls the backend through the **AC** button (sidebar). Without the backend, it keeps working with the **local DC** (the button shows `DC*` and the tooltip explains why). Backend address: `VITE_BACKEND_URL` (default `http://127.0.0.1:8000`).
 
-## Testes
+## Tests
 ```powershell
-# ambiente de testes completo (Python 3.12 recomendado):  pip install -r backend\requirements-dev.txt
-cd backend; python -m pytest -q       # 35 testes (~20 s); sem o pandapower, 18 passam e 1 é pulado
+# full test environment (Python 3.12 recommended):  pip install -r backend\requirements-dev.txt
+cd backend; python -m pytest -q       # 59 tests (~1 to 2 min)
 ```
-- `tests/test_acpf.py`: AC × PowerModels (6 cenários), AC × pandapower, DC × referência da interface.
-- `tests/test_api.py`: topologia/ilhas, resposta da API, erros (404/422/501), caso inline, nome do caso.
-- `tests/fixtures/datakit_case118.json`: cenários do datakit (gerados por `tools/export_datakit_fixture.py`).
+- `tests/test_acpf.py`: AC × PowerModels (6 scenarios), AC × pandapower, DC × interface reference.
+- `tests/test_api.py`: topology/islands, API response, errors (404/422/501), inline case, case name.
+- `tests/test_corrective.py`, `tests/test_redes_pequenas.py`, `tests/test_voltage.py`: corrective plan, screening, reconnection, the four networks and the voltage adjustment.
+- `tests/fixtures/datakit_case118.json`: datakit scenarios (generated by `tools/export_datakit_fixture.py`).
 
-## Gerar o caso para a interface
-`backend/tools/export_case.py` lê um caso MATPOWER, calcula o **despacho base com AC-OPF** (o `Pg` do PGLib não fecha com a carga) e o layout do diagrama, e grava `interface/src/data/case118_ieee.json` (o `name` do JSON deve ser igual ao nome do arquivo: é o nome do caso na API). Também grava a referência DC (`--ref`) usada nos testes da interface (`npm test`):
+## Generate the case for the interface
+`backend/tools/export_case.py` reads a MATPOWER case, computes the **base dispatch with AC-OPF** (the PGLib `Pg` does not match the load) and the diagram layout, and writes `interface/src/data/case118_ieee.json` (the JSON `name` must equal the file name: it is the case name in the API). It also writes the DC reference (`--ref`) used in the interface tests (`npm test`):
 ```bash
 python backend/tools/export_case.py <pglib_opf_case118_ieee.m> interface/src/data/case118_ieee.json --ref interface/tests/case118_dc_ref.json
 ```
-O `.m` do PGLib (licença CC BY 4.0) está em `interface/src/data/pglib_opf_case118_ieee.m`. Para o `export_case.py` o pandapower é necessário (`requirements.txt`).
+The PGLib `.m` (CC BY 4.0 license) is in `interface/src/data/pglib_opf_case118_ieee.m`. For `export_case.py`, pandapower is needed (`requirements.txt`).

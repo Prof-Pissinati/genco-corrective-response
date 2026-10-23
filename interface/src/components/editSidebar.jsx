@@ -20,14 +20,14 @@ export default function EditSidebar({
     const [openWeight, setOpenWeight] = useState(65); 
     const fileInputRef = useRef(null);
     
-    // Estado do VNS
+    // VNS state
     const [vnsRunning, setVnsRunning]     = useState(false);
     const [vnsProgress, setVnsProgress]   = useState(null); 
     const [vnsGridSize, setVnsGridSize]   = useState(100);
     const [vnsMaxIter,  setVnsMaxIter]    = useState(30);
     const [usePhysics, setUsePhysics]     = useState(false); 
 
-    // Estado para o modo de visualização do grafo compactado (Depuração)
+    // State for the coarsened-graph view mode (Debug)
     const [visualDebug, setVisualDebug] = useState(false);
 
     const handleApplyGenerator = async () => {
@@ -49,7 +49,7 @@ export default function EditSidebar({
 
         try {
             if (setIsCalculatingLayout) setIsCalculatingLayout(true);
-            if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Iniciando...", msg2: "" });
+            if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Starting...", msg2: "" });
 
             const safeNodes = allNodes || [];
             const safeBranches = branches || [];
@@ -75,16 +75,16 @@ export default function EditSidebar({
                     detail: { positions: newPositions, waypoints: response.waypoints || {} } 
                 }));
             } else {
-                console.error("Worker devolveu erro:", response.error);
-                alert("Falha no Layout: " + (response.error || "Erro desconhecido"));
+                console.error("Worker returned an error:", response.error);
+                alert("Layout failure: " + (response.error || "Unknown error"));
             }
         } catch (error) {
-            console.error("Erro Crítico ao instanciar o Worker:", error);
-            alert("Erro fatal de comunicação.");
+            console.error("Critical error instantiating the Worker:", error);
+            alert("Fatal communication error.");
         } finally {
-            // 1º: Avisa o App.jsx para desligar a tela de loading ANTES de apagar os dados
+            // 1st: tells App.jsx to turn off the loading screen BEFORE erasing the data
             if (setIsCalculatingLayout) setIsCalculatingLayout(false);
-            // 2º: Agora sim, destrói o objeto com segurança para remover a "parede de vidro"
+            // 2nd: now it safely destroys the object to remove the "glass wall"
             if (setLayoutProgress) setLayoutProgress(null);
         }
     };
@@ -100,7 +100,7 @@ export default function EditSidebar({
 
         setVnsRunning(true);
         if (setIsCalculatingLayout) setIsCalculatingLayout(true);
-        if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Otimizando Layout...", msg2: "Rodando VNS" });
+        if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Optimizing Layout...", msg2: "Running VNS" });
 
         await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -110,14 +110,14 @@ export default function EditSidebar({
                 maxIter: vnsMaxIter,
                 currentPos: actualLayout.positions,
                 selectedNodes: actualLayout.selectedNodes || null,
-                visualizeCoarsened: visualDebug, // 👈 FLAG MÁGICA
+                visualizeCoarsened: visualDebug, // 👈 DEBUG FLAG
                 onProgress: (iter, cost, crossings) => {
                     setVnsProgress({ iter, cost: cost, crossings });
-                    if (setLayoutProgress) setLayoutProgress({ passes: iter, msg1: "Ajuste Fino VNS", msg2: `Tentativa ${iter} | Cruzamentos restantes: ${crossings}` });
+                    if (setLayoutProgress) setLayoutProgress({ passes: iter, msg1: "VNS Fine Tuning", msg2: `Attempt ${iter} | Remaining crossings: ${crossings}` });
                 },
             });
             
-            // 👇 CINTO DE SEGURANÇA ANTIBUG 👇
+            // 👇 ANTI-BUG SAFETY BELT 👇
             if (visualDebug && response.macroData) {
                 window.dispatchEvent(new CustomEvent('applyMacroGraph', { detail: response }));
             } else {
@@ -126,11 +126,11 @@ export default function EditSidebar({
             }
             window.dispatchEvent(new CustomEvent('triggerZoomExtents'));
         } catch (error) {
-            console.error("Erro no Worker VNS:", error);
+            console.error("VNS Worker error:", error);
         } finally {
             setVnsRunning(false);
             if (setIsCalculatingLayout) setIsCalculatingLayout(false);
-            if (setLayoutProgress) setLayoutProgress(null); // Adicione esta linha!
+            if (setLayoutProgress) setLayoutProgress(null); // Add this line!
         }
     };
 
@@ -139,7 +139,7 @@ export default function EditSidebar({
         window.dispatchEvent(new CustomEvent('getLatestLayout', { detail: { callback: (layout) => { actualLayout = layout; } } }));
 
         if (setIsCalculatingLayout) setIsCalculatingLayout(true);
-        if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Visualização Compacta", msg2: "Amassando a rede..." });
+        if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Compact View", msg2: "Collapsing the network..." });
 
         try {
             const response = await runAsyncLayout(algoMode, allNodes, branches, sources, { 
@@ -148,22 +148,22 @@ export default function EditSidebar({
                 onProgress: (passes, msg1, msg2) => { if (setLayoutProgress) setLayoutProgress({ passes, msg1, msg2 }); }
             });
 
-            // 👇 O CINTO DE SEGURANÇA VITAL 👇
+            // 👇 THE VITAL SAFETY BELT 👇
             if (response && response.macroData) {
                 window.dispatchEvent(new CustomEvent('applyMacroGraph', { detail: response }));
             } else {
-                console.warn("⚠️ O Worker não conseguiu gerar o esqueleto (macroData ausente).", response);
-                alert("Aviso: Não foi possível gerar a compactação visual neste momento.");
+                console.warn("⚠️ The Worker could not generate the skeleton (macroData missing).", response);
+                alert("Warning: the visual compaction could not be generated at this time.");
             }
         } catch (error) { 
-            console.error("Erro na compactação visual:", error);
+            console.error("Visual compaction error:", error);
         } finally { 
             if (setIsCalculatingLayout) setIsCalculatingLayout(false); 
-            if (setLayoutProgress) setLayoutProgress(null); // Adicione esta linha!
+            if (setLayoutProgress) setLayoutProgress(null); // Add this line!
         }
     };
 
-    // --- Atalhos e Rotação continuam intactos abaixo ---
+    // --- Shortcuts and Rotation remain untouched below ---
     useEffect(() => {
         const handleRotateShortcut = (e) => handleRotate(e.detail);
         window.addEventListener('triggerRotate', handleRotateShortcut);
@@ -179,12 +179,12 @@ export default function EditSidebar({
                 const data = JSON.parse(event.target.result);
                 if (data.positions || data.layout) {
                     window.dispatchEvent(new CustomEvent('applyGraphLayout', { detail: data }));
-                    alert("✅ Projeto importado com sucesso!");
+                    alert("✅ Project imported successfully!");
                 } else {
-                    alert("❌ Arquivo inválido.");
+                    alert("❌ Invalid file.");
                 }
             } catch (err) {
-                alert("❌ Erro ao ler o arquivo JSON.");
+                alert("❌ Error reading the JSON file.");
             }
         };
         reader.readAsText(file);
@@ -232,7 +232,7 @@ export default function EditSidebar({
     const glassContainerStyle = { background: darkMode ? 'rgba(30, 30, 30, 0.65)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(15px)', WebkitBackdropFilter: 'blur(15px)', borderLeft: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.1)'}`, display: 'flex', flexDirection: 'column', width: '230px', height: '100%', boxSizing: 'border-box', overflow: 'hidden', boxShadow: darkMode ? '-5px 0 20px rgba(0,0,0,0.4)' : '-5px 0 15px rgba(0,0,0,0.05)', transition: 'background 0.3s, border 0.3s' };
     const ghostBtnOrangeStyle = { background: 'transparent', border: '1.5px solid #ff9800', color: '#ff9800', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', padding: '10px 4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s ease-in-out', width: '100%', marginBottom: '10px' };
     const shortcutBadgeStyle = { display: 'inline-block', background: darkMode ? 'rgba(255,152,0,0.2)' : '#FFE0B2', color: darkMode ? '#ffb74d' : '#E65100', borderRadius: '5px', padding: '2px 6px', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '11px', margin: '0 2px' };
-    const shortcuts = [ { keys: ['P'], desc: 'Tela Cheia/A4' }, { keys: ['Ctrl', 'P'], desc: 'Imprimir PDF' }, { keys: ['E'], desc: 'Sair da Edição' }, { keys: ['Z'], desc: 'Centralizar' }, { keys: ['Ctrl', 'Z'], desc: 'Desfazer' }, { keys: ['D'], desc: 'Tema Escuro' }, { keys: ['Shift', 'Arrastar'], desc: 'Seleção Múltipla' } ];
+    const shortcuts = [ { keys: ['P'], desc: 'Full Screen/A4' }, { keys: ['Ctrl', 'P'], desc: 'Print PDF' }, { keys: ['E'], desc: 'Leave Editing' }, { keys: ['Z'], desc: 'Center' }, { keys: ['Ctrl', 'Z'], desc: 'Undo' }, { keys: ['D'], desc: 'Dark Theme' }, { keys: ['Shift', 'Drag'], desc: 'Multiple Selection' } ];
 
     return (
         <div className="edit-sidebar" style={glassContainerStyle}>
@@ -245,19 +245,19 @@ export default function EditSidebar({
             </style>
 
             <div style={{ padding: '20px', borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)'}`, background: darkMode ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)' }}>
-                <h2 style={{ color: '#ff9800', margin: 0, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>✏️ Modo Edição</h2>
+                <h2 style={{ color: '#ff9800', margin: 0, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>✏️ Edit Mode</h2>
             </div>
 
             <div style={{ padding: '15px', flex: 1, overflowY: 'auto' }}>
                 <input type="file" ref={fileInputRef} accept=".json" style={{ display: 'none' }} onChange={handleFileUpload} />
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                    <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, border: '1.5px solid #00bcd4', color: '#00bcd4', '--hover-color': '#00bcd4', margin: 0}} onClick={() => fileInputRef.current.click()}>📂 Importar</button>
-                    <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, border: '1.5px solid #4caf50', color: '#4caf50', '--hover-color': '#4caf50', margin: 0}} onClick={() => window.dispatchEvent(new CustomEvent('requestLayoutExport'))}>💾 Exportar</button>
+                    <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, border: '1.5px solid #00bcd4', color: '#00bcd4', '--hover-color': '#00bcd4', margin: 0}} onClick={() => fileInputRef.current.click()}>📂 Import</button>
+                    <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, border: '1.5px solid #4caf50', color: '#4caf50', '--hover-color': '#4caf50', margin: 0}} onClick={() => window.dispatchEvent(new CustomEvent('requestLayoutExport'))}>💾 Export</button>
                 </div>
 
                 <div style={{ height: '1px', background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)', margin: '15px 0' }}></div>
 
-                <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, '--hover-color': '#ff9800'}} onClick={onUndo} disabled={!canUndo}>↩️ Desfazer Move</button>
+                <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, '--hover-color': '#ff9800'}} onClick={onUndo} disabled={!canUndo}>↩️ Undo Move</button>
                 <div style={{ display: 'flex', gap: '10px', width: '100%', marginBottom: '15px' }}>
                     <button onClick={() => handleRotate(-10)} style={{ flex: 1, padding: '10px', border: '2px solid #00bcd4', borderRadius: '8px', cursor: 'pointer', background: 'transparent', color: '#00bcd4', fontWeight: 'bold', fontSize: '14px', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.background = '#00bcd4'; e.currentTarget.style.color = '#fff'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#00bcd4'; }}>↺ -10°</button>
                     <button onClick={() => handleRotate(10)} style={{ flex: 1, padding: '10px', border: '2px solid #00bcd4', borderRadius: '8px', cursor: 'pointer', background: 'transparent', color: '#00bcd4', fontWeight: 'bold', fontSize: '14px', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.background = '#00bcd4'; e.currentTarget.style.color = '#fff'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#00bcd4'; }}>+10° ↻</button>
@@ -265,41 +265,41 @@ export default function EditSidebar({
             
                 <div style={{ height: '1px', background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)', margin: '15px 0' }}></div>
                 
-                <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, background: 'rgba(255, 152, 0, 0.05)', '--hover-color': '#ff9800'}} onClick={() => setIsEditMode(false)}>🚪 Sair e Salvar</button>
+                <button className="edit-ghost-btn" style={{...ghostBtnOrangeStyle, background: 'rgba(255, 152, 0, 0.05)', '--hover-color': '#ff9800'}} onClick={() => setIsEditMode(false)}>🚪 Exit and Save</button>
 
-                {/* Botão para ver o ANTES */}
+                {/* Button to see the BEFORE */}
                 <button onClick={handleVisualCompact} style={{ width: '100%', padding: '8px', marginTop: '12px', marginBottom: '12px', background: '#ff5722', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    👁️ Ver Esqueleto (Antes do Layout)
+                    👁️ View Skeleton (Before Layout)
                 </button>
                 
-                {/* Checkbox para modificar o DEPOIS */}
+                {/* Checkbox to modify the AFTER */}
                 <div style={{ marginBottom: '15px', padding: '10px', background: darkMode ? 'rgba(255, 87, 34, 0.1)' : 'rgba(255, 87, 34, 0.05)', borderRadius: '8px', border: `1px solid ${darkMode ? 'rgba(255, 87, 34, 0.3)' : 'rgba(255, 87, 34, 0.4)'}` }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ff5722', fontWeight: 'bold', fontSize: '13px' }}>
                         <input type="checkbox" checked={visualDebug} onChange={e => setVisualDebug(e.target.checked)} style={{ accentColor: '#ff5722', width: '16px', height: '16px', cursor: 'pointer' }} />
-                        👁️ Manter Esqueleto (Pós-Layout)
+                        👁️ Keep Skeleton (Post-Layout)
                     </label>
-                    <p style={{ margin: '5px 0 0 24px', fontSize: '10px', color: darkMode ? '#aaa' : '#666' }}>Se ativo, o motor aplicará o layout e vai congelar a tela no esqueleto.</p>
+                    <p style={{ margin: '5px 0 0 24px', fontSize: '10px', color: darkMode ? '#aaa' : '#666' }}>If active, the engine will apply the layout and freeze the screen on the skeleton.</p>
                 </div>
 
                 <div style={{ padding: '15px', background: darkMode ? '#2a2a2a' : '#f5f5f5', borderRadius: '8px', marginBottom: '15px', border: `1px solid ${darkMode ? '#444' : '#ddd'}` }}>
-                    <h3 style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#ff9800' }}>🛠️ Gerador Geométrico</h3>
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#ff9800' }}>🛠️ Geometric Generator</h3>
                     
                     <select value={algoMode} onChange={(e) => setAlgoMode(e.target.value)} style={{ width: '100%', padding: '8px', marginBottom: '10px', borderRadius: '4px', background: darkMode ? '#111' : '#fff', color: darkMode ? '#fff' : '#000', border: '1px solid #555' }}>
-                        <option value="force">Orgânico (D3 Force)</option>
-                        <option value="orthogonal">Ortogonal (Grid Expansion)</option>
-                        <option value="vns">Compactador VNS</option>
-                        <option value="hierarchical">Hierárquico (Árvore Sugiyama)</option>
+                        <option value="force">Organic (D3 Force)</option>
+                        <option value="orthogonal">Orthogonal (Grid Expansion)</option>
+                        <option value="vns">VNS Compactor</option>
+                        <option value="hierarchical">Hierarchical (Sugiyama Tree)</option>
                     </select>
 
                     {algoMode === 'force' && (
                         <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label>Distância das Linhas: {forceDist}px
+                            <label>Line Distance: {forceDist}px
                                 <input type="range" min="1" max="50" value={forceDist} onChange={e=>setForceDist(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
-                            <label>Repulsão (Ímã): {forceCharge}
+                            <label>Repulsion (Magnet): {forceCharge}
                                 <input type="range" min="10" max="300" value={forceCharge} onChange={e=>setForceCharge(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
-                            <label>Força das Chaves Abertas: {openWeight}%
+                            <label>Open Switch Strength: {openWeight}%
                                 <input type="range" min="0" max="100" value={openWeight} onChange={e=>setOpenWeight(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
                         </div>
@@ -309,9 +309,9 @@ export default function EditSidebar({
                         <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ff9800', fontWeight: 'bold' }}>
                                 <input type="checkbox" checked={usePhysics} onChange={e => setUsePhysics(e.target.checked)} />
-                                Usar repulsão física prévia
+                                Use prior physical repulsion
                             </label>
-                            <label style={{ color: '#00bcd4', fontWeight: 'bold' }}>Tamanho da Malha (Grid): {radialStep}px
+                            <label style={{ color: '#00bcd4', fontWeight: 'bold' }}>Grid Size: {radialStep}px
                                 <input type="range" min="10" max="150" step="5" value={radialStep} onChange={e=>setRadialStep(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
                         </div>
@@ -319,7 +319,7 @@ export default function EditSidebar({
 
                     {algoMode === 'hierarchical' && (
                         <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ color: '#00bcd4', fontWeight: 'bold' }}>Espaçamento da Árvore: {radialStep}px
+                            <label style={{ color: '#00bcd4', fontWeight: 'bold' }}>Tree Spacing: {radialStep}px
                                 <input type="range" min="30" max="250" step="10" value={radialStep} onChange={e=>setRadialStep(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
                         </div>
@@ -327,10 +327,10 @@ export default function EditSidebar({
 
                     {algoMode === 'vns' && (
                         <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label>Tam. da célula (grid): {vnsGridSize}px
+                            <label>Cell size (grid): {vnsGridSize}px
                                 <input type="range" min="40" max="200" step="10" value={vnsGridSize} onChange={e => setVnsGridSize(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
-                            <label>Iterações VNS: {vnsMaxIter}
+                            <label>VNS Iterations: {vnsMaxIter}
                                 <input type="range" min="10" max="100" step="5" value={vnsMaxIter} onChange={e => setVnsMaxIter(Number(e.target.value))} style={{width:'100%'}}/>
                             </label>
                         </div>
@@ -338,18 +338,18 @@ export default function EditSidebar({
 
                     {algoMode === 'vns' ? (
                         <button onClick={handleApplyVNS} disabled={vnsRunning} style={{ width: '100%', padding: '8px', marginTop: '12px', background: vnsRunning ? '#555' : '#7c4dff', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: vnsRunning ? 'wait' : 'pointer' }}>
-                            {vnsRunning ? `⏳ Iter ${vnsProgress?.iter ?? 0} | ✂️ ${vnsProgress?.crossings ?? '?'} cruzamentos` : '🧬 Executar VNS'}
+                            {vnsRunning ? `⏳ Iter ${vnsProgress?.iter ?? 0} | ✂️ ${vnsProgress?.crossings ?? '?'} crossings` : '🧬 Run VNS'}
                         </button>
                     ) : (
                         <button onClick={handleApplyGenerator} style={{ width: '100%', padding: '8px', marginTop: '12px', background: '#00bcd4', color: '#000', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
-                            Aplicar Layout
+                            Apply Layout
                         </button>
                     )}
                     
                 </div>
                 
                 <div style={{ background: darkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.4)', border: `1px solid ${darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.05)'}`, borderRadius: '10px', padding: '15px', marginTop: '20px' }}>
-                    <h4 style={{ margin: '0 0 15px 0', color: darkMode ? '#eee' : '#333', fontSize: '13px', borderBottom: `1px solid ${darkMode ? '#444' : '#ccc'}`, paddingBottom: '8px' }}>⌨️ Atalhos:</h4>
+                    <h4 style={{ margin: '0 0 15px 0', color: darkMode ? '#eee' : '#333', fontSize: '13px', borderBottom: `1px solid ${darkMode ? '#444' : '#ccc'}`, paddingBottom: '8px' }}>⌨️ Shortcuts:</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {shortcuts.map((shortcut, index) => (
                             <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>

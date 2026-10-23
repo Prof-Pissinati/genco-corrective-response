@@ -1,0 +1,57 @@
+{
+ "resumo": {
+  "rede": "case14_ieee",
+  "contingenciasComPlano": 2,
+  "comViolacaoDeTensao": 2,
+  "planosComCorteECViol": 2,
+  "V1viavel": 1,
+  "V2viavel": 1,
+  "segundos": 16.9
+ },
+ "contingencias": [
+  {
+   "label": "bus 2",
+   "tipo": "bus",
+   "violacoesTensao": 7,
+   "maiorExcessoPu": 0.0183,
+   "cortePlanoMW": 225.2591,
+   "sobrecargasApos": 0,
+   "custoPlano": 98.2,
+   "V1": {
+    "status": "LOCALLY_INFEASIBLE",
+    "viavel": false
+   },
+   "V2": {
+    "status": "LOCALLY_INFEASIBLE",
+    "viavel": false
+   }
+  },
+  {
+   "label": "line 1–2",
+   "tipo": "line",
+   "violacoesTensao": 7,
+   "maiorExcessoPu": 0.0161,
+   "cortePlanoMW": 113.4058,
+   "sobrecargasApos": 0,
+   "custoPlano": 2120.6,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 1716.8,
+    "custoRelativoAoPlano": -0.1904,
+    "despachoMudaMW": 31.05,
+    "vmMin": 0.9708,
+    "vmMax": 1.06
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 2122.3,
+    "custoRelativoAoPlano": 0.0008,
+    "despachoMudaMW": 0.1,
+    "vmMin": 0.964,
+    "vmMax": 1.06
+   }
+  }
+ ]
+}

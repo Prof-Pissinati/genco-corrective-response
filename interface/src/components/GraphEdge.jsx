@@ -1,32 +1,32 @@
 import React, { memo } from 'react';
 
 /**
- * GraphEdge — Renderiza uma linha/ramal do sistema elétrico.
+ * GraphEdge — Renders a line/branch of the electrical system.
  *
  * Funcionalidades:
- *   - Seta de direção de fluxo no ponto médio da linha energizada
- *   - Linha tracejada para ramais abertos
- *   - Pontos de controle (waypoints) visíveis no modo edição
+ *   - Flow-direction arrow at the midpoint of the energized line
+ *   - Dashed line for open branches
+ *   - Control points (waypoints) visible in edit mode
  *
- * Props adicionadas em relação à versão anterior:
- *   flowDir  {number}  +1 = fluxo de from→to | -1 = fluxo to→from | 0 = sem fluxo
- *   p1, p2   {object}  Posições {x,y} dos extremos (para calcular ponto médio)
+ * Props added relative to the previous version:
+ *   flowDir  {number}  +1 = flow from→to | -1 = flow to→from | 0 = no flow
+ *   p1, p2   {object}  Endpoint {x,y} positions (to compute the midpoint)
  */
 
 /**
- * Retorna a posição e ângulo no ponto médio de um caminho multi-segmento.
- * Necessário para posicionar a seta de direção de fluxo corretamente
- * mesmo quando a linha possui pontos intermediários (waypoints).
+ * Returns the position and angle at the midpoint of a multi-segment path.
+ * Needed to position the flow-direction arrow correctly
+ * even when the line has intermediate points (waypoints).
  *
- * @param {{x,y}} p1          Ponto inicial
- * @param {{x,y}[]} waypoints  Pontos intermediários
- * @param {{x,y}} p2          Ponto final
+ * @param {{x,y}} p1          Start point
+ * @param {{x,y}[]} waypoints  Intermediate points
+ * @param {{x,y}} p2          End point
  * @returns {{x, y, angle}}
  */
 function getMidpointInfo(p1, waypoints, p2) {
     const pts = [p1, ...waypoints, p2];
 
-    // Comprimento total do caminho
+    // Total path length
     let totalLen = 0;
     const segs = [];
     for (let i = 0; i < pts.length - 1; i++) {
@@ -37,7 +37,7 @@ function getMidpointInfo(p1, waypoints, p2) {
         totalLen += len;
     }
 
-    // Caminha até a metade do comprimento total
+    // Walks to half of the total length
     let target = totalLen / 2;
     for (const seg of segs) {
         if (target <= seg.len) {
@@ -51,7 +51,7 @@ function getMidpointInfo(p1, waypoints, p2) {
         target -= seg.len;
     }
 
-    // Fallback: retorna o ponto final
+    // Fallback: returns the end point
     const last = pts[pts.length - 1];
     const prev = pts[pts.length - 2] || pts[0];
     return {
@@ -71,10 +71,10 @@ const GraphEdge = memo(function GraphEdge({
     waypoints,
     selectedEditWaypoints,
     dragInfoType,
-    // Props de fluxo (novas)
+    // Flow props (new)
     flowDir,   // +1 | -1 | 0
-    p1,        // posição {x,y} do nó 'from'
-    p2,        // posição {x,y} do nó 'to'
+    p1,        // {x,y} position of the 'from' node
+    p2,        // {x,y} position of the 'to' node
     // Handlers
     onLineMouseDown,
     onLineClick,
@@ -84,27 +84,28 @@ const GraphEdge = memo(function GraphEdge({
     onWaypointMouseDown,
     onWaypointDoubleClick,
     widthOverride,
+    hitWidth = 20,   // width of the click area (smaller on parallel circuits, so each receives only its own click)
 }) {
     const strokeWidth = isHighlighted ? 6 : (widthOverride || (branch.state === 1 ? 3 : 2));
     const shadowFilter = isHighlighted ? `drop-shadow(0 0 5px ${color})` : 'none';
 
-    // Mostra seta somente em ramais energizados com fluxo ativo e posições disponíveis
+    // Shows the arrow only on energized branches with active flow and available positions
     const showArrow = branch.state === 1 && flowDir !== 0 && p1 && p2;
     const safeWaypoints = Array.isArray(waypoints) ? waypoints : [];
 
-    // Posição e ângulo do ponto médio (para a seta)
+    // Midpoint position and angle (for the arrow)
     const mid = showArrow ? getMidpointInfo(p1, safeWaypoints, p2) : null;
 
-    // Se o fluxo é invertido (to→from), rotaciona a seta 180°
+    // If the flow is reversed (to→from), rotates the arrow 180°
     const arrowAngle = mid ? (flowDir === -1 ? mid.angle + 180 : mid.angle) : 0;
 
     return (
         <g>
-            {/* ── Área de hit transparente (facilita clique em linhas finas) ── */}
+            {/* ── Transparent hit area (makes clicking thin lines easier) ── */}
             <path
                 d={pathString}
                 stroke="transparent"
-                strokeWidth="20"
+                strokeWidth={hitWidth}
                 fill="none"
                 vectorEffect="non-scaling-stroke"
                 style={{ cursor: isEditMode ? 'move' : 'pointer' }}
@@ -115,7 +116,7 @@ const GraphEdge = memo(function GraphEdge({
                 onMouseLeave={() => onLineMouseLeave(branch.id)}
             />
 
-            {/* ── Linha visível ── */}
+            {/* ── Visible line ── */}
             <path
                 d={pathString}
                 stroke={color}
@@ -133,7 +134,7 @@ const GraphEdge = memo(function GraphEdge({
                     filter: shadowFilter,
                     opacity: branch.state === 1 ? 1 : 0.65,
                 }}
-                /*// A classe CSS para animação de fluxo só é aplicada em linhas energizadas com fluxo ativo
+                /*// The CSS class for the flow animation is only applied to energized lines with active flow
                 className={
                     branch.state === 1 && flowDir !== 0
                         ? (flowDir === 1 ? 'edge-flow' : 'edge-flow-rev')
@@ -141,7 +142,7 @@ const GraphEdge = memo(function GraphEdge({
                 }*/
             />
 
-            {/* ── Seta de direção de fluxo (chevron) ── */}
+            {/* ── Flow-direction arrow (chevron) ── */}
             {/*showArrow && mid && (
                 <g
                     transform={`translate(${mid.x}, ${mid.y}) rotate(${arrowAngle})`}
@@ -149,8 +150,8 @@ const GraphEdge = memo(function GraphEdge({
                     style={{ opacity: 0.8 }}
                 >
                     {/*
-                     * Chevron ">" centrado na origem local.
-                     * Tamanho proporcional à espessura da linha para não poluir o diagrama.
+                     * Chevron ">" centered on the local origin.
+                     * Size proportional to the line thickness so as not to clutter the diagram.
                      
                     <polyline
                         points="-5,-4 0,0 -5,4"
@@ -163,7 +164,7 @@ const GraphEdge = memo(function GraphEdge({
                 </g>
             )*/}
 
-            {/* ── Pontos de controle / waypoints (somente no modo edição) ── */}
+            {/* ── Control points / waypoints (edit mode only) ── */}
             {isEditMode && safeWaypoints.map((wp, wpIndex) => {
                 const wpKey = `${branch.id}-${wpIndex}`;
                 const isSelectedWp = selectedEditWaypoints.has(wpKey);

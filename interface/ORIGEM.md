@@ -1,6 +1,6 @@
-# Origem do código desta pasta
+# Origin of the code in this folder
 
-Base: simulador de sistemas de potência do autor (React + Vite), copiado em 2026-10-08 (commit de origem **e13d986**) e adaptado para
-transmissão. Em 2026-10-12 foram removidos os módulos específicos de redes de distribuição (importadores, otimizadores, sequenciador,
-solver de distribuição e os sistemas de exemplo): esta pasta mantém só o que a análise de transmissão usa (diagrama, importação de casos
-MATPOWER, mapa, painéis de resposta corretiva, varredura e religação, e o solver DC local).
+Base: the author's power systems simulator (React + Vite), copied on 2026-10-08 (source commit **e13d986**) and adapted for
+transmission. On 2026-10-12 the modules specific to distribution networks were removed (importers, optimizers, sequencer,
+distribution solver and the example systems): this folder keeps only what the transmission analysis uses (diagram, import of cases
+in MATPOWER format, map, corrective response panels, screening and reconnection, and the local DC solver).

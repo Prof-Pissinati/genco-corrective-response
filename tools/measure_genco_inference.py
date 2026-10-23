@@ -1,10 +1,10 @@
-"""Mede o tempo de inferência do GENCO sobre o conjunto de teste, usando o próprio `gridfm_graphkit evaluate`.
+"""Measures the GENCO inference time on the test set, using `gridfm_graphkit evaluate` itself.
 
-Envolve a etapa `Trainer.predict` do evaluate: roda uma passagem de aquecimento (descartada) e depois uma passagem
-cronometrada. O tempo inclui ler os cenários do disco, montar os lotes e o forward do modelo (não inclui a conversão
-das previsões em fluxos por linha). Divide pelo número de cenários de teste (variável de ambiente GENCO_N).
+It wraps the `Trainer.predict` step of evaluate: runs a warm-up pass (discarded) and then a timed
+pass. The time includes reading the scenarios from disk, assembling the batches and the model forward (it does not include the conversion
+of the predictions into flows per line). It divides by the number of test scenarios (environment variable GENCO_N).
 
-Uso (no ambiente CPU ou GPU, a partir da raiz do repositório); os argumentos são os do `gridfm_graphkit evaluate`:
+Usage (in the CPU or GPU environment, from the repository root); the arguments are those of `gridfm_graphkit evaluate`:
     GENCO_N=320 python tools/measure_genco_inference.py --config configs/train118_gpu.yaml \
       --model_path <run>/artifacts/model/best_model_state_dict.pt --normalizer_stats <run>/artifacts/stats/normalizer_stats.pt \
       --data_path data/case118 --num_workers 0 --exp_name t118 --run_name infer
@@ -22,7 +22,7 @@ orig = L.Trainer.predict
 
 
 def timed_predict(self, *args, **kwargs):
-    orig(self, *args, **kwargs)  # aquecimento (CUDA, caches)
+    orig(self, *args, **kwargs)  # warm-up (CUDA, caches)
     if torch.cuda.is_available():
         torch.cuda.synchronize()
     t0 = time.perf_counter()

@@ -1,4 +1,4 @@
-# Treino final do GENCO Tiny no IEEE 118 (40000 amostras, até 60 épocas, parada antecipada com paciência 15). Usar com --data_path data/case118_grande
+# Final training of GENCO Tiny on IEEE 118 (40000 samples, up to 60 epochs, early stopping with patience 15). Use with --data_path data/case118_grande
 task:
   task_name: PowerFlow
 data:

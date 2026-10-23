@@ -1,4 +1,4 @@
-# Teste de fumaça do gridfm-datakit: poucas amostras em IEEE 14 (modo PF, contingências até N-2)
+# Smoke test of gridfm-datakit: few samples on IEEE 14 (PF mode, contingencies up to N-2)
 network:
   name: "case14_ieee"
   source: "pglib"

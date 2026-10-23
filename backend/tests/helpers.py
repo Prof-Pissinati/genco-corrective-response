@@ -1,4 +1,4 @@
-"""Utilitários dos testes: monta a rede do backend a partir dos cenários do datakit (PowerModels = referência AC)."""
+"""Test utilities: builds the backend network from the datakit scenarios (PowerModels = AC reference)."""
 import json
 from pathlib import Path
 
@@ -12,7 +12,7 @@ def load_datakit_scenarios():
 
 
 def network_from_scenario(sc, base_mva=100.0):
-    """Entradas do cenário (cargas, despacho, tensão dos geradores, admitâncias perturbadas, ramos fora) -> Network."""
+    """Scenario inputs (loads, dispatch, generator voltage, perturbed admittances, branches out) -> Network."""
     vm_of = {b["i"]: b["vm"] for b in sc["bus"]}
     # o datakit guarda GS/BS em pu; a tabela MATPOWER usa MW/MVAr a 1 pu
     bus = [[b["i"] + 1, b["type"], b["pd"], b["qd"], b["gs"] * base_mva, b["bs"] * base_mva, 1, 1.0, 0.0, 138.0, 1, 1.06, 0.94] for b in sc["bus"]]

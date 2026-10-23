@@ -1,4 +1,4 @@
-# Valida que a interface compila no Linux (o Windows ignora maiúsculas/minúsculas em imports; o Linux não).
+# Validates that the interface builds on Linux (Windows ignores upper/lower case in imports; Linux does not).
 name: Interface (build)
 
 on:

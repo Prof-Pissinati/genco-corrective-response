@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "Se você usar este software ou os resultados, cite-o como abaixo."
-title: "Resposta corretiva a contingências em redes de transmissão com GENCO (GENCO Challenge, GridFM Porto 2026)"
+message: "If you use this software or its results, please cite it as below."
+title: "Corrective response to contingencies on transmission grids with GENCO (GENCO Challenge, GridFM Porto 2026)"
 type: software
 license: Apache-2.0
 date-released: 2026-10-25
@@ -12,8 +12,8 @@ authors:
     family-names: "Pilarski"
     alias: "leonardp315"
 abstract: >-
-  Interface e backend para resposta corretiva a contingências (redespacho e corte mínimo de carga), varredura N-1,
-  reparo com religação de carga por blocos e validação do GENCO no sistema IEEE 118.
+  Interface and backend for the corrective response to contingencies (redispatch and minimum load shedding), N-1 screening,
+  repair with block-by-block load reconnection and GENCO validation on the IEEE 14, 30, 57 and 118 systems.
 keywords:
   - GENCO
   - power systems

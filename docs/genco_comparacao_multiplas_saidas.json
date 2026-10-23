@@ -1,0 +1,136 @@
+{
+ "seed": 0,
+ "porK": 80,
+ "modelos": [
+  "case118_genco_tiny_n10",
+  "case118_genco_tiny_autores"
+ ],
+ "k": {
+  "1": {
+   "estados": 80,
+   "case118_genco_tiny_n10": {
+    "maePct": 1.008,
+    "p95Pct": 3.13,
+    "maxPct": 136.5,
+    "erroDoMaximoMedianoPct": 1.88
+   },
+   "case118_genco_tiny_autores": {
+    "maePct": 0.129,
+    "p95Pct": 0.46,
+    "maxPct": 16.9,
+    "erroDoMaximoMedianoPct": 0.16
+   },
+   "dc": {
+    "maePct": 3.024,
+    "p95Pct": 10.01,
+    "maxPct": 132.0,
+    "erroDoMaximoMedianoPct": 4.32
+   }
+  },
+  "2": {
+   "estados": 80,
+   "case118_genco_tiny_n10": {
+    "maePct": 1.083,
+    "p95Pct": 3.71,
+    "maxPct": 24.6,
+    "erroDoMaximoMedianoPct": 1.82
+   },
+   "case118_genco_tiny_autores": {
+    "maePct": 0.197,
+    "p95Pct": 0.73,
+    "maxPct": 15.4,
+    "erroDoMaximoMedianoPct": 0.26
+   },
+   "dc": {
+    "maePct": 3.053,
+    "p95Pct": 10.82,
+    "maxPct": 51.2,
+    "erroDoMaximoMedianoPct": 4.76
+   }
+  },
+  "3": {
+   "estados": 80,
+   "case118_genco_tiny_n10": {
+    "maePct": 1.642,
+    "p95Pct": 5.69,
+    "maxPct": 152.5,
+    "erroDoMaximoMedianoPct": 2.36
+   },
+   "case118_genco_tiny_autores": {
+    "maePct": 0.403,
+    "p95Pct": 1.17,
+    "maxPct": 463.1,
+    "erroDoMaximoMedianoPct": 0.5
+   },
+   "dc": {
+    "maePct": 3.237,
+    "p95Pct": 11.0,
+    "maxPct": 133.8,
+    "erroDoMaximoMedianoPct": 5.24
+   }
+  },
+  "5": {
+   "estados": 80,
+   "case118_genco_tiny_n10": {
+    "maePct": 1.514,
+    "p95Pct": 5.59,
+    "maxPct": 54.0,
+    "erroDoMaximoMedianoPct": 2.3
+   },
+   "case118_genco_tiny_autores": {
+    "maePct": 0.475,
+    "p95Pct": 2.0,
+    "maxPct": 44.3,
+    "erroDoMaximoMedianoPct": 0.52
+   },
+   "dc": {
+    "maePct": 3.18,
+    "p95Pct": 11.24,
+    "maxPct": 53.9,
+    "erroDoMaximoMedianoPct": 5.62
+   }
+  },
+  "8": {
+   "estados": 80,
+   "case118_genco_tiny_n10": {
+    "maePct": 2.399,
+    "p95Pct": 8.99,
+    "maxPct": 212.6,
+    "erroDoMaximoMedianoPct": 3.92
+   },
+   "case118_genco_tiny_autores": {
+    "maePct": 1.121,
+    "p95Pct": 4.09,
+    "maxPct": 218.6,
+    "erroDoMaximoMedianoPct": 1.64
+   },
+   "dc": {
+    "maePct": 3.671,
+    "p95Pct": 12.94,
+    "maxPct": 151.6,
+    "erroDoMaximoMedianoPct": 6.82
+   }
+  },
+  "10": {
+   "estados": 80,
+   "case118_genco_tiny_n10": {
+    "maePct": 2.5,
+    "p95Pct": 9.07,
+    "maxPct": 155.0,
+    "erroDoMaximoMedianoPct": 4.26
+   },
+   "case118_genco_tiny_autores": {
+    "maePct": 1.192,
+    "p95Pct": 4.57,
+    "maxPct": 118.0,
+    "erroDoMaximoMedianoPct": 1.79
+   },
+   "dc": {
+    "maePct": 3.685,
+    "p95Pct": 13.09,
+    "maxPct": 136.3,
+    "erroDoMaximoMedianoPct": 7.04
+   }
+  }
+ }
+}

@@ -1,15 +1,15 @@
 import React, { memo, useMemo } from 'react';
 
 /**
- * GraphNode — Renderiza uma barra do sistema elétrico no diagrama SVG.
+ * GraphNode — Renders a bus of the electrical system in the SVG diagram.
  */
 const GraphNode = memo(function GraphNode({
     nodeId,
     pos,
     isSource,
     isFeeder,
-    hasGD,        // Booleano: indica se este nó tem GD cadastrada
-    gdActive,     // Booleano: indica se a GD está ligada
+    hasGD,        // Boolean: indicates whether this node has a registered DG
+    gdActive,     // Boolean: indicates whether the DG is on
     color,
     isHighlighted,
     darkMode,
@@ -23,19 +23,20 @@ const GraphNode = memo(function GraphNode({
     onMouseEnter,
     onMouseLeave,
     currentScale,
-    isSimplified
+    isSimplified,
+    shedPct = 0   // fraction of the load shed by the plan (0 to 1); the bus stays energized
 }) {
 
     const inverseScale = Math.min(1 / (currentScale || 1), 3);
 
-    // 👇 A MÁGICA DA TRANSIÇÃO SUAVE (Lerp) 👇
-    // Calcula um fator 't' que vai de 1 (Zoom Máximo LOD0) até 0 (Zoom Mínimo LOD2)
+    // 👇 SMOOTH TRANSITION (Lerp) 👇
+    // Computes a factor 't' going from 1 (maximum zoom, LOD0) to 0 (minimum zoom, LOD2)
     const t = Math.max(0, Math.min(1, (currentScale - 0.6) / 0.6));
 
-    // Tamanhos dinâmicos interpolados (Máximo do SVG ➔ Mínimo do Canvas)
-    const baseSourceR = 15 + t * 16; // Cai progressivamente de 31 para 15
+    // Interpolated dynamic sizes (SVG maximum ➔ Canvas minimum)
+    const baseSourceR = 15 + t * 16; // Progressively drops from 31 to 15
     
-    // CORREÇÃO: Dá um leve "pop" se o mouse estiver em cima, mas mantém a proporção do zoom!
+    // FIX: gives a slight "pop" when the mouse is over it, but keeps the zoom proportion!
     const sourceR = isHighlighted ? baseSourceR + 4 : baseSourceR; 
     
     const feederR = 15 + t * 16;                        
@@ -43,16 +44,16 @@ const GraphNode = memo(function GraphNode({
     const loadW = 18 + t * 22;                          
     const loadH = 10 + t * 12;                          
 
-    // 👇 CORREÇÃO: A fonte também encolhe dinamicamente com a barra 👇
-    // Subestação: vai de 16px para 10px. Barra normal: vai de 13px para 8px.
+    // 👇 FIX: the font also shrinks dynamically with the bus 👇
+    // Substation: goes from 16px to 10px. Normal bus: goes from 13px to 8px.
     const idFontSize = isSource ? `${10 + t * 6}px` : `${8 + t * 5}px`;
 
-    // Distância dinâmica do rótulo "MW" para não ficar flutuando longe da barra
+    // Dynamic distance of the "MW" label so it does not float away from the bus
     const labelY = (loadH / 2) + 12;
 
     const isDetailed = !isSimplified || isHighlighted; 
 
-    // Contorno de destaque ao hover / seleção
+    // Highlight outline on hover / selection
     const strokeColor = isHighlighted
         ? 'rgba(255,255,255,0.35)'
         : (darkMode ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.12)');
@@ -68,12 +69,21 @@ const GraphNode = memo(function GraphNode({
         transition: 'all 0.1s linear' 
     };
 
+    // load shed: the bus stays energized (same color), but without the load. Full shed = hollow shape; partial = filled. Always a dashed outline.
+    const isShed = shedPct > 0;
+    const fullShed = shedPct >= 0.99;
+    const fillColor = fullShed ? (darkMode ? '#101014' : '#ffffff') : color;
+    const outline = isShed ? (fullShed ? color : (darkMode ? '#ffffff' : '#222222')) : strokeColor;
+    const outlineW = isShed ? Math.max(strokeWidth, 3) : strokeWidth;
+    const dash = isShed ? '5 3' : undefined;
+    const idColor = fullShed && !darkMode ? '#222' : 'white';
+
     const hexPoints = useMemo(() => {
         return Array.from({ length: 6 }, (_, i) => {
             const a = (Math.PI / 3) * i - Math.PI / 6;
             return `${(feederR * Math.cos(a)).toFixed(2)},${(feederR * Math.sin(a)).toFixed(2)}`;
         }).join(' ');
-    }, [feederR]); // 👈 Agora o useMemo recalcula quando o raio diminui
+    }, [feederR]); // 👈 Now the useMemo recomputes when the radius shrinks
 
     const shuntPoints = `0,-${shuntR} ${shuntR},0 0,${shuntR} -${shuntR},0`;
 
@@ -92,34 +102,35 @@ const GraphNode = memo(function GraphNode({
             onMouseLeave={() => onMouseLeave(nodeId)}
         >
             {isSource ? (
-                /* SUBESTAÇÃO PRINCIPAL */
+                /* MAIN SUBSTATION */
                 <g style={shapeStyle}>
-                    <circle cx="0" cy="0" r={sourceR} fill={color} stroke={strokeColor} strokeWidth={strokeWidth} />
+                    <circle cx="0" cy="0" r={sourceR} fill={fillColor} stroke={outline} strokeWidth={outlineW} strokeDasharray={dash} />
                 </g>
             ) : isFeeder ? (
-                /* ALIMENTADOR */
+                /* FEEDER */
                 <g style={shapeStyle}>
-                    <polygon points={hexPoints} fill={color} stroke={strokeColor} strokeWidth={strokeWidth} />
+                    <polygon points={hexPoints} fill={fillColor} stroke={outline} strokeWidth={outlineW} strokeDasharray={dash} />
                 </g>
             ) : hasShunt ? (
                 /* CAPACITOR / SHUNT */
-                <polygon points={shuntPoints} fill={color} stroke={strokeColor} strokeWidth={strokeWidth} style={shapeStyle} />
+                <polygon points={shuntPoints} fill={fillColor} stroke={outline} strokeWidth={outlineW} strokeDasharray={dash} style={shapeStyle} />
             ) :  (
-                /* CARGA NORMAL */
+                /* NORMAL LOAD */
                 <g>
-                    {/* A hitbox continua fixa e invisível para garantir o clique */}
+                    {/* The hitbox stays fixed and invisible to guarantee the click */}
                     <rect x="-28" y="-16" width="56" height="32" fill="transparent" /> 
                     
-                    {/* 👇 Centraliza dinamicamente usando a largura/altura calculada 👇 */}
+                    {/* 👇 Centers dynamically using the computed width/height 👇 */}
                     <rect 
                         x={-loadW / 2} 
                         y={-loadH / 2} 
                         width={loadW} 
                         height={loadH} 
                         rx="4" 
-                        fill={color} 
-                        stroke={strokeColor} 
-                        strokeWidth={strokeWidth} 
+                        fill={fillColor} 
+                        stroke={outline} 
+                        strokeWidth={outlineW} 
+                        strokeDasharray={dash} 
                         style={shapeStyle} 
                     />
                 </g>
@@ -130,7 +141,7 @@ const GraphNode = memo(function GraphNode({
                     x="0" y="0"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fill="white"
+                    fill={idColor}
                     fontSize={idFontSize}
                     fontWeight="bold"
                     pointerEvents="none"

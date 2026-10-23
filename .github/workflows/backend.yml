@@ -1,5 +1,5 @@
-# Testes do backend (AC contra PowerModels e pandapower, DC, topologia e API) no Linux.
-name: Backend (testes)
+# Backend tests (AC against PowerModels and pandapower, DC, topology and API) on Linux.
+name: Backend (tests)
 
 on:
   push:

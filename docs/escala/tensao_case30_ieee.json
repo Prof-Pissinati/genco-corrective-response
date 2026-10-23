@@ -1,0 +1,489 @@
+{
+ "resumo": {
+  "rede": "case30_ieee",
+  "contingenciasComPlano": 43,
+  "comViolacaoDeTensao": 8,
+  "planosComCorteECViol": 7,
+  "V1viavel": 6,
+  "V2viavel": 6,
+  "segundos": 32.1
+ },
+ "contingencias": [
+  {
+   "label": "bus 2",
+   "tipo": "bus",
+   "violacoesTensao": 16,
+   "maiorExcessoPu": 0.0188,
+   "cortePlanoMW": 259.3,
+   "sobrecargasApos": 0,
+   "custoPlano": 52.6,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 47.7,
+    "custoRelativoAoPlano": -0.0926,
+    "despachoMudaMW": 0.13,
+    "vmMin": 0.94,
+    "vmMax": 1.0289
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 47.7,
+    "custoRelativoAoPlano": -0.0926,
+    "despachoMudaMW": 0.13,
+    "vmMin": 0.94,
+    "vmMax": 1.0289
+   }
+  },
+  {
+   "label": "bus 4",
+   "tipo": "bus",
+   "violacoesTensao": 7,
+   "maiorExcessoPu": 0.0081,
+   "cortePlanoMW": 74.8981,
+   "sobrecargasApos": 0,
+   "custoPlano": 7023.8,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 6404.9,
+    "custoRelativoAoPlano": -0.0881,
+    "despachoMudaMW": 19.25,
+    "vmMin": 0.995,
+    "vmMax": 1.06
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 7023.0,
+    "custoRelativoAoPlano": -0.0001,
+    "despachoMudaMW": 0.02,
+    "vmMin": 0.9978,
+    "vmMax": 1.06
+   }
+  },
+  {
+   "label": "line 1–2",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 81.6712,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 3",
+   "tipo": "bus",
+   "violacoesTensao": 10,
+   "maiorExcessoPu": 0.0093,
+   "cortePlanoMW": 74.667,
+   "sobrecargasApos": 0,
+   "custoPlano": 7086.3,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 6647.5,
+    "custoRelativoAoPlano": -0.0619,
+    "despachoMudaMW": 13.63,
+    "vmMin": 0.9966,
+    "vmMax": 1.06
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 7085.6,
+    "custoRelativoAoPlano": -0.0001,
+    "despachoMudaMW": 0.02,
+    "vmMin": 0.9978,
+    "vmMax": 1.06
+   }
+  },
+  {
+   "label": "line 1–3",
+   "tipo": "line",
+   "violacoesTensao": 13,
+   "maiorExcessoPu": 0.0096,
+   "cortePlanoMW": 77.2805,
+   "sobrecargasApos": 0,
+   "custoPlano": 7081.4,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 6634.5,
+    "custoRelativoAoPlano": -0.0631,
+    "despachoMudaMW": 13.89,
+    "vmMin": 0.9964,
+    "vmMax": 1.06
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 7080.8,
+    "custoRelativoAoPlano": -0.0001,
+    "despachoMudaMW": 0.02,
+    "vmMin": 0.9973,
+    "vmMax": 1.06
+   }
+  },
+  {
+   "label": "line 3–4",
+   "tipo": "line",
+   "violacoesTensao": 11,
+   "maiorExcessoPu": 0.0093,
+   "cortePlanoMW": 74.4012,
+   "sobrecargasApos": 0,
+   "custoPlano": 7136.0,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 6709.6,
+    "custoRelativoAoPlano": -0.0598,
+    "despachoMudaMW": 13.28,
+    "vmMin": 0.9951,
+    "vmMax": 1.06
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 7135.9,
+    "custoRelativoAoPlano": -0.0,
+    "despachoMudaMW": 0.0,
+    "vmMin": 0.9963,
+    "vmMax": 1.06
+   }
+  },
+  {
+   "label": "bus 10",
+   "tipo": "bus",
+   "violacoesTensao": 4,
+   "maiorExcessoPu": 0.0865,
+   "cortePlanoMW": 26.3759,
+   "sobrecargasApos": 0,
+   "custoPlano": 7998.0,
+   "V1": {
+    "status": "LOCALLY_INFEASIBLE",
+    "viavel": false
+   },
+   "V2": {
+    "status": "LOCALLY_INFEASIBLE",
+    "viavel": false
+   }
+  },
+  {
+   "label": "line 4–6",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 15.7418,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 7",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 6–7",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.2445,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 8",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 12",
+   "tipo": "bus",
+   "violacoesTensao": 4,
+   "maiorExcessoPu": 0.0354,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0,
+   "custoPlano": 7889.7,
+   "V1": {
+    "status": "LOCALLY_INFEASIBLE",
+    "viavel": false
+   },
+   "V2": {
+    "status": "LOCALLY_INFEASIBLE",
+    "viavel": false
+   }
+  },
+  {
+   "label": "bus 21",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 5–7",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 27",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 30",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 15",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 19",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 17",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 24",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 4–12",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 14",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 16",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 25–26",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 18",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 23",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 26",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 25",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 29",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 20",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 12–13",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 12–15",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 12–16",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 16–17",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 15–18",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 15–23",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 13",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 9–11",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 18–19",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 23–24",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "line 8–28",
+   "tipo": "line",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 11",
+   "tipo": "bus",
+   "violacoesTensao": 0,
+   "maiorExcessoPu": 0.0,
+   "cortePlanoMW": 0.0,
+   "sobrecargasApos": 0
+  },
+  {
+   "label": "bus 6",
+   "tipo": "bus",
+   "violacoesTensao": 1,
+   "maiorExcessoPu": 0.0007,
+   "cortePlanoMW": 62.4125,
+   "sobrecargasApos": 0,
+   "custoPlano": 5685.0,
+   "V1": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 5649.9,
+    "custoRelativoAoPlano": -0.0062,
+    "despachoMudaMW": 1.15,
+    "vmMin": 0.9541,
+    "vmMax": 1.06
+   },
+   "V2": {
+    "status": "LOCALLY_SOLVED",
+    "viavel": true,
+    "custo": 5684.6,
+    "custoRelativoAoPlano": -0.0001,
+    "despachoMudaMW": 0.01,
+    "vmMin": 0.9588,
+    "vmMax": 1.06
+   }
+  }
+ ]
+}

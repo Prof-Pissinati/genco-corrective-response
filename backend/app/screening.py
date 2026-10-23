@@ -1,5 +1,5 @@
-"""Varredura N-1 ("mapa de risco"): para cada linha e cada barra, o estado pós-falta com a resposta automática da geração
-(redistribuição pela folga) e o que ele exige, calculado pelo AC. O plano completo (redespacho + corte) é pedido por contingência em /corrective."""
+"""N-1 screening ("risk map"): for each line and each bus, the post-fault state with the automatic generation response
+(redistribution using the headroom) and what it requires, computed by the AC. The full plan (redispatch + shedding) is requested per contingency in /corrective."""
 from __future__ import annotations
 
 import time
@@ -12,14 +12,14 @@ from .network import Network, topology_masks
 
 
 def screen(net: Network, scope: str = "both") -> dict:
-    """Retorna as contingências simples ordenadas por severidade (maior carregamento pós-falta)."""
+    """Returns the single contingencies sorted by severity (highest post-fault loading)."""
     t0 = time.perf_counter()
     ref_no = int(net.bus_no[net.ref])
     cases = []
     if scope in ("both", "lines"):
-        cases += [("line", k, f"linha {int(net.bus_no[net.br_f[k]])}–{int(net.bus_no[net.br_t[k]])}", [k], []) for k in range(net.nl) if net.br_on[k]]
+        cases += [("line", k, f"line {net.line_name(k)}", [k], []) for k in range(net.nl) if net.br_on[k]]
     if scope in ("both", "buses"):
-        cases += [("bus", int(n), f"barra {int(n)}", [], [int(n)]) for n in net.bus_no if int(n) != ref_no]
+        cases += [("bus", int(n), f"bus {int(n)}", [], [int(n)]) for n in net.bus_no if int(n) != ref_no]
     rows = []
     for kind, ident, label, bo, bu in cases:
         bm, brm = topology_masks(net, bo, bu)

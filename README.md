@@ -1,102 +1,114 @@
 # concurso-genco
 
-Projeto para o **[GENCO Challenge](https://huggingface.co/spaces/gridfm/genco-challenge)** (GridFM Porto 2026).
+Project for the **[GENCO Challenge](https://huggingface.co/spaces/gridfm/genco-challenge)** (GridFM Porto 2026).
 
-- Desafio aberto, prêmio de US$ 1.000. **Prazo de submissão: 25/out/2026** (fim do dia, AoE), por post na aba *Community* do Space.
-- Obrigatório usar o modelo **GENCO** e as ferramentas **OpenGridFM** (`gridfm-datakit`, `gridfm-graphkit`).
-- Critérios: originalidade e impacto, qualidade técnica, exploração/extensão do GENCO, narrativa e reprodutibilidade.
+- Open challenge, US$ 1,000 prize. **Submission deadline: Oct 25, 2026** (end of day, AoE), as a post in the *Community* tab of the Space.
+- The **GENCO** model and the **OpenGridFM** tools (`gridfm-datakit`, `gridfm-graphkit`) are mandatory.
+- Criteria: originality and impact, technical quality, exploration/extension of GENCO, narrative and reproducibility.
 
-## Ideia
+## Idea
 
-Ferramenta de apoio à decisão para **contingências em redes de transmissão** (IEEE 118): o operador marca linhas e/ou barras com defeito e o sistema propõe o **redespacho** da geração e, se necessário, o **corte mínimo de carga**, sempre confirmado por um fluxo de potência AC clássico. O **GENCO** entra como avaliador rápido na triagem das contingências (melhora o DC; ainda fraco perto do limite, daí a confirmação pelo AC). Arquitetura: `docs/ARQUITETURA.md`.
+Decision-support tool for **contingencies on transmission grids** (IEEE 14, 30, 57 and 118): the operator marks faulted lines and/or buses and the system proposes the generation **redispatch** and, if needed, the **minimum load shedding**, always confirmed by a classical AC power flow. **GENCO** enters as a fast evaluator for screening the contingencies and as a verifier of the plans (it improves on the DC; still weak near the limit, hence the AC confirmation), and, in OPF mode, it chooses the generators' reference voltage to fix voltage violations (IEEE 118). Architecture: `docs/ARQUITETURA.md`.
 
-## Interface e backend: resposta corretiva a contingências (IEEE 118)
+## Interface and backend: corrective response to contingencies
 
-O operador marca **linhas e/ou barras com defeito**; o sistema mostra o estado pré-falta, pós-falta e **com plano** (redespacho da geração e, se ainda houver sobrecarga, o **corte mínimo de carga**, verificado pelo fluxo AC). Há ainda a **varredura N-1** (mapa de risco de todas as linhas e barras, com a estimativa do GENCO) e a **linha do tempo de reparo com religação da carga por blocos**. Detalhes: o histórico do projeto, `docs/CONTRATO_API.md`, `docs/GENCO_VARREDURA.md`.
+The operator marks **faulted lines and/or buses**; the system shows the pre-fault, post-fault and **with-plan** states (generation redispatch and, if overloads remain, the **minimum load shedding**, verified by the AC power flow). On IEEE 118, plans that end with voltage out of range go through the **generator voltage adjustment by GENCO-OPF** (`docs/TENSAO_GENCO_OPF.md`). There is also the **N-1 screening** (risk map of every line and bus, with the GENCO estimate) and the **repair timeline with block-by-block load reconnection**. Details: `docs/CONTRATO_API.md`, `docs/GENCO_VARREDURA.md`.
 
-- **Demo estático (sem instalar nada):** `interface/` gera, com `npm run build:replay`, um único arquivo HTML (`interface/standalone/genco-replay.html`) com **resultados pré-calculados** do IEEE 118 (42 respostas corretivas, 17 religações, varredura completa). O workflow *Replay (demo estático)* o gera a cada push na `main` (artefato) e pode publicá-lo no GitHub Pages. Para regenerar os dados: `python backend/tools/export_replay.py`.
-- **Interface completa (qualquer falha):** no Windows, `iniciar-local.bat` (liga backend e interface); em outros sistemas, `pip install -r backend/requirements.txt && uvicorn app.main:app --port 8000` na pasta `backend/` e `npm ci && npm run dev` na pasta `interface/`.
-- **Testes:** `pytest` em `backend/` (instale `requirements-dev.txt`) e `npm test` em `interface/`.
+- **Static demo (nothing to install):** `interface/` builds, with `npm run build:replay`, a single HTML file (`interface/standalone/genco-replay.html`) with **precomputed results** for the IEEE 14, 30, 57 and 118 networks (on the 118: 42 corrective responses, 17 reconnections, full screening). The *Replay (static demo)* workflow builds it on every push to `main` (artifact) and can publish it to GitHub Pages. To regenerate the data: `python backend/tools/export_replay.py --case <network>` (add `--voltage-genco models/case118_genco_opf_small_autores` on the 118, in the GENCO environment).
+- **Diagram views:** a selector chooses **AC** (default), **DC** or **GENCO** (the loading GENCO estimates, precomputed for the intact network and single-line outages; `docs/ARQUITETURA.md`). To regenerate the GENCO data: `python backend/tools/export_genco_lines.py --case <network> --modelo models/case<N>_genco_tiny_autores` (GENCO environment).
+- **Full interface (any fault):** on Windows, `start-local.bat` (starts backend and interface); on other systems, `pip install -r backend/requirements.txt && uvicorn app.main:app --port 8000` in the `backend/` folder and `npm ci && npm run dev` in the `interface/` folder.
+- **Tests:** `pytest` in `backend/` (install `requirements-dev.txt`) and `npm test` in `interface/`.
 
-## Estrutura
+## Structure
 
-| Pasta | Conteúdo |
+| Folder | Content |
 |---|---|
-| `configs/` | YAML de geração de dados (datakit) e de treino (graphkit) |
-| `tools/` | Correções necessárias no Windows (veja abaixo) |
-| `docs/referencias/` | Papers de referência (GENCO e gridfm-datakit, arXiv) |
-| `models/case118_genco_tiny/` | Pesos do GENCO Tiny treinado no IEEE 118 (treino reduzido) + como usar |
-| `interface/` | Interface web (React/Vite): diagrama, resposta corretiva, varredura N-1, reparo e religação |
-| `backend/` | Serviço FastAPI: AC/DC, resposta corretiva, varredura N-1, reparo e religação |
-| `docs/CONTRATO_API.md` | Contrato de dados e API entre interface e backend |
-| `docs/TREINO_GENCO.md` | Roteiro do treino final do GENCO no IEEE 118 (para quem treina) |
-| `docs/GENCO_VARREDURA.md` | Validação do GENCO nas saídas de linha do IEEE 118 (resultados e como reproduzir) |
-| `docs/ARQUITETURA.md` | Arquitetura e decisões de projeto |
+| `configs/` | YAML for data generation (datakit) and training (graphkit) |
+| `tools/` | Windows fixes (see below) and GENCO inference helpers |
+| `docs/referencias/` | Reference papers (GENCO and gridfm-datakit, arXiv) |
+| `models/case118_genco_tiny_n10/` | **Weights of the final GENCO Tiny training** (IEEE 118, up to N-10) + normalizer, configuration, results and how to use |
+| `models/case118_genco_tiny/` | Weights of the reduced GENCO Tiny training (IEEE 118, up to N-2), kept for comparison |
+| `models/*_autores/` | Checkpoints published by the GENCO authors (not ours; see each folder's README and `NOTICE.md`) |
+| `interface/` | Web interface (React/Vite): diagram, corrective response, N-1 screening, repair and reconnection |
+| `backend/` | FastAPI service: AC/DC, corrective response, voltage adjustment, N-1 screening, repair and reconnection |
+| `docs/CONTRATO_API.md` | Data and API contract between interface and backend |
+| `docs/TREINO_GENCO.md` | Final GENCO training script on IEEE 118 (for whoever trains) |
+| `docs/GENCO_VARREDURA.md` | GENCO validation on the IEEE 118 line outages (results and how to reproduce) |
+| `docs/GENCO_ESCALA.md` | Scale study: GENCO error and time on networks from 14 to 10,000 buses (IEEE and GOC), with the limits of the test |
+| `docs/TENSAO_PASSO0.md` and `docs/TENSAO_GENCO_OPF.md` | Voltage correction: what an AC-OPF would do (Step 0) and GENCO-OPF choosing the generator voltage (IEEE 118) |
+| `docs/REDES_ADICIONAIS.md` | The IEEE 14, 30 and 57 networks (besides 118): preparation, GENCO results and how to reproduce |
+| `docs/GENCO_CHECKPOINT_AUTORES.md` | The checkpoint published by the GENCO authors against our training (screening, several lines out and plan verifier) |
+| `docs/GENCO_VERIFICACAO.md` | GENCO as a verifier of the corrective plans (states with redispatch and shedding that it did not see in training) |
+| `docs/RELATORIO_TREINO_N10.md` | Report of our final training (IEEE 118, up to N-10) |
+| `docs/ARQUITETURA.md` | Architecture and design decisions |
 
-Dados, ambiente virtual e `mlruns/` **não** são versionados (ver `.gitignore`).
+Data, virtual environment and `mlruns/` are **not** versioned (see `.gitignore`). Some folders and files keep Portuguese names (`*_autores` = authors', `docs/escala` = scale, `verificacao_planos_*` = plan verification) because other files refer to them.
 
-## Ambiente (Windows, CPU)
+## Environment (Windows, CPU)
 
-Requer Python **3.10–3.12** (o 3.14 não é suportado). Exemplo com `uv`:
+Requires Python **3.10–3.12** (3.14 is not supported). Example with `uv`:
 
 ```bash
 uv venv .venv --python 3.12
-# PyTorch CPU compatível com o branch do GENCO (torch < 2.9)
+# CPU PyTorch compatible with the GENCO branch (torch < 2.9)
 uv pip install --python .venv/Scripts/python.exe "torch>=2.7.1,<2.9" torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 uv pip install --python .venv/Scripts/python.exe gridfm-datakit
 ```
 
-**O GENCO não está no pacote do PyPI.** Ele está no branch `genco-paper-repro` do GitHub:
+**GENCO is not in the PyPI package.** It is in the `genco-paper-repro` branch on GitHub:
 
 ```bash
 git clone --depth 1 --branch genco-paper-repro https://github.com/gridfm/gridfm-graphkit.git
 uv pip install --python .venv/Scripts/python.exe -e gridfm-graphkit
 ```
 
-Três ajustes necessários no Windows:
+Three adjustments needed on Windows:
 
-1. **`torch_scatter`** não tem pacote para Windows. Copie `tools/torch_scatter_shim/torch_scatter/` para o `site-packages` do ambiente (substituto em PyTorch puro; só `scatter_add`, `scatter_mean` e `scatter_max` são usados).
-2. **Bug de caminhos no datakit 1.1.0** (barras invertidas em código Julia): rode `python tools/patch_datakit_windows.py`.
-3. **MLflow recente** recusa o backend de arquivos: `export MLFLOW_ALLOW_FILE_STORE=true`.
+1. **`torch_scatter`** has no package for Windows. Copy `tools/torch_scatter_shim/torch_scatter/` into the environment's `site-packages` (a pure-PyTorch substitute; only `scatter_add`, `scatter_mean` and `scatter_max` are used).
+2. **Path bug in datakit 1.1.0** (backslashes in Julia code): run `python tools/patch_datakit_windows.py`.
+3. **Recent MLflow** refuses the file backend: `export MLFLOW_ALLOW_FILE_STORE=true`.
 
-Dicas: os executáveis são `gridfm_datakit` e `gridfm_graphkit` (com *underscore*); na primeira geração de dados o Julia (~280 MB) e o PowerModels são baixados automaticamente; rode pelo Bash, pois o PowerShell trata a saída de progresso do Julia como erro.
+Tips: the executables are `gridfm_datakit` and `gridfm_graphkit` (with an *underscore*); on the first data generation Julia (~280 MB) and PowerModels are downloaded automatically; run from Bash, since PowerShell treats Julia's progress output as an error.
 
-### Opcional: treinar na GPU NVIDIA (Windows)
+### Optional: train on an NVIDIA GPU (Windows)
 
-Crie um segundo ambiente com `torch==2.8.0` do índice `https://download.pytorch.org/whl/cu128` (GPUs RTX 50xx exigem CUDA 12.8+), instale o graphkit e o shim nele e aplique `python tools/patch_graphkit_windows_gpu.py <pasta do gridfm-graphkit>` (o DDP/NCCL padrão não existe no Windows). Use `configs/bench_train14_gpu.yaml` (igual ao `_cpu`, só muda `accelerator`). Detalhes e medições no o histórico do projeto.
+Create a second environment with `torch==2.8.0` from the index `https://download.pytorch.org/whl/cu128` (RTX 50xx GPUs require CUDA 12.8+), install graphkit and the shim in it and apply `python tools/patch_graphkit_windows_gpu.py <gridfm-graphkit folder>` (the default DDP/NCCL does not exist on Windows). Use `configs/bench_train14_gpu.yaml` (same as `_cpu`, only `accelerator` changes). Details and measurements in the repository history.
 
-## Painel de contingências (protótipo)
+## Contingency panel (prototype)
 
-Página estática em `app/` (sem build). Já inclui `app/data.json` com 320 cenários de teste do IEEE 118 (AC e DC reais e previsões do GENCO Tiny treinado em 3200 amostras). Para ver:
+Static page in `app/` (no build). It already includes `app/data.json` with 320 IEEE 118 test scenarios (real AC and DC and predictions of the GENCO Tiny trained on 3,200 samples). To view it:
 
 ```bash
 python -m http.server 8765 --directory app
-# abra http://127.0.0.1:8765/index.html
+# open http://127.0.0.1:8765/index.html
 ```
 
-Para regenerar o `data.json` (precisa de `networkx` e `pandas`) e incluir previsões do GENCO: no ambiente do GENCO, rode `gridfm_graphkit evaluate --config configs/train118_gpu.yaml --model_path <run>/artifacts/model/best_model_state_dict.pt --normalizer_stats <run>/artifacts/stats/normalizer_stats.pt --data_path data/case118 --num_workers 0 --save_output` e depois `python app/export_data.py data/case118/case118_ieee/raw app/data.json <.../test/case118_ieee_predictions.parquet>`.
+To regenerate `data.json` (needs `networkx` and `pandas`) and include GENCO predictions: in the GENCO environment, run `gridfm_graphkit evaluate --config configs/train118_gpu.yaml --model_path <run>/artifacts/model/best_model_state_dict.pt --normalizer_stats <run>/artifacts/stats/normalizer_stats.pt --data_path data/case118 --num_workers 0 --save_output` and then `python app/export_data.py data/case118/case118_ieee/raw app/data.json <.../test/case118_ieee_predictions.parquet>`.
 
-## Uso rápido (teste de fumaça, IEEE 14)
+## Quick use (smoke test, IEEE 14)
 
 ```bash
 export MLFLOW_ALLOW_FILE_STORE=true PYTHONIOENCODING=utf-8
-gridfm_datakit generate configs/smoke_case14.yaml                      # gera ./data/smoke14
+gridfm_datakit generate configs/smoke_case14.yaml                      # generates ./data/smoke14
 gridfm_graphkit train --config configs/smoke_train14.yaml \
   --data_path data/smoke14 --num_workers 0 --exp_name smoke --run_name t14
 ```
 
-## Estado (12/10/2026)
+## Status (10/22/2026)
 
-- ✅ Interface e backend funcionando para o IEEE 118: resposta corretiva, varredura N-1 (303 contingências), reparo e religação por blocos, demo estático (replay).
-- ✅ GENCO Tiny (treino reduzido) validado em 177 saídas de linha: melhora o DC, mas só detecta 25% das linhas acima de 100% (`docs/GENCO_VARREDURA.md`).
-- ⏳ Treino maior do GENCO (`docs/TREINO_GENCO.md`) e integração do GENCO ao backend.
+- ✅ Interface and backend working on four networks (IEEE 14, 30, 57 and 118): corrective response, N-1 screening (303 contingencies on the 118), repair and block reconnection, static demo (replay).
+- ✅ **GENCO Tiny N-10** (39,761 samples, up to N-10; weights in `models/case118_genco_tiny_n10/`) validated on 177 line outages: mean loading error 0.93 % points (DC 2.95; reduced training 2.08) and 98.8% of the lines ≥ 90% detected; at 100% it detects 52% (DC 13%), so the final plan is confirmed by the AC (`docs/GENCO_VARREDURA.md`, `docs/RELATORIO_TREINO_N10.md`). The checkpoint published by the authors does better (0.11 % points; `docs/GENCO_CHECKPOINT_AUTORES.md`) and is the main model shown in the interface.
+- ✅ **GENCO as a plan verifier** (`docs/GENCO_VERIFICACAO.md`): on 623 states with redispatch and load shedding that it never saw, mean error per line of 1.03 % points (DC 2.92); it approved 0 of 173 insufficient plans by mistake (DC 121); with a 5-point margin in the plan, it approves 75 of 89 plans.
+- ✅ **GENCO-OPF fixing the voltage (IEEE 118)** (`docs/TENSAO_GENCO_OPF.md`): on the replay, 13 plans ended with voltage out of range; with the generator voltage adjusted by GENCO-OPF, the power plan redone and the AC confirming, the 15 violations become 0, with no overload and less shedding (901.8 → 866.2 MW).
+- ✅ **Scale study** (`docs/GENCO_ESCALA.md`): up to 10,000 buses; on CPU GENCO is not faster than our AC, and on the GOC networks it does not beat the DC. GPU not tested.
+- ⏳ GENCO integration into the live backend (today it appears as offline validation, a column in the screening, the verifier and the precomputed voltage adjustment).
 
-## Como colaborar
+## How to collaborate
 
-- Trabalhe em **branches** (`feature/...`) e abra *pull requests*; evite commits diretos na `main`.
-- Não suba dados, checkpoints grandes nem o ambiente virtual.
-- Antes de começar, rode `git pull`.
+- Work on **branches** (`feature/...`) and open *pull requests*; avoid direct commits to `main`.
+- Do not push data, large checkpoints or the virtual environment.
+- Before starting, run `git pull`.
 
-## Licença e citação
+## License and citation
 
-Código sob **Apache License 2.0** (arquivo `LICENSE`). Textos e figuras: CC BY 4.0. Materiais de terceiros (dados do PGLib, artigos, GENCO/OpenGridFM) mantêm suas licenças: veja `NOTICE.md`. Para citar este trabalho, use `CITATION.cff`.
+Code under the **Apache License 2.0** (file `LICENSE`). Texts and figures: CC BY 4.0. Third-party materials (PGLib data, papers, GENCO/OpenGridFM) keep their licenses: see `NOTICE.md`. To cite this work, use `CITATION.cff`.

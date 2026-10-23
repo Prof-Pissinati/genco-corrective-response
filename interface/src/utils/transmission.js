@@ -1,29 +1,31 @@
 // src/utils/transmission.js
-// Suporte a sistemas de TRANSMISSÃO (malhados, com barras PV e geradores) na interface do simulador.
-//  - buildTransmissionSystem: converte um caso MATPOWER (tabelas numéricas) para o formato interno (systemData).
-//  - solveTransmissionDC: fluxo DC com despacho fixo, por ilha energizada (a ilha que contém a barra de referência).
+// Support for TRANSMISSION systems (meshed, with PV buses and generators) in the simulator interface.
+//  - buildTransmissionSystem: converts a MATPOWER case (numeric tables) to the internal format (systemData).
+//  - solveTransmissionDC: DC power flow with fixed dispatch, per energized island (the island that contains the reference bus).
 //
-// Convenções (ver docs/CONTRATO_API.md): potência em MW na lógica elétrica; o simulador original guarda cargas em kW, então
-// systemData.loads/pFlow ficam em kW e Sbase em kVA (a interface já divide por 1000 para exibir MW).
-// Só a ilha com a barra de referência é energizada; ilhas sem ela ficam desenergizadas (carga perdida).
+// Conventions (see docs/CONTRATO_API.md): power in MW in the electrical logic; the original simulator stores loads in kW, so
+// systemData.loads/pFlow are in kW and Sbase in kVA (the interface already divides by 1000 to display MW).
+// Only the island with the reference bus is energized; islands without it are de-energized (load lost).
 import { solveLinearSystem } from './mathSolver.js';
+import { parallelGroups, shareWaypoints } from './parallel.js';
 
 const REF_TYPE = 3;
 
 /**
- * @param {{baseMVA:number, bus:number[][], gen:number[][], branch:number[][]}} mpc  tabelas MATPOWER
- * @param {{layout?:Object<string,[number,number]>, name?:string, gridName?:string}} [extras]  layout {numeroDaBarra:[x,y]}; gridName = caso do backend
+ * @param {{baseMVA:number, bus:number[][], gen:number[][], branch:number[][]}} mpc  MATPOWER tables
+ * @param {{layout?:Object<string,[number,number]|{x:number,y:number}>, waypoints?:Object<string,{x:number,y:number}[]>, name?:string, gridName?:string}} [extras]
+ *        layout {busNumber:[x,y] | {x,y}}; waypoints {branchIndex:[{x,y}]} (bend points); gridName = backend case
  */
 export function buildTransmissionSystem(mpc, extras = {}) {
     const { baseMVA, bus, gen, branch } = mpc;
-    const name = extras.name || 'Sistema de transmissão';
+    const name = extras.name || 'Transmission system';
 
     const refRow = bus.find(r => r[1] === REF_TYPE) || bus[0];
     const refBus = refRow[0];
     const vbase = refRow[9] || 138;
 
-    // geradores; casos de OPF (PGLib) trazem um Pg inicial que NÃO fecha com a carga (ou zero). Se o despacho difere da carga em mais de 10% (perdas de um OPF ficam em ~3%, e a referência as absorve),
-    // rebalanceia: escala o Pg existente (respeitando Pmax) ou, se não houver, distribui a carga proporcionalmente a Pmax.
+    // generators; OPF cases (PGLib) bring an initial Pg that does NOT match the load (or zero). If the dispatch differs from the load by more than 10% (OPF losses are around 3%, and the reference absorbs them),
+    // it rebalances: scales the existing Pg (respecting Pmax) or, if there is none, distributes the load proportionally to Pmax.
     const gens = gen.map((g, i) => ({
         id: i, bus: g[0], pg: g[1], qg: g[2], qmax: g[3], qmin: g[4], vg: g[5],
         status: g[7] > 0 ? 1 : 0, pmax: g[8], pmin: g[9],
@@ -49,9 +51,9 @@ export function buildTransmissionSystem(mpc, extras = {}) {
         const tap = b[8] && b[8] !== 0 ? b[8] : 1;
         return {
             id: i, from: b[0], to: b[1],
-            r: b[2] * zbase, x: b[3] * zbase,          // ohm (só para compatibilidade com o restante do código)
+            r: b[2] * zbase, x: b[3] * zbase,          // ohm (only for compatibility with the rest of the code)
             rpu: b[2], xpu: b[3], bch: b[4], tap, shift: b[9] || 0,
-            rateA: b[5], imax: b[5],                    // MVA; 0 = sem limite
+            rateA: b[5], imax: b[5],                    // MVA; 0 = no limit
             angmin: b[11], angmax: b[12],
             state: status, initialState: status, hasSwitch: true,
         };
@@ -66,7 +68,7 @@ export function buildTransmissionSystem(mpc, extras = {}) {
 
     const positions = {};
     if (extras.layout) {
-        Object.entries(extras.layout).forEach(([no, xy]) => { positions[no] = { x: xy[0], y: xy[1] }; });
+        Object.entries(extras.layout).forEach(([no, xy]) => { positions[no] = Array.isArray(xy) ? { x: xy[0], y: xy[1] } : { x: xy.x, y: xy.y }; });
     }
     const pmaxTotal = gens.filter(g => g.status).reduce((s, g) => s + Math.max(g.pmax, 0), 0);
 
@@ -82,17 +84,18 @@ export function buildTransmissionSystem(mpc, extras = {}) {
         branches,
         shunts: {},
         positionsProject: Object.keys(positions).length ? positions : null,
+        waypointsProject: extras.waypoints ? shareWaypoints(JSON.parse(JSON.stringify(extras.waypoints)), parallelGroups(branches)) : {},   // line bends (design layout); parallel circuits share the same ones
         transmission: {
             name, baseMVA, refBus, buses: busInfo, gens, dispatchAdjusted,
-            gridName: extras.gridName || null,              // caso existente no backend (vai pelo nome); null = enviar as tabelas
-            mpc: { baseMVA, bus, gen, branch },             // tabelas MATPOWER originais (para o backend avaliar casos importados)
+            gridName: extras.gridName || null,              // case that exists in the backend (sent by name); null = send the tables
+            mpc: { baseMVA, bus, gen, branch },             // original MATPOWER tables (for the backend to evaluate imported cases)
         },
     };
 }
 
 /**
- * Fluxo DC com despacho fixo. A barra de referência absorve o desbalanço.
- * Retorna { nodes, lines, summary } no formato esperado pela interface (como runPowerFlow).
+ * DC power flow with fixed dispatch. The reference bus absorbs the imbalance.
+ * Returns { nodes, lines, summary } in the format expected by the interface (like runPowerFlow).
  */
 export function solveTransmissionDC(branches, faultNodes, sysData) {
     const T = sysData.transmission;
@@ -109,7 +112,7 @@ export function solveTransmissionDC(branches, faultNodes, sysData) {
     const emptyResult = () => ({ nodes: {}, lines, summary: { mode: 'DC', servedMW: 0, lostMW: totalLoadMW, genMW: 0, slackMW: 0, energizedBuses: 0 } });
     if (faults.has(ref)) return emptyResult();
 
-    // ramos ativos (fechados e com as duas pontas sem falta) e BFS a partir da referência
+    // active branches (closed and with both ends fault-free) and BFS from the reference
     const active = branches.filter(b => b.state === 1 && !faults.has(b.from) && !faults.has(b.to));
     const adj = new Map();
     const link = (u, v) => { if (!adj.has(u)) adj.set(u, []); adj.get(u).push(v); };
@@ -125,7 +128,7 @@ export function solveTransmissionDC(branches, faultNodes, sysData) {
     const idx = new Map(order.map((n, i) => [n, i]));
     const n = order.length;
 
-    // injeções líquidas em pu (geração - carga) nas barras energizadas
+    // net injections in pu (generation - load) at the energized buses
     const inj = new Array(n).fill(0);
     let genMW = 0;
     T.gens.forEach(g => {
@@ -138,7 +141,7 @@ export function solveTransmissionDC(branches, faultNodes, sysData) {
         servedMW += pd;
     });
 
-    // matriz B' (susceptâncias 1/(x*tap)) e solução com a referência em θ = 0
+    // B' matrix (susceptances 1/(x*tap)) and solution with the reference at θ = 0
     const B = Array.from({ length: n }, () => new Array(n).fill(0));
     const usable = active.filter(b => energized.has(b.from) && energized.has(b.to) && b.xpu !== 0);
     usable.forEach(b => {
@@ -157,17 +160,22 @@ export function solveTransmissionDC(branches, faultNodes, sysData) {
 
     const nodes = {};
     order.forEach((no, i) => { nodes[no] = { v: 1.0, angle: theta[i] * (180 / Math.PI), unit: 'MW' }; });
+    // generation per bus (MW): the reference bus absorbs the imbalance
+    T.gens.forEach(g => {
+        if (g.status && energized.has(g.bus) && !faults.has(g.bus)) nodes[g.bus].pg = (nodes[g.bus].pg || 0) + g.pg;
+    });
+    nodes[ref].pg = (nodes[ref].pg || 0) + (servedMW - genMW);
 
     usable.forEach(b => {
         const flowMW = ((theta[idx.get(b.from)] - theta[idx.get(b.to)]) / (b.xpu * b.tap)) * base;
         const abs = Math.abs(flowMW);
         lines[b.id] = {
-            current: Math.max(abs, 0.002),                // MW (evita cair na cor de "desenergizado" com fluxo ~ 0)
+            current: Math.max(abs, 0.002),                // MW (avoids falling into the "de-energized" color with flow ~ 0)
             percentage: b.rateA > 0 ? (abs / b.rateA) * 100 : 0,
-            pFlow: flowMW * 1000,                          // kW, como o restante da interface
+            pFlow: flowMW * 1000,                          // kW, like the rest of the interface
             qFlow: 0,
             limitCurrent: b.rateA || 0,
-            unit: 'MW',                                    // a interface mostra MW/MVA em vez de A
+            unit: 'MW',                                    // the interface shows MW/MVA instead of A
         };
     });
 

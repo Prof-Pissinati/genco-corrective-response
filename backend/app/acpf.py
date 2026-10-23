@@ -1,7 +1,7 @@
-"""Fluxo de potência AC (Newton-Raphson, coordenadas polares) e DC com despacho fixo, sobre a ilha energizada.
+"""AC (Newton-Raphson, polar coordinates) and DC power flow with fixed dispatch, over the energized island.
 
-A barra de referência absorve o desbalanço (e as perdas); geradores PV mantêm P e |V|. Sem limites de Q (como o PowerModels
-`compute_ac_pf` usado pelo gridfm-datakit nos dados de treino do GENCO); as violações de Q são apenas reportadas.
+The reference bus absorbs the imbalance (and the losses); PV generators keep P and |V|. No Q limits (like the PowerModels
+`compute_ac_pf` used by gridfm-datakit in the GENCO training data); Q violations are only reported.
 """
 from __future__ import annotations
 
@@ -24,8 +24,11 @@ def _branch_admittances(net: Network, bi: np.ndarray):
 
 
 def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: np.ndarray | None = None,
-             tol: float = 1e-8, max_it: int = 30):
-    """Resolve o fluxo AC na ilha energizada. Retorna dict com arrays nos tamanhos ORIGINAIS (zeros fora da ilha)."""
+             tol: float = 1e-8, max_it: int = 30, init: str = "flat"):
+    """Solves the AC power flow on the energized island. Returns a dict with arrays in the ORIGINAL sizes (zeros outside the island).
+
+    `init`: "flat" (default) starts from flat voltages at the PQ buses and zero angles; "case" starts from the point stored in the case (AC-OPF Vm and Va),
+    as an operations tool does when recomputing a contingency from the base case (warm start). It does not change the solution, only the path."""
     nb_full, nl_full, ng_full = net.nb, net.nl, len(net.gen_bus)
     idx = np.flatnonzero(bus_mask)
     n = len(idx)
@@ -45,7 +48,7 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
     ysh = (net.gs[idx] + 1j * net.bs[idx]) / base
     Ybus = (Cf.T @ Yf + Ct.T @ Yt + diags(ysh)).tocsr()
 
-    # geradores em serviço dentro da ilha
+    # in-service generators inside the island
     gmask = net.gen_on & bus_mask[net.gen_bus]
     if gen_mask is not None:
         gmask &= gen_mask
@@ -54,7 +57,7 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
     has_gen = np.bincount(gb, minlength=n) > 0
 
     typ = net.bus_type[idx].copy()
-    typ[(typ == 2) & ~has_gen] = 1              # PV sem gerador em serviço vira PQ
+    typ[(typ == 2) & ~has_gen] = 1              # PV without an in-service generator becomes PQ
     ref = remap[net.ref]
     typ[ref] = 3
     typ[(typ == 3) & (np.arange(n) != ref)] = 2
@@ -62,7 +65,7 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
     pq = np.flatnonzero(typ == 1)
     pvpq = np.r_[pv, pq]
 
-    # tensões iniciais/especificadas: |V| = Vg do primeiro gerador em serviço nas barras PV/ref
+    # initial/specified voltages: |V| = Vg of the first in-service generator at the PV/ref buses
     vm = np.ones(n)
     first_vg = {}
     for g, b in zip(gi, gb):
@@ -70,10 +73,15 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
     for b, vg in first_vg.items():
         if typ[b] in (2, 3):
             vm[b] = vg
+    if getattr(net, "bus_vm", None) is not None and not has_gen[ref]:      # reference without an in-service generator (there are such cases, like GOC 500): the case's |V| applies
+        vm[ref] = net.bus_vm[idx][ref]
     va = np.zeros(n)
+    if init == "case" and getattr(net, "bus_va", None) is not None and getattr(net, "bus_vm", None) is not None:      # initial guess: the case point (AC-OPF), not flat voltages
+        va = np.radians(net.bus_va[idx] - net.bus_va[idx][ref])
+        vm[pq] = net.bus_vm[idx][pq]
     V = vm * np.exp(1j * va)
 
-    # injeções especificadas (pu): P de todos os geradores - carga; Q só nas barras PQ (Qg do arquivo)
+    # specified injections (pu): P of all generators - load; Q only at the PQ buses (Qg from the file)
     pg_bus = np.bincount(gb, weights=net.gen_pg[gi], minlength=n)
     qg_bus = np.bincount(gb, weights=net.gen_qg[gi], minlength=n)
     Sbus = ((pg_bus - net.pd[idx]) + 1j * (np.where(typ == 1, qg_bus, 0.0) - net.qd[idx])) / base
@@ -105,11 +113,11 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
     if not converged:
         return out
 
-    # barras
+    # buses
     out["vm"][idx] = np.abs(V)
     out["va"][idx] = np.rad2deg(np.angle(V) - np.angle(V[ref]))
-    S = V * np.conj(Ybus @ V) * base                       # injeção líquida (MW, MVAr)
-    # geradores: P da barra de referência e Q das barras PV/ref saem do balanço
+    S = V * np.conj(Ybus @ V) * base                       # net injection (MW, MVAr)
+    # generators: P of the reference bus and Q of the PV/ref buses come out of the balance
     pg = np.zeros(ng_full)
     qg = np.zeros(ng_full)
     pg[gi] = net.gen_pg[gi]
@@ -126,7 +134,7 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
             pg[on_b] = p_total * np.maximum(net.gen_pmax[on_b], 1e-9) / np.maximum(net.gen_pmax[on_b], 1e-9).sum() if len(on_b) > 1 else p_total
     out["pg"], out["qg"] = pg, qg
 
-    # fluxos nos ramos (MW, MVAr), nas duas pontas
+    # branch flows (MW, MVAr), at both ends
     Sf = V[f] * np.conj(Yf @ V) * base
     St = V[t] * np.conj(Yt @ V) * base
     out["pf"][bi], out["qf"][bi] = Sf.real, Sf.imag
@@ -135,7 +143,7 @@ def solve_ac(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: 
 
 
 def solve_dc(net: Network, bus_mask: np.ndarray, br_mask: np.ndarray, gen_mask: np.ndarray | None = None):
-    """Fluxo DC com despacho fixo; a referência absorve o desbalanço. Mesma formulação de interface/src/utils/transmission.js."""
+    """DC power flow with fixed dispatch; the reference absorbs the imbalance. Same formulation as interface/src/utils/transmission.js."""
     nb_full, nl_full, ng_full = net.nb, net.nl, len(net.gen_bus)
     idx = np.flatnonzero(bus_mask)
     n = len(idx)

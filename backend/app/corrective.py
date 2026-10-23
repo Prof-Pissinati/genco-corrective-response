@@ -1,12 +1,12 @@
-"""Resposta corretiva a contingências: redespacho da geração e, se ainda houver violação, o corte MÍNIMO de carga.
+"""Corrective response to contingencies: generation redispatch and, if a violation remains, the MINIMUM load shedding.
 
 Fluxo (docs/ARQUITETURA.md):
-  1. estado pós-falta, com a geração perdida/sobrando redistribuída entre os geradores pela folga (resposta automática);
-  2. se restarem sobrecargas (ou faltar geração), um problema linear escolhe o redespacho e o corte de carga que minimizam a carga cortada
-     respeitando os limites térmicos (sensibilidades DC sobre o estado AC) e os limites dos geradores;
-  3. o plano é verificado pelo AC; se sobrar sobrecarga, os limites dos ramos violados são apertados e o problema é resolvido de novo.
+  1. post-fault state, with the lost/surplus generation redistributed among the generators using their headroom (automatic response);
+  2. if overloads remain (or generation is short), a linear problem chooses the redispatch and load shedding that minimize the shed load
+     respecting the thermal limits (DC sensitivities over the AC state) and the generator limits;
+  3. the plan is verified by the AC; if an overload remains, the limits of the violated branches are tightened and the problem is solved again.
 
-Qualquer carga pode ser cortada (por barra, de 0 a 100%). Violações de tensão são apenas reportadas.
+Any load can be shed (per bus, from 0 to 100%). Voltage violations are only reported.
 """
 from __future__ import annotations
 
@@ -24,12 +24,13 @@ from .network import Network, topology_masks
 
 SHED_COST = 1.0           # custo por MW cortado
 REDISPATCH_COST = 1e-3    # custo por MW redespachado (preferir redespachar a cortar)
-MIN_PU_CAP = 0.05         # limite mínimo de P num ramo, como fração do rateA (evita restrição degenerada)
+MIN_PU_CAP = 0.05         # minimum P limit on a branch, as a fraction of rateA (avoids a degenerate constraint)
+VIOLATION_COST = 10.0     # best-effort plan: cost per MW of line-limit violation = VIOLATION_COST x total load (more expensive than shedding all the load)
 
 
 def proportional_redispatch(net: Network, bus_mask, br_mask) -> np.ndarray:
-    """Despacho após a falta: o desbalanço que a referência absorveria é redistribuído entre os demais geradores pela folga
-    (até Pmax se faltar geração; até Pmin se sobrar). Devolve Pg por gerador (todos, na ordem da tabela)."""
+    """Dispatch after the fault: the imbalance the reference would absorb is redistributed among the other generators using their headroom
+    (up to Pmax if generation is short; down to Pmin if there is a surplus). Returns Pg per generator (all of them, in table order)."""
     pg = net.gen_pg.copy()
     sol = solve_ac(net, bus_mask, br_mask)
     if not sol["converged"]:
@@ -39,7 +40,7 @@ def proportional_redispatch(net: Network, bus_mask, br_mask) -> np.ndarray:
     others = np.array([g for g in on if net.gen_bus[g] != net.ref], dtype=int)
     if not len(ref_gens) or not len(others):
         return pg
-    delta = float(sol["pg"][ref_gens].sum() - net.gen_pg[ref_gens].sum())      # MW que a referência precisaria ceder/receber
+    delta = float(sol["pg"][ref_gens].sum() - net.gen_pg[ref_gens].sum())      # MW the reference would need to give up/receive
     if abs(delta) < 1e-6:
         return pg
     if delta > 0:
@@ -48,7 +49,7 @@ def proportional_redispatch(net: Network, bus_mask, br_mask) -> np.ndarray:
         room = np.clip(pg[others] - net.gen_pmin[others], 0, None)
     need = abs(delta)
     alloc = np.zeros(len(others))
-    for _ in range(len(others) + 1):                                           # preenchimento por água (respeita saturações)
+    for _ in range(len(others) + 1):                                           # water-filling (respects saturations)
         free = room - alloc > 1e-9
         if need < 1e-9 or not free.any():
             break
@@ -61,8 +62,8 @@ def proportional_redispatch(net: Network, bus_mask, br_mask) -> np.ndarray:
 
 
 def _ptdf(net: Network, bus_mask, br_mask):
-    """Sensibilidade do fluxo (P, na ponta `from`) de cada ramo ativo à injeção em cada barra da ilha; referência como folga.
-    Retorna (idx_barras, ramos_ativos, S[nl_ativos, nb_ilha])."""
+    """Sensitivity of the flow (P, at the `from` end) of each active branch to the injection at each bus of the island; reference as slack.
+    Returns (bus_indices, active_branches, S[n_active_branches, n_island_buses])."""
     idx = np.flatnonzero(bus_mask)
     n = len(idx)
     remap = -np.ones(net.nb, dtype=int)
@@ -81,27 +82,27 @@ def _ptdf(net: Network, bus_mask, br_mask):
 
 
 def plan_corrective(net: Network, branch_out=(), bus_out=(), max_iter: int = 8, margin: float = 0.0) -> dict:
-    """Plano corretivo para a topologia com as falhas informadas. Ver o módulo."""
+    """Corrective plan for the topology with the given faults. See the module."""
     t0 = time.perf_counter()
     bus_mask, br_mask = topology_masks(net, branch_out, bus_out)
     pre = evaluate(net, [], [], "ac")
-    if not bus_mask.any():                                                      # referência em falta: nada a fazer
+    if not bus_mask.any():                                                      # reference faulted: nothing to do
         lost = evaluate(net, branch_out, bus_out, "ac")
-        return _pack(net, branch_out, bus_out, pre, lost, lost, net.gen_pg, net.gen_pg, net.pd, net.pd, 0, t0, "a barra de referência está em falta: nenhuma ilha energizada")
+        return _pack(net, branch_out, bus_out, pre, lost, lost, net.gen_pg, net.gen_pg, net.pd, net.pd, 0, t0, "the reference bus is faulted: no island is energized")
 
-    # 1) resposta automática da geração
+    # 1) automatic generation response
     pg1 = proportional_redispatch(net, bus_mask, br_mask)
     post = evaluate(net, branch_out, bus_out, "ac", pg=pg1)
     need = _needs_action(post)
     if not need:
         return _pack(net, branch_out, bus_out, pre, post, post, pg1, pg1, net.pd, net.pd, 0, t0)
 
-    # 2) LP: corte mínimo + redespacho
+    # 2) LP: minimum shedding + redispatch
     idx, bi, S = _ptdf(net, bus_mask, br_mask)
     pos = -np.ones(net.nb, dtype=int)
     pos[idx] = np.arange(len(idx))
     pbr = {b["id"]: b for b in post["branches"]} if post["converged"] else None
-    if pbr is None:                                                             # AC não convergiu: baseline DC
+    if pbr is None:                                                             # AC did not converge: DC baseline
         dc = solve_dc(net, bus_mask, br_mask)
         p_from = dc["pf"][bi]; q_from = np.zeros(len(bi)); p_to = dc["pt"][bi]; q_to = np.zeros(len(bi))
         pg_now = pg1.copy()
@@ -110,7 +111,7 @@ def plan_corrective(net: Network, branch_out=(), bus_out=(), max_iter: int = 8, 
         p_to = np.array([pbr[i]["pt"] for i in bi]); q_to = np.array([pbr[i]["qt"] for i in bi])
         pg_now = pg1.copy()
         for g in post["gens"]:
-            pg_now[g["id"]] = g["pg"]                                           # inclui o que a referência passou a gerar
+            pg_now[g["id"]] = g["pg"]                                           # includes what the reference started generating
 
     gens = np.flatnonzero(net.gen_on & bus_mask[net.gen_bus])
     loads = np.flatnonzero(bus_mask & (net.pd > 1e-9))
@@ -123,17 +124,17 @@ def plan_corrective(net: Network, branch_out=(), bus_out=(), max_iter: int = 8, 
     for iterations in range(1, max_iter + 1):
         cap_f = np.sqrt(np.maximum((rate * (1 - margins)) ** 2 - q_from ** 2, (MIN_PU_CAP * rate) ** 2))
         cap_t = np.sqrt(np.maximum((rate * (1 - margins)) ** 2 - q_to ** 2, (MIN_PU_CAP * rate) ** 2))
-        # variáveis: [u_g (sobe), d_g (desce), s_b (corte)]
+        # variables: [u_g (up), d_g (down), s_b (shed)]
         nvar = 2 * ng + nl_
         c = np.r_[np.full(2 * ng, REDISPATCH_COST), np.full(nl_, SHED_COST)]
-        # injeção líquida de cada barra: gerador (u-d) e corte (+s)
+        # net injection of each bus: generator (u-d) and shedding (+s)
         M = np.zeros((len(idx), nvar))
         for k, g in enumerate(gens):
             M[pos[net.gen_bus[g]], k] = 1.0
             M[pos[net.gen_bus[g]], ng + k] = -1.0
         for k, b in enumerate(loads):
             M[pos[b], 2 * ng + k] = 1.0
-        F = S @ M                                                               # variação do fluxo `from` por variável
+        F = S @ M                                                               # change of the `from` flow per variable
         lim = np.flatnonzero(has_lim)
         A_ub = np.vstack([F[lim], -F[lim], -F[lim], F[lim]])                    # |pf0+ΔF| <= cap_f  e  |pt0-ΔF| <= cap_t
         b_ub = np.r_[cap_f[lim] - p_from[lim], cap_f[lim] + p_from[lim], cap_t[lim] - p_to[lim], cap_t[lim] + p_to[lim]]
@@ -144,8 +145,17 @@ def plan_corrective(net: Network, branch_out=(), bus_out=(), max_iter: int = 8, 
                   + [(0, float(net.pd[b])) for b in loads])
         res = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=[0.0], bounds=bounds, method="highs")
         if res.status != 0:
-            return _pack(net, branch_out, bus_out, pre, post, post, pg1, pg1, net.pd, net.pd, iterations, t0, f"otimização sem solução ({res.message})")
-        x = res.x
+            # no redispatch and shedding respects all the line limits: BEST-EFFORT plan, with limit violations at a very high cost
+            # (only gets here when the hard problem is infeasible, so plans that already have a solution do not change)
+            nlim = len(lim)
+            A_soft = np.hstack([A_ub, np.zeros((A_ub.shape[0], nlim))])
+            for blk in range(4):
+                A_soft[blk * nlim + np.arange(nlim), nvar + np.arange(nlim)] = -1.0
+            c_soft = np.r_[c, np.full(nlim, VIOLATION_COST * max(float(net.pd.sum()), 1.0))]
+            res = linprog(c_soft, A_ub=A_soft, b_ub=b_ub, A_eq=np.hstack([A_eq, np.zeros((1, nlim))]), b_eq=[0.0], bounds=bounds + [(0, None)] * nlim, method="highs")
+        if res.status != 0:
+            return _pack(net, branch_out, bus_out, pre, post, post, pg1, pg1, net.pd, net.pd, iterations, t0, f"optimization has no solution ({res.message})")
+        x = res.x[:nvar]
         pg2 = pg_now.copy()
         pg2[gens] = pg_now[gens] + x[:ng] - x[ng:2 * ng]
         shed = np.zeros(net.nb)
@@ -160,12 +170,17 @@ def plan_corrective(net: Network, branch_out=(), bus_out=(), max_iter: int = 8, 
         over = after["violations"]["overload"]
         if not over:
             break
-        ld = {b["id"]: b["loading"] for b in after["branches"]}                 # aperta os ramos que o AC ainda acusa
+        ld = {b["id"]: b["loading"] for b in after["branches"]}                 # tightens the branches the AC still flags
         for k, i in enumerate(bi):
             if i in over:
                 margins[k] += (ld[i] - 1.0) + 0.003
     after, pg2, pd2 = best
-    return _pack(net, branch_out, bus_out, pre, post, after, pg1, pg2, net.pd, pd2, iterations, t0)
+    note = None
+    if not after["converged"]:
+        note = "the AC power flow does not converge with the plan applied: the plan could not be confirmed"
+    elif after["violations"]["overload"]:
+        note = f"best-effort plan: {len(after['violations']['overload'])} overload(s) remain that the model could not eliminate"
+    return _pack(net, branch_out, bus_out, pre, post, after, pg1, pg2, net.pd, pd2, iterations, t0, note)
 
 
 def _needs_action(ev: dict) -> bool:
@@ -176,7 +191,7 @@ def _needs_action(ev: dict) -> bool:
 
 
 def _pack(net, branch_out, bus_out, pre, post, after, pg_before, pg_after, pd_before, pd_after, iterations, t0, note=None):
-    """Monta a resposta: estados (pré-falta, pós-falta, com plano) e o plano (redespacho e corte)."""
+    """Builds the response: states (pre-fault, post-fault, with plan) and the plan (redispatch and shedding)."""
     shed = pd_before - pd_after
     shed_rows = [{"bus": int(net.bus_no[b]), "mw": round(float(shed[b]), 4), "pct": round(float(shed[b] / pd_before[b]), 5)}
                  for b in np.flatnonzero(shed > 1e-6)]

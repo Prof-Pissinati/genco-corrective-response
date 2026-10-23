@@ -5,9 +5,9 @@ export function useGridInteraction({
     setSelectedElement,
     toggleSwitch,
     toggleFault,
-    onPinCard // 👈 NOVO: Função para fixar o Post-it
+    onPinCard // 👈 NEW: function to pin the Post-it
 }) {
-    // === INTERAÇÃO COM BARRAS (NODES) ===
+    // === BUS (NODE) INTERACTION ===
     const handleNodeClick = useCallback((nodeId, event) => {
         if (isEditMode) return;
 
@@ -16,7 +16,7 @@ export function useGridInteraction({
 
         if (isCtrl) {
             setSelectedElement({ type: 'node', id: parseInt(nodeId) });
-            return; // SEM tooltip, SEM toggleFault
+            return; // NO tooltip, NO toggleFault
         }
         if (isShift) {
             setSelectedElement({ type: 'node', id: parseInt(nodeId) });
@@ -35,7 +35,7 @@ export function useGridInteraction({
 
         if (isCtrl) {
             setSelectedElement({ type: 'edge', data: branchObj });
-            return; // SEM tooltip, SEM toggleSwitch
+            return; // NO tooltip, NO toggleSwitch
         }
         if (isShift) {
             setSelectedElement({ type: 'edge', data: branchObj });

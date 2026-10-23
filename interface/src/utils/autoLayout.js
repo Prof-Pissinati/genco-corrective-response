@@ -1,7 +1,7 @@
 import * as d3 from 'd3-force';
 
 // =============================================================================
-// FERRAMENTAS GENÉRICAS DE GEOMETRIA (Otimização de Performance)
+// GENERIC GEOMETRY TOOLS (Performance Optimization)
 // =============================================================================
 
 export function getBoundingBox(pos, targetNodes, padding = 0) {
@@ -74,10 +74,10 @@ function applyProportionalScaling(nodesArray, branchesArray, actualPositions, ta
 }
 
 // =============================================================================
-// MOTOR FORCE (ORGÂNICO) - COM CONGELAMENTO DE SELEÇÃO
+// FORCE ENGINE (ORGANIC) - WITH SELECTION FREEZING
 // =============================================================================
 export function calculateForceLayout(nodesArray, branchesArray, sourcesArray, config = {}) {
-    // 👇 Garantia absoluta de definição das variáveis 👇
+    // 👇 Absolute guarantee that the variables are defined 👇
     const distVal = config.distance !== undefined ? config.distance : 10;
     const targetCharge = config.charge !== undefined ? config.charge : -40; 
     const col = config.collide !== undefined ? config.collide : 40;
@@ -99,7 +99,7 @@ export function calculateForceLayout(nodesArray, branchesArray, sourcesArray, co
         if (currentPos[strId]) { 
             nodeObj.x = currentPos[strId].x; 
             nodeObj.y = currentPos[strId].y; 
-            // Congela as barras não selecionadas
+            // Freezes the unselected buses
             if (selectedSet && !selectedSet.has(strId)) {
                 nodeObj.fx = nodeObj.x;
                 nodeObj.fy = nodeObj.y;
@@ -148,7 +148,7 @@ export function calculateForceLayout(nodesArray, branchesArray, sourcesArray, co
 }
 
 // =========================================================
-// FASE 4: SWAP GLOBAL INTELIGENTE
+// PHASE 4: SMART GLOBAL SWAP
 // =========================================================
 function applySmartGlobalSwap(pos, nodesArray, branchesArray, sourcesArray, feederMap, getLocalCost, getSystemCost) {
     let improved = false;
@@ -225,12 +225,12 @@ function applySmartGlobalSwap(pos, nodesArray, branchesArray, sourcesArray, feed
 }
 
 // =============================================================================
-// MOTOR DE INTELIGÊNCIA: VNS RESTRITO (O GATEKEEPER DE CRUZAMENTOS)
+// INTELLIGENCE ENGINE: CONSTRAINED VNS (THE CROSSING GATEKEEPER)
 // =============================================================================
 
 /**
- * Conta apenas atropelamentos (barra sobre linha) — separado dos cruzamentos X.
- * Usado como restrição DURA: qualquer movimento que aumente esse número é vetado.
+ * Counts only run-overs (bus on top of a line) — separate from X crossings.
+ * Used as a HARD constraint: any move that increases this number is vetoed.
  */
 function countNodeOverlaps(positions, branches, nodeIds) {
     let count = 0;
@@ -257,12 +257,12 @@ export async function applySmartCompaction(pos, nodesArrayRaw, branchesArrayRaw,
     const selectedSet = config.selectedNodes?.length > 0 ? new Set(config.selectedNodes.map(String)) : null;
     const movableNodes = selectedSet ? nodesArray.filter(id => selectedSet.has(id)) : nodesArray;
 
-    // 👇 LOG 1: VERIFICAÇÃO DE SELEÇÃO 👇
-    console.log(`%c[TELEMETRIA] Iniciando Compactador. Total de Barras: ${nodesArray.length} | Barras na Seleção (movableNodes): ${movableNodes.length}`, "color: #00bcd4; font-weight: bold;");
+    // 👇 LOG 1: SELECTION CHECK 👇
+    console.log(`%c[TELEMETRY] Starting Compactor. Total Buses: ${nodesArray.length} | Buses in Selection (movableNodes): ${movableNodes.length}`, "color: #00bcd4; font-weight: bold;");
 
     const getGlobalCrossings = (currentPos) => findIntersections(currentPos, branchesArray).length;
     const initialCrossings = getGlobalCrossings(pos);
-    console.log(`%c[AUDITORIA] Cruzamentos Iniciais: ${initialCrossings}`, "color: #ffeb3b; font-weight: bold;");
+    console.log(`%c[AUDIT] Initial Crossings: ${initialCrossings}`, "color: #ffeb3b; font-weight: bold;");
 
     const myEdgesMap = {}; 
     const otherEdgesMap = {};
@@ -281,7 +281,7 @@ export async function applySmartCompaction(pos, nodesArrayRaw, branchesArrayRaw,
             const p2 = isFrom ? currentPos[b.to] : testPos;
 
             const distance = Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
-            // Todas as linhas têm o mesmo peso agora
+            // All lines have the same weight now
             cost += distance;
 
             const dx = Math.abs(p1.x - p2.x); const dy = Math.abs(p1.y - p2.y);
@@ -321,9 +321,9 @@ export async function applySmartCompaction(pos, nodesArrayRaw, branchesArrayRaw,
         improved = false;
         passes++;
         await new Promise(r => setTimeout(r, 0));
-        if (onProgress) onProgress(passes, "Compactando...", `Cruzamentos: ${currentTotalCrossings}`);
+        if (onProgress) onProgress(passes, "Compacting...", `Crossings: ${currentTotalCrossings}`);
 
-        // Calcula a BBox
+        // Computes the BBox
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         movableNodes.forEach(id => {
             const p = pos[id];
@@ -331,9 +331,9 @@ export async function applySmartCompaction(pos, nodesArrayRaw, branchesArrayRaw,
             if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
         });
 
-        // 👇 LOG 2: VERIFICAÇÃO DA CAIXA (BBOX) 👇
+        // 👇 LOG 2: BOX (BBOX) CHECK 👇
         if (passes === 1) {
-            console.log(`%c[TELEMETRIA BBOX] Largura: ${maxX - minX}px | Altura: ${maxY - minY}px (De X:${minX} até X:${maxX} / De Y:${minY} até Y:${maxY})`, "color: #ff9800; font-weight: bold;");
+            console.log(`%c[BBOX TELEMETRY] Width: ${maxX - minX}px | Height: ${maxY - minY}px (From X:${minX} to X:${maxX} / From Y:${minY} to Y:${maxY})`, "color: #ff9800; font-weight: bold;");
         }
 
         const isOccupied = (tx, ty, currentPos) => nodesArray.some(n => currentPos[n].x === tx && currentPos[n].y === ty);
@@ -399,22 +399,22 @@ export async function applySmartCompaction(pos, nodesArrayRaw, branchesArrayRaw,
             }
         };
 
-        // Varredura da BBox (Atua apenas dentro da caixa selecionada!)
+        // BBox sweep (acts only inside the selected box!)
         for(let s=maxX; s>minX; s-=gridSize) trySlice(s, 'x', -gridSize);
         for(let s=minX; s<maxX; s+=gridSize) trySlice(s, 'x', gridSize, true);
         for(let s=maxY; s>minY; s-=gridSize) trySlice(s, 'y', -gridSize);
         for(let s=minY; s<maxY; s+=gridSize) trySlice(s, 'y', gridSize, true);
     }
     
-    console.log(`%c[AUDITORIA] Finalizado. Cruzamentos Finais: ${currentTotalCrossings}`, "color: #4caf50; font-weight: bold;");
+    console.log(`%c[AUDIT] Finished. Final Crossings: ${currentTotalCrossings}`, "color: #4caf50; font-weight: bold;");
     return pos;
 }
 
 // =============================================================================
-// MOTOR ORTOGONAL (Expansão Geométrica + Snap + Compactador)
+// ORTHOGONAL ENGINE (Geometric Expansion + Snap + Compactor)
 // =============================================================================
 export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw, sourcesArrayRaw, config = {}) {
-    // Blindagem de tipos
+    // Type hardening
     const nodesArray = (nodesArrayRaw || []).map(String);
     const branchesArray = (branchesArrayRaw || []).map(b => ({ ...b, from: String(b.from), to: String(b.to) }));
     const sourcesArray = (sourcesArrayRaw || []).map(String);
@@ -423,7 +423,7 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
     const selectedSet = config.selectedNodes?.length > 0 ? new Set(config.selectedNodes.map(String)) : null;
     const movableNodes = selectedSet ? nodesArray.filter(id => selectedSet.has(id)) : nodesArray;
 
-    // 1. Inicializa posições (lê da interface ou zera)
+    // 1. Initializes positions (reads from the interface or zeroes)
     let pos = {};
     if (config.currentPos) {
         Object.keys(config.currentPos).forEach(k => pos[String(k)] = { ...config.currentPos[k] });
@@ -434,11 +434,11 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
     if (movableNodes.length === 0) return pos;
 
     // ==========================================
-    // FASE 1: EXPANSÃO GEOMÉTRICA (Afastamento)
+    // PHASE 1: GEOMETRIC EXPANSION (Spreading apart)
     // ==========================================
-    if (config.onProgress) config.onProgress(1, "Ortogonal", "Afastando barras muito próximas...");
+    if (config.onProgress) config.onProgress(1, "Orthogonal", "Moving apart buses that are too close...");
 
-    // Acha o centro da massa das barras que vão se mover
+    // Finds the center of mass of the buses that will move
     let cx = 0, cy = 0;
     movableNodes.forEach(id => { cx += pos[id].x; cy += pos[id].y; });
     cx /= movableNodes.length; 
@@ -447,7 +447,7 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
     let minDist = 0;
     let limitador = 0;
 
-    // Expande 10% em relação ao centroide enquanto houver barras mais perto que o gridSize
+    // Expands 10% relative to the centroid while there are buses closer than the gridSize
     while (minDist < gridSize && limitador < 100) {
         minDist = Infinity;
         for (let i = 0; i < movableNodes.length; i++) {
@@ -456,17 +456,17 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
                 const idB = movableNodes[j];
                 const d = Math.sqrt((pos[idA].x - pos[idB].x)**2 + (pos[idA].y - pos[idB].y)**2);
                 
-                // Ignora distâncias menores que 1 (casos em que as barras nasceram no mesmo pixel 0,0)
+                // Ignores distances smaller than 1 (cases where the buses were born on the same 0,0 pixel)
                 if (d < minDist && d > 1) {
                     minDist = d;
                 }
             }
         }
 
-        // Força uma pequena separação inicial se a distância calculada foi nula
+        // Forces a small initial separation if the computed distance was zero
         if (minDist === Infinity || minDist === 0) minDist = 10; 
 
-        // Se ainda está espremido, aplica o "Zoom Out" de 10%
+        // If still squeezed, applies a 10% "Zoom Out"
         if (minDist < gridSize) {
             movableNodes.forEach(id => {
                 pos[id].x = cx + (pos[id].x - cx) * 1.1;
@@ -477,12 +477,12 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
     }
 
     // ==========================================
-    // FASE 2: ENQUADRAMENTO NO GRID (Snap)
+    // PHASE 2: GRID SNAPPING (Snap)
     // ==========================================
-    if (config.onProgress) config.onProgress(2, "Ortogonal", "Enquadrando no Grid absoluto...");
+    if (config.onProgress) config.onProgress(2, "Orthogonal", "Snapping to the absolute Grid...");
     const occupied = new Set();
 
-    // Trava as paredes fixas (nós não selecionados) no grid mais próximo
+    // Snaps the fixed walls (unselected nodes) to the nearest grid point
     nodesArray.forEach(id => {
         if (selectedSet && !selectedSet.has(id)) {
             const snapX = Math.round(pos[id].x / gridSize) * gridSize;
@@ -492,13 +492,13 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
         }
     });
 
-    // Ordena os nós móveis: do centro para a borda (evita que a periferia roube vagas centrais)
+    // Sorts the movable nodes: from the center to the edge (prevents the periphery from stealing central spots)
     const sortedIds = [...movableNodes].sort((a, b) => {
         return (Math.pow(pos[a].x - cx, 2) + Math.pow(pos[a].y - cy, 2)) -
                (Math.pow(pos[b].x - cx, 2) + Math.pow(pos[b].y - cy, 2));
     });
 
-    // Acha um slot vazio no grid com busca em espiral (anéis radiais)
+    // Finds an empty slot on the grid with a spiral search (radial rings)
     sortedIds.forEach(id => {
         let baseX = Math.round(pos[id].x / gridSize) * gridSize;
         let baseY = Math.round(pos[id].y / gridSize) * gridSize;
@@ -521,25 +521,25 @@ export async function calculateOrthogonalLayout(nodesArrayRaw, branchesArrayRaw,
                 }
             }
             ring++;
-            if(ring > 200) break; // Trava de emergência para mapas titânicos
+            if(ring > 200) break; // Emergency stop for titanic maps
         }
     });
 
     // ==========================================
-    // FASE 3: COMPACTAÇÃO INTELIGENTE
+    // PHASE 3: INTELLIGENT COMPACTION
     // ==========================================
-    if (config.onProgress) config.onProgress(3, "Ortogonal", "Iniciando compactação...");
+    if (config.onProgress) config.onProgress(3, "Orthogonal", "Starting compaction...");
     return await applySmartCompaction(pos, nodesArray, branchesArray, sourcesArray, gridSize, 8, config.onProgress, config);
 }
 // =============================================================================
-// VND — Variable Neighborhood Descent para redes de distribuição
-// Opera no grafo COMPLETO usando a estrutura topológica como vizinhanças.
-// Nunca retorna resultado pior que o layout original.
+// VND — Variable Neighborhood Descent for distribution networks
+// Operates on the COMPLETE graph using the topological structure as neighborhoods.
+// Never returns a result worse than the original layout.
 // =============================================================================
 
 /**
- * Extrai a estrutura de vizinhança do grafo sem remover nenhum nó.
- * Reutiliza a lógica do contractTopology mas apenas para análise.
+ * Extracts the neighborhood structure of the graph without removing any node.
+ * Reuses the contractTopology logic but only for analysis.
  */
 function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
     const adj = {};
@@ -552,13 +552,13 @@ function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
 
     const sourceSet = new Set(sourcesArray.map(String));
 
-    // Âncoras: fontes, feeders, e nós com grau ≠ 2
+    // Anchors: sources, feeders, and nodes with degree ≠ 2
     const anchors = new Set();
     nodesArray.forEach(id => {
         if (sourceSet.has(id) || adj[id].size !== 2) anchors.add(id);
     });
 
-    // Cadeias: sequências de nós com grau 2 entre duas âncoras
+    // Chains: sequences of degree-2 nodes between two anchors
     const chains = [];
     const inChain = new Set();
     const visited = new Set();
@@ -566,7 +566,7 @@ function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
     nodesArray.forEach(startId => {
         if (visited.has(startId) || anchors.has(startId) || adj[startId].size !== 2) return;
 
-        // Rastreia a cadeia nos dois sentidos a partir do startId
+        // Traces the chain in both directions from startId
         const buildChain = (start) => {
             const chain = [];
             let prev = null, curr = start;
@@ -580,11 +580,11 @@ function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
             return { chain, endAnchor: curr };
         };
 
-        // Encontra as duas âncoras da cadeia percorrendo nos dois sentidos
+        // Finds the two anchors of the chain by walking in both directions
         const neighbors = [...adj[startId]];
         if (neighbors.length !== 2) return;
 
-        // Percorre para o lado 0
+        // Walks toward side 0
         const side0 = [];
         let prev0 = startId, curr0 = neighbors[0];
         while (curr0 && !anchors.has(curr0) && !visited.has(curr0)) {
@@ -595,7 +595,7 @@ function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
         }
         const anchor0 = curr0;
 
-        // Percorre para o lado 1
+        // Walks toward side 1
         const side1 = [];
         let prev1 = startId, curr1 = neighbors[1];
         while (curr1 && !anchors.has(curr1) && !visited.has(curr1)) {
@@ -608,14 +608,14 @@ function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
 
         if (!anchor0 || !anchor1) return;
 
-        // Monta a cadeia completa: anchor0 → side0(reversed) → startId → side1 → anchor1
+        // Builds the complete chain: anchor0 → side0(reversed) → startId → side1 → anchor1
         const fullChain = [...side0.reverse(), startId, ...side1];
         fullChain.forEach(n => { visited.add(n); inChain.add(n); });
 
         chains.push({ chain: fullChain, anchors: [anchor0, anchor1] });
     });
 
-    // Folhas: nós com grau 1 que não são fontes
+    // Leaves: degree-1 nodes that are not sources
     const leaves = [];
     nodesArray.forEach(id => {
         if (adj[id].size === 1 && !sourceSet.has(id)) {
@@ -628,17 +628,17 @@ function analyzeTopology(nodesArray, branchesArray, sourcesArray) {
 }
 
 /**
- * Coleta os IDs dos nós envolvidos nos cruzamentos detectados.
- * Usado para focar N4 apenas em âncoras relevantes.
+ * Collects the IDs of the nodes involved in the detected crossings.
+ * Used to focus N4 only on relevant anchors.
  */
 function getCrossingNodes(intersections) {
     const nodes = new Set();
     intersections.forEach(ix => {
-        // ix.b1 e ix.b2 têm formato "from-to" ou "Barra X"
+        // ix.b1 and ix.b2 have the format "from-to" or "Bus X"
         [ix.b1, ix.b2].forEach(ref => {
             if (!ref) return;
-            if (ref.startsWith('Barra ')) {
-                nodes.add(ref.replace('Barra ', ''));
+            if (ref.startsWith('Bus ')) {
+                nodes.add(ref.replace('Bus ', ''));
             } else {
                 const parts = ref.split('-');
                 if (parts.length >= 2) { nodes.add(parts[0]); nodes.add(parts[1]); }
@@ -649,11 +649,11 @@ function getCrossingNodes(intersections) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// VIZINHANÇAS DO VND
+// VND NEIGHBORHOODS
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FUNÇÕES AUXILIARES DO NOVO VND MULTIOBJETIVO
+// HELPER FUNCTIONS OF THE NEW MULTI-OBJECTIVE VND
 // ─────────────────────────────────────────────────────────────────────────────
 
 function expandCandidates(seedNodes, adj, nodesArray, hops) {
@@ -672,9 +672,9 @@ function expandCandidates(seedNodes, adj, nodesArray, hops) {
     return [...candidates].filter(id => nodeSet.has(id));
 }
 
-// Garante que o Euclidean spacing respeite o gridSize!
+// Ensures the Euclidean spacing respects the gridSize!
 function isPositionOccupied(tx, ty, pos, ignoreIds, minDist) {
-    const minSq = (minDist * 0.9) ** 2; // Tolerância de 10% do grid
+    const minSq = (minDist * 0.9) ** 2; // 10% grid tolerance
     for (const [id, p] of Object.entries(pos)) {
         if (ignoreIds.has(id)) continue;
         const distSq = (p.x - tx) ** 2 + (p.y - ty) ** 2;
@@ -683,8 +683,8 @@ function isPositionOccupied(tx, ty, pos, ignoreIds, minDist) {
     return false;
 }
 
-// O Otimizador de Distância e Estética (O Peso do Centroide agora está FORTE!)
-function getLayoutCost(pos, branchesArray, centroidWeight = 0.20) { // 👈 Aumentado para 20%
+// The Distance and Aesthetics Optimizer (the Centroid Weight is now STRONG!)
+function getLayoutCost(pos, branchesArray, centroidWeight = 0.20) { // 👈 Increased to 20%
     let cost = 0;
     let cx = 0, cy = 0, count = 0;
     Object.values(pos).forEach(p => { cx += p.x; cy += p.y; count++; });
@@ -697,13 +697,13 @@ function getLayoutCost(pos, branchesArray, centroidWeight = 0.20) { // 👈 Aume
             const dy = Math.abs(p1.y - p2.y);
             const dist = Math.sqrt(dx*dx + dy*dy);
             
-            // Dá bônus de 15% de desconto se a linha for perfeitamente horizontal ou vertical!
+            // Gives a 15% discount bonus if the line is perfectly horizontal or vertical!
             const orthoBonus = (dx < 1 || dy < 1) ? 0.85 : 1.0; 
             cost += dist * orthoBonus;
         }
     });
 
-    // Puxa a rede toda para o centro de gravidade com força
+    // Pulls the whole network strongly toward the center of gravity
     Object.values(pos).forEach(p => {
         cost += Math.sqrt((p.x - cx)**2 + (p.y - cy)**2) * centroidWeight;
     });
@@ -720,7 +720,7 @@ function evaluateMove(testPos, branchesArray, nodesArray, currentCrossings, curr
 
     const cost = getLayoutCost(testPos, branchesArray);
 
-    // Aceita se reduziu os erros, OU se manteve os erros zerados mas melhorou a distância/estética!
+    // Accepts if it reduced the errors, OR kept the errors at zero but improved the distance/aesthetics!
     if (c < currentCrossings || (c === currentCrossings && cost < currentCost - 1)) {
         return { accept: true, crossings: c, cost: cost, overlaps: newOverlaps };
     }
@@ -728,7 +728,7 @@ function evaluateMove(testPos, branchesArray, nodesArray, currentCrossings, curr
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// VIZINHANÇAS DO VND ATUALIZADAS
+// UPDATED VND NEIGHBORHOODS
 // ─────────────────────────────────────────────────────────────────────────────
 
 function applyN1(pos, nodesArray, branchesArray, gridSize, currentCrossings, currentCost, currentOverlaps, radius, adj, crossingNodes) {
@@ -736,29 +736,29 @@ function applyN1(pos, nodesArray, branchesArray, gridSize, currentCrossings, cur
     let bCross = currentCrossings; let bCost = currentCost; let bOver = currentOverlaps;
 
     const candidates = expandCandidates(crossingNodes, adj, nodesArray, 1);
-    // Se não há cruzamentos, otimiza TODOS os nós buscando aproximar do centro e endireitar!
+    // If there are no crossings, optimizes ALL nodes trying to bring them closer to the center and straighten them!
     const nodesToTest = candidates.length > 0 ? candidates : nodesArray; 
 
     for (const id of nodesToTest) {
         if (!pos[id]) continue;
         const orig = pos[id];
 
-        // 👇 A MÁGICA DO GRID: A âncora de teste agora é a Malha Absoluta, e não a flutuante! 👇
+        // 👇 THE GRID TRICK: the test anchor is now the Absolute Grid, not the floating one! 👇
         const snapX = Math.round(orig.x / gridSize) * gridSize;
         const snapY = Math.round(orig.y / gridSize) * gridSize;
 
-        // Testa todas as células no grid absoluto ao redor do nó
+        // Tests all cells on the absolute grid around the node
         for (let dx = -radius; dx <= radius; dx++) {
             for (let dy = -radius; dy <= radius; dy++) {
                 
                 const tx = snapX + dx * gridSize; 
                 const ty = snapY + dy * gridSize;
 
-                // Se a posição de teste for EXATAMENTE a que o nó já está, pula.
-                // Mas se o nó estiver fora do grid, dx=0 e dy=0 vai forçar ele a entrar no grid!
+                // If the test position is EXACTLY where the node already is, skips.
+                // But if the node is off the grid, dx=0 and dy=0 will force it onto the grid!
                 if (Math.abs(tx - orig.x) < 1 && Math.abs(ty - orig.y) < 1) continue;
 
-                // Respeita o distanciamento da grade (Euclidiano)
+                // Respects the grid spacing (Euclidean)
                 if (isPositionOccupied(tx, ty, pos, new Set([id]), gridSize)) continue;
 
                 const testPos = { ...pos, [id]: { x: tx, y: ty } };
@@ -788,7 +788,7 @@ function applyN2(pos, nodesArray, chains, branchesArray, gridSize, currentCrossi
         if (!pos[a0] || !pos[a1]) continue;
 
         const relevant = [...chain, a0, a1].some(id => crossingNodes.has(id));
-        if (crossingNodes.size > 0 && !relevant) continue; // Pula se houver cruzamentos em outro lugar
+        if (crossingNodes.size > 0 && !relevant) continue; // Skips if there are crossings elsewhere
 
         for (const [ddx, ddy] of directions) {
             const ox = ddx * gridSize, oy = ddy * gridSize;
@@ -882,7 +882,7 @@ function applyN4(pos, nodesArray, branchesArray, currentCrossings, currentCost, 
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOTOR PRINCIPAL VND
+// MAIN VND ENGINE
 // ─────────────────────────────────────────────────────────────────────────────
 export async function calculateVNSLayout(nodesArray, branchesArray, sourcesArray, config = {}) {
     nodesArray    = nodesArray.map(String);
@@ -907,7 +907,7 @@ export async function calculateVNSLayout(nodesArray, branchesArray, sourcesArray
     let currentCost = getLayoutCost(pos, branchesArray);
     let currentOverlaps = countNodeOverlaps(pos, branchesArray, nodesArray);
 
-    if (onProgress) onProgress(1, 'VND', `Iniciando: ${currentCrossings} Cruzamentos`);
+    if (onProgress) onProgress(1, 'VND', `Starting: ${currentCrossings} Crossings`);
 
     let k = 1;           
     let iter = 0;
@@ -920,7 +920,7 @@ export async function calculateVNSLayout(nodesArray, branchesArray, sourcesArray
         const intersections  = findIntersections(pos, branchesArray);
         const crossingNodes  = getCrossingNodes(intersections);
 
-        if (onProgress) onProgress(iter, `VND N${k}`, `${currentCrossings} cruzamento(s) | Custo: ${Math.round(currentCost)}`);
+        if (onProgress) onProgress(iter, `VND N${k}`, `${currentCrossings} crossing(s) | Cost: ${Math.round(currentCost)}`);
 
         let result;
         if (k === 1) {
@@ -945,12 +945,12 @@ export async function calculateVNSLayout(nodesArray, branchesArray, sourcesArray
         }
     }
 
-    if (onProgress) onProgress('Concluído', 'VND', `Custo final alcançado.`);
+    if (onProgress) onProgress('Done', 'VND', `Final cost reached.`);
     return pos;
 }
 
 export function classifyTopology(nodesArray, branchesArray) {
-    // 1. Contagem Básica
+    // 1. Basic Count
     const nodesCount = nodesArray.length;
     const edgesCount = branchesArray.length;
     
@@ -960,7 +960,7 @@ export function classifyTopology(nodesArray, branchesArray) {
     const adj = {};
     nodesArray.forEach(n => adj[String(n)] = []);
     
-    // Filtramos para entender o que é o esqueleto (fechado) e o que são as tie-lines (abertas)
+    // We filter to understand what is the skeleton (closed) and what are the tie-lines (open)
     branchesArray.forEach(b => {
         const isOpen = String(b.state) === '0' || String(b.initialState) === '0';
         if (isOpen) {
@@ -976,7 +976,7 @@ export function classifyTopology(nodesArray, branchesArray) {
         }
     });
 
-    // 2. Análise de Ilhas (Componentes Elétricos / Alimentadores isolados)
+    // 2. Island Analysis (Electrical Components / isolated Feeders)
     const visited = new Set();
     let components = 0;
 
@@ -998,35 +998,35 @@ export function classifyTopology(nodesArray, branchesArray) {
         }
     });
 
-    // 3. Fórmula de Euler para Grafos (Calcula se existem anéis elétricos fechados)
+    // 3. Euler's Formula for Graphs (computes whether closed electrical loops exist)
     const electricalLoops = closedEdges - nodesCount + components;
 
     // =========================================================
-    // 4. A ÁRVORE DE DECISÃO: Como um Engenheiro escolhe o Layout
+    // 4. THE DECISION TREE: how an Engineer chooses the Layout
     // =========================================================
-    let recommendedEngine = 'force'; // Default: Nosso motor poderoso
+    let recommendedEngine = 'force'; // Default: our powerful engine
     let typeName = "Desconhecida";
 
     if (electricalLoops > 0) {
-        typeName = `Malhado (${electricalLoops} Anéis Fechados)`;
-        // Sistemas de transmissão malhados. Precisam de física se forem grandes.
+        typeName = `Meshed (${electricalLoops} Closed Loops)`;
+        // Meshed transmission systems. They need physics if they are large.
         recommendedEngine = nodesCount > 80 ? 'force' : 'vns';
         
     } else if (openSwitches > 0 || components > 1) {
-        typeName = `Radial Interligado (${components} Alimentadores, ${openSwitches} Chaves Abertas)`;
-        // O cenário clássico de Distribuição (IEEE 33, 69, 123...). 
-        // O Force é OBRIGATÓRIO aqui para forçar os alimentadores a se afastarem!
+        typeName = `Interconnected Radial (${components} Feeders, ${openSwitches} Open Switches)`;
+        // The classic Distribution scenario (IEEE 33, 69, 123...). 
+        // Force is MANDATORY here to push the feeders apart!
         recommendedEngine = 'force';
         
     } else {
-        typeName = "Radial Simples (Árvore Pura)";
-        // Sem chaves abertas e apenas 1 raiz.
+        typeName = "Simple Radial (Pure Tree)";
+        // No open switches and only 1 root.
         if (nodesCount < 30) {
-            recommendedEngine = 'orthogonal'; // Pequeno? Fica bonito como diagrama unifilar quadrado.
+            recommendedEngine = 'orthogonal'; // Small? It looks nice as a square one-line diagram.
         } else if (nodesCount < 80) {
-            recommendedEngine = 'vns';        // Médio? O VNS ajusta no grid sem esmagar.
+            recommendedEngine = 'vns';        // Medium? The VNS adjusts on the grid without crushing.
         } else {
-            recommendedEngine = 'force';      // Muito grande? Só a física resolve sem sobrepor.
+            recommendedEngine = 'force';      // Very large? Only physics solves it without overlap.
         }
     }
 
@@ -1135,7 +1135,7 @@ export function applyBarycenterSweep(positions, nodesArray, branchesArray, sourc
 }
 
 // =========================================================
-// GRAPH COARSENING HÍBRIDO (PODA + CONTRAÇÃO DE CADEIAS)
+// HYBRID GRAPH COARSENING (PRUNING + CHAIN CONTRACTION)
 // =========================================================
 
 export function contractTopology(nodesArray, branchesArray, sourcesArray) {
@@ -1153,7 +1153,7 @@ export function contractTopology(nodesArray, branchesArray, sourcesArray) {
     let activeNodes = new Set(nodesArray.map(String));
 
     // ==========================================
-    // FASE 1: PODA DE RAMOS TERMINAIS (Folhas)
+    // PHASE 1: PRUNING OF TERMINAL BRANCHES (Leaves)
     // ==========================================
     const prunedMap = {};
     const leaves = [];
@@ -1167,9 +1167,9 @@ export function contractTopology(nodesArray, branchesArray, sourcesArray) {
 
         const parent = Array.from(adj[leaf])[0];
         
-        // 👇 A MÁGICA ENTRA AQUI 👇
-        // Se o pai for uma Fonte/Subestação, nós não engolimos esse nó!
-        // Ele sobrevive no mapa e atua como o "toco" (âncora) para o ramal.
+        // 👇 THE TRICK GOES HERE 👇
+        // If the parent is a Source/Substation, we do not swallow this node!
+        // It survives on the map and acts as the "stump" (anchor) for the branch.
         if (sourceSet.has(parent)) {
             continue; 
         }
@@ -1190,7 +1190,7 @@ export function contractTopology(nodesArray, branchesArray, sourcesArray) {
         if (adj[parent] && adj[parent].size === 1 && !sourceSet.has(parent)) leaves.push(parent);
     }
 
-    // FASE 2: CONTRAÇÃO DE CADEIAS (Ligação Direta)
+    // PHASE 2: CHAIN CONTRACTION (Direct Link)
     const chainMap = {};
     let macroCounter = 1;
     const visited = new Set();
@@ -1232,7 +1232,7 @@ export function contractTopology(nodesArray, branchesArray, sourcesArray) {
                     to: ancArray[1], 
                     state: 1, 
                     __isMacroEdge: true,
-                    // 👇 A MÁGICA: A aresta sabe quantos pedaços ela representa!
+                    // 👇 THE TRICK: the edge knows how many pieces it represents!
                     __weight: chain.length + 1 
                 });
             }
@@ -1242,15 +1242,15 @@ export function contractTopology(nodesArray, branchesArray, sourcesArray) {
     });
 
     // ==========================================
-    // FASE 3: A GUILHOTINA
+    // PHASE 3: THE GUILLOTINE
     // ==========================================
     const finalBranches = branchesArray.filter(b => 
         activeNodes.has(String(b.from)) && activeNodes.has(String(b.to))
     );
     finalBranches.push(...macroEdges);
 
-    // 👇 RESTAURADOR DE TIPAGEM PARA O REACT 👇
-    // Converte os IDs numéricos de volta para Number para o React reconhecer as Subestações
+    // 👇 TYPE RESTORER FOR REACT 👇
+    // Converts the numeric IDs back to Number so React recognizes the Substations
     const restoreType = (val) => isNaN(val) ? val : Number(val);
 
     const safeNodes = Array.from(activeNodes).map(restoreType);
@@ -1274,7 +1274,7 @@ export function expandTopology(coarsePos, coarseData, originalPos) {
     
     const { prunedMap, chainMap } = coarseData;
 
-    // 1. Expansão Linear Simples (O Trilho)
+    // 1. Simple Linear Expansion (The Rail)
     if (chainMap) {
         Object.keys(chainMap).forEach(macroId => {
             const { chain, anchors } = chainMap[macroId];
@@ -1285,7 +1285,7 @@ export function expandTopology(coarsePos, coarseData, originalPos) {
                     const segments = chain.length + 1;
                     chain.forEach((nodeId, idx) => {
                         const t = (idx + 1) / segments;
-                        // Matemática Pura: Alinha perfeitamente sem erros!
+                        // Pure Math: aligns perfectly without errors!
                         finalPos[nodeId] = { x: p1.x + (p2.x - p1.x) * t, y: p1.y + (p2.y - p1.y) * t };
                     });
                 }
@@ -1296,7 +1296,7 @@ export function expandTopology(coarsePos, coarseData, originalPos) {
         });
     }
 
-    // 2. Expansão das Folhas (Poda)
+    // 2. Leaf Expansion (Pruning)
     if (prunedMap) {
         Object.keys(prunedMap).forEach(anchor => {
             const anchorNewPos = finalPos[anchor] || coarsePos[anchor];
@@ -1316,12 +1316,12 @@ export function expandTopology(coarsePos, coarseData, originalPos) {
 }
 
 // =========================================================
-// RELAXAMENTO FÍSICO COM EIXOS RESTRITOS (A Sua Ideia!)
+// PHYSICAL RELAXATION WITH CONSTRAINED AXES (Your Idea!)
 // =========================================================
 export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesArray, branchesArray, coarseData) {
     const skeletonSet = new Set(skeletonNodeIds.map(String));
 
-    // 1. Prepara a inteligência das Sanfonas (O Trilho Base e a Normal)
+    // 1. Prepares the Accordion intelligence (the Base Rail and the Normal)
     const chainNodesInfo = {};
     if (coarseData && coarseData.chainMap) {
         Object.values(coarseData.chainMap).forEach(macro => {
@@ -1339,7 +1339,7 @@ export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesA
 
                     chain.forEach((nodeId, idx) => {
                         const t = (idx + 1) / segments;
-                        // Guarda a regra imutável para cada barra da sanfona
+                        // Stores the immutable rule for each bus of the accordion
                         chainNodesInfo[String(nodeId)] = { p1, p2, t, nx, ny };
                     });
                 }
@@ -1347,7 +1347,7 @@ export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesA
         });
     }
 
-    // 2. Prepara os nós para o motor físico
+    // 2. Prepares the nodes for the physics engine
     const d3Nodes = allNodesArray.map(id => {
         const strId = String(id);
         const pos = expandedPositions[id] || expandedPositions[strId] || { x: 0, y: 0 };
@@ -1358,7 +1358,7 @@ export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesA
             x: pos.x, y: pos.y,
             fx: isFixed ? pos.x : null,
             fy: isFixed ? pos.y : null,
-            chainInfo: chainNodesInfo[strId] // Anexa as regras ao nó!
+            chainInfo: chainNodesInfo[strId] // Attaches the rules to the node!
         };
     });
 
@@ -1366,39 +1366,39 @@ export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesA
         .filter(b => b.state === 1 || b.initialState === 1)
         .map(b => ({ source: String(b.from), target: String(b.to) }));
 
-    // 3. Configura o motor físico (Repulsão forte!)
+    // 3. Configures the physics engine (strong repulsion!)
     const simulation = d3.forceSimulation(d3Nodes)
         .force("link", d3.forceLink(d3Links).id(d => d.id).distance(30).strength(0.8))
-        .force("charge", d3.forceManyBody().strength(-250)) // Afasta nós sobrepostos
+        .force("charge", d3.forceManyBody().strength(-250)) // Pushes apart overlapping nodes
         .force("collide", d3.forceCollide().radius(25));
 
-    // 👇 4. A MÁGICA: FORÇA CUSTOMIZADA TRANSVERSAL 👇
-    // A cada milissegundo, essa força intercepta o cálculo da física:
+    // 👇 4. THE TRICK: CUSTOM TRANSVERSAL FORCE 👇
+    // Every millisecond, this force intercepts the physics computation:
     simulation.force("transversal", () => {
         for (let i = 0; i < d3Nodes.length; i++) {
             const node = d3Nodes[i];
             if (node.chainInfo) {
                 const { p1, p2, t, nx, ny } = node.chainInfo;
 
-                // A posição longitudinal imutável no trilho
+                // The immutable longitudinal position on the rail
                 const baseX = p1.x + (p2.x - p1.x) * t;
                 const baseY = p1.y + (p2.y - p1.y) * t;
 
-                // O quanto a física tentou empurrar o nó para longe
+                // How far the physics tried to push the node away
                 const vx = node.x - baseX;
                 const vy = node.y - baseY;
 
-                // Captura APENAS a força que atuou para os lados (Produto Escalar na Normal)
+                // Captures ONLY the force that acted sideways (Dot Product on the Normal)
                 const distTransversal = vx * nx + vy * ny;
 
-                // Limita a "barriga" a no máximo 100 pixels para não voar para fora da tela
+                // Limits the "belly" to at most 100 pixels so it does not fly off the screen
                 const clampedDist = Math.max(-100, Math.min(100, distTransversal));
 
-                // Sobrescreve a posição final: Anula zigue-zagues!
+                // Overwrites the final position: cancels zigzags!
                 node.x = baseX + clampedDist * nx;
                 node.y = baseY + clampedDist * ny;
                 
-                // Reduz inércia para o nó não tremer na tela
+                // Reduces inertia so the node does not shake on screen
                 node.vx *= 0.1;
                 node.vy *= 0.1;
             }
@@ -1407,12 +1407,12 @@ export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesA
 
     simulation.stop();
 
-    // 5. Roda a física instantaneamente
+    // 5. Runs the physics instantly
     for (let i = 0; i < 150; ++i) {
         simulation.tick();
     }
 
-    // 6. Devolve posições perfeitas
+    // 6. Returns perfect positions
     const relaxedPositions = {};
     d3Nodes.forEach(n => {
         const originalId = isNaN(n.id) ? n.id : Number(n.id);
@@ -1423,76 +1423,80 @@ export function relaxExpandedNodes(expandedPositions, skeletonNodeIds, allNodesA
 }
 
 // =========================================================
-// FERRAMENTAS DE POLIMENTO (CRUZAMENTOS E COMPACTAÇÃO)
+// POLISHING TOOLS (CROSSINGS AND COMPACTION)
 // =========================================================
 
 // =========================================================
-// 1. Detecta cruzamentos e atropelamentos (Aresta-Nó)
+// 1. Detects crossings and run-overs (Edge-Node)
 // =========================================================
-export function findIntersections(positions, branches) {
+/**
+ * Path of a branch in segments: origin bus -> bend points (waypoints[id]) -> destination bus.
+ * Each segment says at which bus it ends (`from`/`to`, or null in the middle of the path).
+ */
+export function branchSegments(branch, positions, waypoints = {}) {
+    const A = positions[branch.from];
+    const B = positions[branch.to];
+    if (!A || !B) return null;
+    const bends = (waypoints && Array.isArray(waypoints[branch.id]) ? waypoints[branch.id] : []).filter(w => w && Number.isFinite(w.x) && Number.isFinite(w.y));
+    const pts = [A, ...bends, B];
+    const segs = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+        segs.push({ a: pts[i], b: pts[i + 1], from: i === 0 ? String(branch.from) : null, to: i === pts.length - 2 ? String(branch.to) : null });
+    }
+    return segs;
+}
+
+/**
+ * Crossings and run-overs. `waypoints` (optional) = bend points per branch: the test uses the drawn path, not the straight segment
+ * between the buses. Without `waypoints` the behavior is the old one (straight lines).
+ */
+export function findIntersections(positions, branches, waypoints = {}) {
     const intersections = [];
     const activeBranches = branches;
     const nodeIds = Object.keys(positions);
+    const paths = activeBranches.map(br => branchSegments(br, positions, waypoints));
 
     for (let i = 0; i < activeBranches.length; i++) {
         const b1 = activeBranches[i];
-        const A = positions[b1.from]; 
-        const B = positions[b1.to];
+        const segs1 = paths[i];
+        if (!segs1) continue;
 
-        if (!A || !B) continue;
-
-        // 👇 1. NOVO RASTREIO: Detecta Linha passando por cima de Barra (ou linhas colineares) 👇
+        // 1. Line passing over a bus (or collinear lines): a third party's bus within 5 px of any stretch of the path
         for (let k = 0; k < nodeIds.length; k++) {
             const nId = nodeIds[k];
-            
-            // Ignora as pontas da própria linha (onde ela nasce e morre)
-            if (nId === String(b1.from) || nId === String(b1.to)) continue;
-
+            if (nId === String(b1.from) || nId === String(b1.to)) continue;      // the line's own endpoints
             const P = positions[nId];
             if (!P) continue;
-
-            // Se uma barra de terceiros estiver a menos de 5 pixels da linha, é um atropelamento!
-            if (getDistToSegment(P, A, B) < 5) {
-                intersections.push({
-                    x: P.x,
-                    y: P.y,
-                    b1: `${b1.from}-${b1.to}`,
-                    b2: `Barra ${nId}` // O Tooltip vai avisar quem atropelou quem!
-                });
+            if (segs1.some(s => getDistToSegment(P, s.a, s.b) < 5)) {
+                intersections.push({ x: P.x, y: P.y, b1: `${b1.from}-${b1.to}`, b2: `Bus ${nId}` });
             }
         }
 
-        // 👇 2. RASTREIO CLÁSSICO: Cruzamento de duas linhas em "X" 👇
+        // 2. Crossing of two paths in an "X": stretches of different lines that cut each other in the middle
         for (let j = i + 1; j < activeBranches.length; j++) {
             const b2 = activeBranches[j];
+            const segs2 = paths[j];
+            if (!segs2) continue;
+            const shared = [String(b1.from), String(b1.to)].filter(n => n === String(b2.from) || n === String(b2.to));
 
-            // Se compartilham o mesmo nó, não formam um X. 
-            // Se fossem sobrepostas (colineares), o rastreio 1 já teria pegado!
-            if (b1.from === b2.from || b1.from === b2.to || b1.to === b2.from || b1.to === b2.to) continue;
-
-            const C = positions[b2.from]; const D = positions[b2.to];
-            if (!C || !D) continue;
-
-            // Fórmula de Interseção de Linhas de Bézier/Planares
-            const den = (A.x - B.x) * (C.y - D.y) - (A.y - B.y) * (C.x - D.x);
-            if (den === 0) continue; // Linhas paralelas
-
-            const t = ((A.x - C.x) * (C.y - D.y) - (A.y - C.y) * (C.x - D.x)) / den;
-            const u = -((A.x - B.x) * (A.y - C.y) - (A.y - B.y) * (A.x - C.x)) / den;
-
-            // Se t e u estão entre 0 e 1 (exclusivo), houve cruzamento real no meio do trecho!
-            if (t > 0 && t < 1 && u > 0 && u < 1) {
-                intersections.push({
-                    x: A.x + t * (B.x - A.x),
-                    y: A.y + t * (B.y - A.y),
-                    b1: `${b1.from}-${b1.to}`,
-                    b2: `${b2.from}-${b2.to}`
-                });
+            for (const s1 of segs1) {
+                for (const s2 of segs2) {
+                    // stretches that meet at the bus the two lines share do not form an X
+                    if (shared.some(n => (s1.from === n || s1.to === n) && (s2.from === n || s2.to === n))) continue;
+                    const A = s1.a, B = s1.b, C = s2.a, D = s2.b;
+                    const den = (A.x - B.x) * (C.y - D.y) - (A.y - B.y) * (C.x - D.x);
+                    if (den === 0) continue;                                          // parallel (collinear ones fall under check 1)
+                    const t = ((A.x - C.x) * (C.y - D.y) - (A.y - C.y) * (C.x - D.x)) / den;
+                    const u = -((A.x - B.x) * (A.y - C.y) - (A.y - B.y) * (A.x - C.x)) / den;
+                    if (t > 0 && t < 1 && u > 0 && u < 1) {
+                        intersections.push({ x: A.x + t * (B.x - A.x), y: A.y + t * (B.y - A.y), b1: `${b1.from}-${b1.to}`, b2: `${b2.from}-${b2.to}` });
+                    }
+                }
             }
         }
     }
-    
-    // 👇 FILTRO DE SEGURANÇA: Remove alvos duplicados no mesmo pixel
+
+    // 👇 SAFETY FILTER: removes duplicate targets on the same pixel
     const uniqueIntersections = [];
     const seen = new Set();
     intersections.forEach(pt => {
@@ -1507,13 +1511,13 @@ export function findIntersections(positions, branches) {
 }
 
 // =============================================================================
-// EXPANSOR/COMPACTADOR MANUAL (SEMPRE ENQUADRADO NO GRID DA INTERFACE)
+// MANUAL EXPANDER/COMPACTOR (ALWAYS SNAPPED TO THE INTERFACE GRID)
 // =============================================================================
 export function compactPositions(positions, factor = 0.90) { 
     let cx = 0, cy = 0, count = 0;
-    const FIXED_GRID = 10; // O grid visual da sua GraphArea
+    const FIXED_GRID = 10; // The visual grid of your GraphArea
     
-    // Calcula o Centro de Massa (Centroide)
+    // Computes the Center of Mass (Centroid)
     Object.values(positions).forEach(p => {
         cx += p.x; cy += p.y; count++;
     });
@@ -1525,11 +1529,11 @@ export function compactPositions(positions, factor = 0.90) {
     Object.keys(positions).forEach(id => {
         const p = positions[id];
         
-        // 1. Aplica o fator de escala (Gera o número quebrado)
+        // 1. Applies the scale factor (generates the fractional number)
         const rawX = cx + (p.x - cx) * factor;
         const rawY = cy + (p.y - cy) * factor;
 
-        // 2. Trava a nova coordenada no múltiplo de 10px mais próximo!
+        // 2. Snaps the new coordinate to the nearest multiple of 10px!
         newPos[id] = {
             x: Math.round(rawX / FIXED_GRID) * FIXED_GRID,
             y: Math.round(rawY / FIXED_GRID) * FIXED_GRID
@@ -1550,7 +1554,7 @@ function countNodeEdgeOverlaps(pos, branchesArray, nodesArray) {
 
         for (const b of branchesArray) {
 
-            // ignora endpoints legítimos
+            // ignores legitimate endpoints
             if (
                 b.from === nodeId ||
                 b.to === nodeId
@@ -1561,7 +1565,7 @@ function countNodeEdgeOverlaps(pos, branchesArray, nodesArray) {
 
             if (!a || !c) continue;
 
-            // linha vertical
+            // vertical line
             if (a.x === c.x) {
 
                 if (
@@ -1573,7 +1577,7 @@ function countNodeEdgeOverlaps(pos, branchesArray, nodesArray) {
                 }
             }
 
-            // linha horizontal
+            // horizontal line
             else if (a.y === c.y) {
 
                 if (
@@ -1590,32 +1594,32 @@ function countNodeEdgeOverlaps(pos, branchesArray, nodesArray) {
     return overlaps;
 }
 // =============================================================================
-// MOTOR DE BUSCA PERIFÉRICA (Peripheral Search Layout)
-// Substitui o motor hierárquico.
+// PERIPHERAL SEARCH ENGINE (Peripheral Search Layout)
+// Replaces the hierarchical engine.
 //
-// Função objetivo:
-//   custo = w_angular * penalidade_angular
-//         + w_caixa   * penalidade_caixa
+// Objective function:
+//   cost = w_angular * angular_penalty
+//         + w_box     * box_penalty
 //         + w_dist    * comprimento_total_arestas
 //
-// Ângulos sem penalidade: 0°, 45°, 90°, 135° (ortogonais e diagonais)
-// Cruzamentos: hard constraint — nunca aumenta; se reduz, atualiza o limite
+// Angles without penalty: 0°, 45°, 90°, 135° (orthogonal and diagonal)
+// Crossings: hard constraint — never increases; if it decreases, updates the limit
 //
-// Busca:
-//   1. Começa pelas subestações, move em direção ao interior da caixa
-//   2. Propaga em cadeia pelos vizinhos (menor grau primeiro)
-//   3. Aceita movimentos neutros (mesmo custo) e volta à vizinhança anterior (VND)
+// Search:
+//   1. Starts at the substations, moves toward the interior of the box
+//   2. Propagates in a chain through the neighbors (lowest degree first)
+//   3. Accepts neutral moves (same cost) and goes back to the previous neighborhood (VND)
 // =============================================================================
 
-// Pesos da função objetivo
-const PSL_W_ANGULAR = 3.0;  // penalidade de ângulo proibido (domina)
-const PSL_W_CAIXA   = 1.0;  // tamanho da bounding box
-const PSL_W_DIST    = 0.5;  // comprimento total das arestas (leve)
+// Objective function weights
+const PSL_W_ANGULAR = 3.0;  // forbidden angle penalty (dominates)
+const PSL_W_BOX     = 1.0;  // bounding box size
+const PSL_W_DIST    = 0.5;  // total edge length (light)
 
 /**
- * Penalidade angular de uma aresta.
- * 0 para horizontal, vertical, 45° e 135°.
- * 1 para qualquer outro ângulo.
+ * Angular penalty of an edge.
+ * 0 for horizontal, vertical, 45° and 135°.
+ * 1 for any other angle.
  */
 function angularPenalty(p1, p2) {
     if (!p1 || !p2) return 0;
@@ -1641,7 +1645,7 @@ function calcBBox(pos, targetNodes) {
 }
 
 /**
- * Função de custo global do layout.
+ * Global cost function of the layout.
  */
 function pslCost(pos, branchesArray, targetNodes) {
     let angular = 0, distTotal = 0;
@@ -1653,31 +1657,31 @@ function pslCost(pos, branchesArray, targetNodes) {
         distTotal += Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
     });
 
-    // Penalidade de caixa calculada APENAS para os nós móveis
+    // Box penalty computed ONLY for the movable nodes
     const bb = calcBBox(pos, targetNodes);
-    const caixa = (bb.w + bb.h) / Math.max(targetNodes.length, 1);
+    const boxTerm = (bb.w + bb.h) / Math.max(targetNodes.length, 1);
 
     return PSL_W_ANGULAR * angular
-         + PSL_W_CAIXA   * caixa
+         + PSL_W_BOX     * boxTerm
          + PSL_W_DIST    * distTotal;
 }
 
 /**
- * Testa um movimento e retorna se deve ser aceito.
- * Nunca aumenta cruzamentos. Aceita melhora ou empate no custo.
+ * Tests a move and returns whether it should be accepted.
+ * Never increases crossings. Accepts an improvement or a tie in cost.
  */
 function pslEvaluate(testPos, branchesArray, nodesArray, currentCrossings, currentCost) {
     const newCross = findIntersections(testPos, branchesArray).length;
     if (newCross > currentCrossings) return null; // hard constraint
     const newCost = pslCost(testPos, branchesArray, nodesArray);
-    if (newCost <= currentCost + 0.001) { // aceita melhora ou neutro
+    if (newCost <= currentCost + 0.001) { // accepts improvement or neutral
         return { crossings: newCross, cost: newCost };
     }
     return null;
 }
 
 /**
- * Verifica se uma posição está ocupada por outro nó.
+ * Checks whether a position is occupied by another node.
  */
 function pslOccupied(tx, ty, pos, excludeId) {
     return Object.entries(pos).some(
@@ -1686,15 +1690,15 @@ function pslOccupied(tx, ty, pos, excludeId) {
 }
 
 /**
- * Gera candidatos de movimento para um nó:
- * posições na grade ao redor do nó, priorizando movimentos
- * em direção ao interior da bounding box.
+ * Generates move candidates for a node:
+ * positions on the grid around the node, prioritizing moves
+ * toward the interior of the bounding box.
  */
 function pslCandidates(id, pos, bbox, gridSize, radius) {
     const p = pos[id];
     if (!p) return [];
 
-    // Centro da bounding box
+    // Center of the bounding box
     const cx = (bbox.minX + bbox.maxX) / 2;
     const cy = (bbox.minY + bbox.maxY) / 2;
 
@@ -1704,23 +1708,23 @@ function pslCandidates(id, pos, bbox, gridSize, radius) {
             if (dx === 0 && dy === 0) continue;
             const tx = Math.round(p.x / gridSize) * gridSize + dx * gridSize;
             const ty = Math.round(p.y / gridSize) * gridSize + dy * gridSize;
-            // Calcula se o movimento aproxima do centro (prioridade mais alta)
+            // Computes whether the move gets closer to the center (highest priority)
             const distBefore = (p.x - cx) ** 2 + (p.y - cy) ** 2;
             const distAfter  = (tx - cx) ** 2 + (ty - cy) ** 2;
-            const priority   = distBefore - distAfter; // positivo = aproxima
+            const priority   = distBefore - distAfter; // positive = gets closer
             candidates.push({ tx, ty, priority });
         }
     }
-    // Ordena: movimentos que aproximam do centro primeiro
+    // Sorts: moves that get closer to the center first
     candidates.sort((a, b) => b.priority - a.priority);
     return candidates;
 }
 
 /**
- * Ordena os nós para a busca periférica:
- * 1. Subestações/fontes (para mover em direção ao interior)
- * 2. Folhas (grau 1) na borda da bounding box
- * 3. Demais nós por grau crescente
+ * Sorts the nodes for the peripheral search:
+ * 1. Substations/sources (to move toward the interior)
+ * 2. Leaves (degree 1) on the edge of the bounding box
+ * 3. Remaining nodes by ascending degree
  */
 function pslNodeOrder(targetNodes, branchesArray, sourcesArray, pos, bbox, gridSize) {
     const sourceSet = new Set(sourcesArray.map(String));
@@ -1755,7 +1759,7 @@ function pslNodeOrder(targetNodes, branchesArray, sourcesArray, pos, bbox, gridS
 }
 
 /**
- * Motor principal de Busca Periférica.
+ * Main Peripheral Search engine.
  */
 export async function calculateHierarchicalLayout(nodesArray, branchesArray, sourcesArray, config = {}) {
     nodesArray    = nodesArray.map(String);
@@ -1768,7 +1772,7 @@ export async function calculateHierarchicalLayout(nodesArray, branchesArray, sou
     const maxIter    = config.maxIter  || 60;
     const onProgress = config.onProgress || null;
 
-    // 👇 SELEÇÃO: O motor enxerga o mapa inteiro para colisões, mas só otimiza os selecionados
+    // 👇 SELECTION: the engine sees the whole map for collisions, but only optimizes the selected ones
     const selectedSet = config.selectedNodes?.length > 0 ? new Set(config.selectedNodes.map(String)) : null;
     const movableNodes = selectedSet ? nodesArray.filter(id => selectedSet.has(id)) : nodesArray;
 
@@ -1778,7 +1782,7 @@ export async function calculateHierarchicalLayout(nodesArray, branchesArray, sou
 
     if (movableNodes.length === 0) return pos;
 
-    // 👇 LIMITADOR DE BUSCA (Clipping Box) com 2 grids de margem de manobra
+    // 👇 SEARCH LIMITER (Clipping Box) with 2 grids of maneuvering margin
     const clippingBox = calcBBox(pos, movableNodes);
     clippingBox.minX -= gridSize * 2; clippingBox.maxX += gridSize * 2;
     clippingBox.minY -= gridSize * 2; clippingBox.maxY += gridSize * 2;
@@ -1787,7 +1791,7 @@ export async function calculateHierarchicalLayout(nodesArray, branchesArray, sou
     let currentCrossings    = originalCrossings;
     let currentCost         = pslCost(pos, branchesArray, movableNodes);
 
-    if (onProgress) onProgress(0, 'PSL', `Custo inicial: ${currentCost.toFixed(1)}`);
+    if (onProgress) onProgress(0, 'PSL', `Initial cost: ${currentCost.toFixed(1)}`);
 
     let iter = 0;
     let globalImproved = true;
@@ -1801,7 +1805,7 @@ export async function calculateHierarchicalLayout(nodesArray, branchesArray, sou
         const currentBBox = calcBBox(pos, movableNodes);
         const nodeOrder = pslNodeOrder(movableNodes, branchesArray, sourcesArray, pos, currentBBox, gridSize);
 
-        if (onProgress) onProgress(iter, 'PSL', `Iter ${iter} | Custo ${currentCost.toFixed(1)}`);
+        if (onProgress) onProgress(iter, 'PSL', `Iter ${iter} | Cost ${currentCost.toFixed(1)}`);
 
         const visited  = new Set();
         const queue    = [...nodeOrder];
@@ -1823,12 +1827,12 @@ export async function calculateHierarchicalLayout(nodesArray, branchesArray, sou
             const candidates = pslCandidates(id, pos, currentBBox, gridSize, searchRadius);
 
             for (const { tx, ty } of candidates) {
-                // 👇 CORTA A BUSCA NO INFINITO: Se a coordenada de teste sair da caixa, ignora!
+                // 👇 CUTS THE SEARCH AT INFINITY: if the test coordinate leaves the box, ignores it!
                 if (tx < clippingBox.minX || tx > clippingBox.maxX || ty < clippingBox.minY || ty > clippingBox.maxY) {
                     continue;
                 }
                 
-                // Trata todo o resto da rede que não foi selecionada como paredes sólidas
+                // Treats the rest of the network that was not selected as solid walls
                 if (pslOccupied(tx, ty, pos, id)) continue;
 
                 const testPos = { ...pos, [id]: { x: tx, y: ty } };
@@ -1848,6 +1852,6 @@ export async function calculateHierarchicalLayout(nodesArray, branchesArray, sou
         }
     }
 
-    if (onProgress) config.onProgress("Concluído", "Busca Periférica Finalizada", "-");
+    if (onProgress) config.onProgress("Done", "Peripheral Search Finished", "-");
     return pos;
 }

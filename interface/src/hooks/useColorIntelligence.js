@@ -12,9 +12,9 @@ export const getBaseColor = (id, allRoots, darkMode) => {
     return `hsl(${h}, 95%, ${darkMode ? 50 : 35}%)`;
 };
 
-// 👇 Recebe a "topology" pronta de bandeja 👇
-// ---- Esquema de cores da transmissão (decisão: carregamento > tensão; escala que não depende de distinguir verde de vermelho) ----
-// Carregamento (% de rateA): azul -> azul-céu -> quase-branco -> amarelo -> laranja -> vermelho (>= 100%), sem passar por verde. A largura da linha também cresce com a carga.
+// 👇 Receives the ready-made "topology" 👇
+// ---- Transmission color scheme (decision: loading > voltage; scale that does not depend on telling green from red) ----
+// Loading (% of rateA): blue -> sky blue -> near-white -> yellow -> orange -> red (>= 100%), without passing through green. The line width also grows with the load.
 const LOADING_STOPS = [[0, [74, 120, 194]], [50, [110, 185, 235]], [68, [236, 236, 226]], [82, [255, 210, 63]], [95, [255, 122, 26]], [100, [213, 0, 0]]];
 export function loadingColor(pct) {
     const p = Math.max(0, Math.min(100, pct || 0));
@@ -30,9 +30,9 @@ export function loadingColor(pct) {
 }
 export function loadingWidth(pct) {
     const f = Math.max(0, Math.min(1, ((pct || 0) - 60) / 40));
-    return 2.5 + 3.5 * f; // 2,5 px (folgado) até 6 px (>= 100%)
+    return 2.5 + 3.5 * f; // 2.5 px (relaxed) up to 6 px (>= 100%)
 }
-// Tensão (pu), divergente azul (baixa) - claro (1,0) - vermelho (alta), com os limites vmin/vmax da barra.
+// Voltage (pu), diverging blue (low) - light (1.0) - red (high), with the bus vmin/vmax limits.
 export function voltageColor(v, vmin, vmax, darkMode) {
     const lo = Math.max(1 - vmin, 1e-6), hi = Math.max(vmax - 1, 1e-6);
     const t = Math.max(-1, Math.min(1, v >= 1 ? (v - 1) / hi : (v - 1) / lo));
@@ -42,18 +42,18 @@ export function voltageColor(v, vmin, vmax, darkMode) {
     return `rgb(${mid.map((m, k) => Math.round(m + f * (end[k] - m))).join(',')})`;
 }
 
-export function useColorIntelligence({ faultNodes, activeSources, lineCurrents, darkMode, topology, transmission = false, nodeData = null, voltageMode = false, voltageLimits = null, shedNodes = null }) {
+export function useColorIntelligence({ faultNodes, activeSources, lineCurrents, darkMode, topology, transmission = false, nodeData = null, voltageMode = false, voltageLimits = null, shedNodes = null, redispatchNodes = null }) {
     
-    // Extrai o que precisa do pacote
+    // Extracts what it needs from the package
     const { nodeFeeds, nodeZones, edgeZones, loopNodes, loopEdges, colorRoots } = topology;
 
     const getNodeColor = useCallback((nodeId) => {
         const colors = darkMode ? THEME.dark : THEME.light;
         if (faultNodes.has(nodeId)) return colors.fault;
         if (loopNodes.has(nodeId)) return colors.loop;
-        // plano corretivo: barras com carga cortada em laranja
-        if (shedNodes && shedNodes.has(Number(nodeId))) return '#ff8f00';
-        // transmissão com AC: pintar pela tensão (opcional); barras sem resultado ficam como desenergizadas
+        // corrective plan: redispatched generators in purple
+        if (redispatchNodes && redispatchNodes.has(Number(nodeId))) return '#ab47bc';
+        // transmission with AC: color by voltage (optional); buses without a result are shown as de-energized
         if (transmission && voltageMode && nodeData) {
             const nd = nodeData[nodeId];
             if (!nd) return colors.de;
@@ -72,7 +72,7 @@ export function useColorIntelligence({ faultNodes, activeSources, lineCurrents, 
         
         const zone = nodeZones[nodeId] || sourceToUse;
         return getBaseColor(zone, colorRoots, darkMode);
-    }, [darkMode, faultNodes, loopNodes, activeSources, nodeFeeds, nodeZones, colorRoots, transmission, voltageMode, nodeData, voltageLimits, shedNodes]);
+    }, [darkMode, faultNodes, loopNodes, activeSources, nodeFeeds, nodeZones, colorRoots, transmission, voltageMode, nodeData, voltageLimits, shedNodes, redispatchNodes]);
 
     const getEdgeColor = useCallback((branch) => {
         const colors = darkMode ? THEME.dark : THEME.light;

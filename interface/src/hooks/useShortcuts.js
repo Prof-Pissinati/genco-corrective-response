@@ -10,7 +10,7 @@ export function useShortcuts({
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             const key = e.key.toLowerCase();
 
-            // Atalhos originais
+            // Original shortcuts
             if (e.key === 'Escape') { setShowShortcuts(false); return; }
             if (key === 'p' && !e.ctrlKey) setPrintFrameMode(prev => prev === 'none' ? 'landscape' : (prev === 'landscape' ? 'portrait' : 'none'));
             if (key === 'd') setDarkMode(prev => !prev);
@@ -22,16 +22,16 @@ export function useShortcuts({
             if (key === 'z' && e.ctrlKey) { e.preventDefault(); handleUndoLayout(); }
             if (key === 'h') setShowShortcuts(true);
 
-            // --- NOVOS ATALHOS ---
+            // --- NEW SHORTCUTS ---
             if (key === 's' && handleExportSVG) handleExportSVG();
             
-            // Dispara um clique no botão "Abrir" (buscando pela classe)
+            // Triggers a click on the "Open" button (looked up by class)
             if (key === 'o') {
-                const btnOpen = document.querySelector('button[title*="Importar"], button[title*="Abrir"]');
+                const btnOpen = document.querySelector('button[title*="Import"], button[title*="Open"]');
                 if (btnOpen) btnOpen.click();
             }
 
-            // ROTAÇÃO: Dispara eventos globais para o EditSidebar ouvir
+            // ROTATION: fires global events for the EditSidebar to listen to
             if (e.key === '[') window.dispatchEvent(new CustomEvent('triggerRotate', { detail: -10 }));
             if (e.key === ']') window.dispatchEvent(new CustomEvent('triggerRotate', { detail: 10 }));
         };

@@ -1,4 +1,4 @@
-"""AC: contra o PowerModels (gridfm-datakit) e contra o pandapower; DC: contra a referência usada nos testes da interface."""
+"""AC: against PowerModels (gridfm-datakit) and against pandapower; DC: against the reference used in the interface tests."""
 import json
 from pathlib import Path
 
@@ -14,8 +14,8 @@ CASE118 = ROOT / "interface" / "src" / "data" / "case118_ieee.json"
 
 
 @pytest.mark.parametrize("sc", load_datakit_scenarios()["scenarios"], ids=lambda s: f"datakit_{s['scenario']}")
-def test_ac_igual_ao_powermodels(sc):
-    """6 cenários do datakit (cargas/despacho/admitâncias perturbadas, 0 a 7 linhas fora): AC do backend = AC do PowerModels."""
+def test_ac_matches_powermodels(sc):
+    """6 datakit scenarios (perturbed loads/dispatch/admittances, 0 to 7 lines out): backend AC = PowerModels AC."""
     net = network_from_scenario(sc)
     bus_mask, br_mask = topology_masks(net)
     r = solve_ac(net, bus_mask, br_mask)
@@ -32,8 +32,8 @@ def test_ac_igual_ao_powermodels(sc):
         assert np.all(r[campo][~on] == 0)
 
 
-def test_ac_igual_ao_pandapower_no_caso_base():
-    """Validação cruzada: tensões do AC do backend = pandapower.runpp no IEEE 118 (PGLib com o despacho do AC-OPF)."""
+def test_ac_matches_pandapower_on_the_base_case():
+    """Cross-validation: backend AC voltages = pandapower.runpp on IEEE 118 (PGLib with the AC-OPF dispatch)."""
     pp = pytest.importorskip("pandapower")
     from pandapower.converter.pypower.from_ppc import from_ppc
 
@@ -46,13 +46,13 @@ def test_ac_igual_ao_pandapower_no_caso_base():
     bus_mask, br_mask = topology_masks(net_b)
     r = solve_ac(net_b, bus_mask, br_mask)
     assert r["converged"]
-    vm_pp = net.res_bus.vm_pu.reindex(net_b.bus_no).to_numpy()          # índice de barra do pandapower = número MATPOWER
+    vm_pp = net.res_bus.vm_pu.reindex(net_b.bus_no).to_numpy()          # pandapower bus index = MATPOWER number
     assert np.max(np.abs(r["vm"] - vm_pp)) < 1e-6
-    assert abs(r["pg"][np.flatnonzero(net_b.gen_bus == net_b.ref)].sum() - net.res_ext_grid.p_mw.sum()) < 1e-3   # barra de referência
+    assert abs(r["pg"][np.flatnonzero(net_b.gen_bus == net_b.ref)].sum() - net.res_ext_grid.p_mw.sum()) < 1e-3   # reference bus
 
 
-def test_dc_igual_a_referencia_da_interface():
-    """Os fluxos DC do backend = referência independente que valida o solver JS da interface (10 casos)."""
+def test_dc_matches_the_interface_reference():
+    """The backend DC flows = independent reference that validates the interface JS solver (10 cases)."""
     ref = json.loads((ROOT / "interface" / "tests" / "case118_dc_ref.json").read_text(encoding="utf-8"))
     net = load_case(CASE118)
     for c in ref["cases"]:

@@ -1,4 +1,4 @@
-"""Avalia topologias (ramos/barras fora) com o solver escolhido e monta a resposta do contrato (docs/CONTRATO_API.md)."""
+"""Evaluates topologies (branches/buses out) with the chosen solver and builds the contract response (docs/CONTRATO_API.md)."""
 from __future__ import annotations
 
 import time
@@ -11,10 +11,10 @@ from .network import Network, topology_masks
 
 SOLVERS = {"ac": solve_ac, "dc": solve_dc}
 
-# Tolerâncias das violações: um OPF deixa ramos/tensões exatamente NO limite (restrição ativa); o fluxo de potência refeito dá
-# 100,0003% ou 1,0600001 pu por ruído numérico, o que não é violação.
-TOL_LOADING = 1e-4      # razão (0,01% do rateA)
-TOL_VOLTAGE = 1e-4      # pu
+# Violation tolerances: an OPF leaves branches/voltages exactly AT the limit (active constraint); the recomputed power flow gives
+# 100.0003% or 1.0600001 pu from numerical noise, which is not a violation.
+TOL_LOADING = 1e-4      # ratio (0.01% of rateA)
+TOL_VOLTAGE = 5e-4      # pu (the interface uses the same value in interface/src/utils/voltage.js)
 TOL_QGEN = 1e-3         # MVAr
 TOL_PGEN = 1e-3         # MW
 
@@ -24,9 +24,9 @@ def _r(x, nd=6):
 
 
 def evaluate(net: Network, branch_out=(), bus_out=(), solver: str = "ac", pg=None, pd=None, qd=None) -> dict:
-    """Retorna o estado elétrico da topologia. Barras pelo número MATPOWER; ramos pelo índice da tabela `branch`.
+    """Returns the electrical state of the topology. Buses by MATPOWER number; branches by the index in the `branch` table.
 
-    `pg` (por gerador), `pd` e `qd` (por barra) substituem o despacho e as cargas do caso (usado pelo plano corretivo: redespacho e corte).
+    `pg` (per generator), `pd` and `qd` (per bus) replace the dispatch and loads of the case (used by the corrective plan: redispatch and shedding).
     """
     if pg is not None or pd is not None or qd is not None:
         net = replace(net, gen_pg=net.gen_pg if pg is None else np.asarray(pg, float),
@@ -37,7 +37,7 @@ def evaluate(net: Network, branch_out=(), bus_out=(), solver: str = "ac", pg=Non
     bus_mask, br_mask = topology_masks(net, branch_out, bus_out)
     total_pd = float(net.pd.sum())
 
-    if not bus_mask.any():                                    # referência em falta: nada energizado
+    if not bus_mask.any():                                    # reference faulted: nothing energized
         return {"solver": solver, "converged": True, "ms": round((time.perf_counter() - t0) * 1000, 3), "energized": [],
                 "lostBuses": [int(n) for n in net.bus_no], "servedMW": 0.0, "lostMW": round(total_pd, 6), "buses": [], "branches": [],
                 "gens": [], "violations": {"overload": [], "voltage": [], "qgen": [], "pgen": []}}
@@ -49,7 +49,7 @@ def evaluate(net: Network, branch_out=(), bus_out=(), solver: str = "ac", pg=Non
             "energized": [int(n) for n in net.bus_no[bus_mask]], "lostBuses": [int(n) for n in net.bus_no[~bus_mask]],
             "servedMW": round(served, 6), "lostMW": round(total_pd - served, 6)}
     if not sol["converged"]:
-        return {**base, "error": f"não convergiu em {sol['iterations']} iterações (erro {sol['mismatch']:.2e})", "buses": [],
+        return {**base, "error": f"did not converge in {sol['iterations']} iterations (error {sol['mismatch']:.2e})", "buses": [],
                 "branches": [], "gens": [], "violations": {"overload": [], "voltage": [], "qgen": [], "pgen": []}}
 
     bi = np.flatnonzero(br_mask)

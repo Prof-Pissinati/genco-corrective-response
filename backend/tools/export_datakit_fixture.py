@@ -1,11 +1,11 @@
-"""Exporta cenários do gridfm-datakit (PowerModels = solução AC de referência) como um JSON pequeno para os testes do backend.
+"""Exports gridfm-datakit scenarios (PowerModels = reference AC solution) as a small JSON for the backend tests.
 
-Cada cenário traz as ENTRADAS (cargas, despacho, tensões dos geradores, admitâncias já perturbadas, ramos fora de serviço)
-e a SOLUÇÃO de referência (Vm, Va, fluxos por ramo). Assim os testes comparam o nosso AC com o do PowerModels sem Julia/Parquet.
+Each scenario carries the INPUTS (loads, dispatch, generator voltages, already perturbed admittances, branches out of service)
+and the reference SOLUTION (Vm, Va, flows per branch). This way the tests compare our AC with PowerModels' without Julia/Parquet.
 
-Uso (ambiente do GENCO, que tem pandas/pyarrow), a partir da raiz do repositório:
+Usage (GENCO environment, which has pandas/pyarrow), from the repository root:
     python backend/tools/export_datakit_fixture.py <pasta .../case118_ieee/raw> backend/tests/fixtures/datakit_case118.json
-Índices de barra/ramo/gerador seguem o datakit: a partir de 0 (barra = número MATPOWER - 1).
+Bus/branch/generator indices follow the datakit: from 0 (bus = MATPOWER number - 1).
 """
 import json
 import sys
@@ -39,4 +39,4 @@ for sid in sorted(bus.scenario.unique()):
 
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(json.dumps({"baseMVA": 100.0, "scenarios": scenarios}, separators=(",", ":")), encoding="utf-8")
-print(f"{out}: {len(scenarios)} cenários, {out.stat().st_size / 1024:.0f} KB")
+print(f"{out}: {len(scenarios)} scenarios, {out.stat().st_size / 1024:.0f} KB")

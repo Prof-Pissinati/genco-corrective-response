@@ -1,17 +1,17 @@
 // src/utils/topology.js
-// Análise de topologia: quais fontes energizam cada barra e quais barras/ramos estão em laço, e o resumo de carga por fonte.
-// Usada pelo diagrama (cores e painéis) tanto no modo de transmissão quanto no genérico. O fluxo de potência fica em
+// Topology analysis: which sources energize each bus and which buses/branches are in a loop, and the load summary per source.
+// Used by the diagram (colors and panels) in both transmission and generic mode. The power flow lives in
 // `transmission.js` (DC local) e no backend (AC).
 
-// 👇 O CÉREBRO UNIFICADO: Propagação com Dependência Hierárquica 👇
+// 👇 THE UNIFIED BRAIN: propagation with hierarchical dependency 👇
 export function analyzeTopology(branches, faultNodes, sysData) {
     const { sources = [], feeders = [] } = sysData || {};
     const nZ = {}; const eZ = {};
     const loopN = new Set(); const loopE = new Set();
     const nodeFeeds = {}; 
-    const colorRoots = [...sources, ...feeders]; // A paleta de cores continua precisando de todos
+    const colorRoots = [...sources, ...feeders]; // The color palette still needs all of them
 
-    // 1. A REVOLUÇÃO: O Big Bang começa APENAS nas Subestações
+    // 1. THE REVOLUTION: the Big Bang starts ONLY at the Substations
     let queue = [...sources];
     sources.forEach(s => {
         nodeFeeds[s] = new Set([s]);
@@ -28,17 +28,17 @@ export function analyzeTopology(branches, faultNodes, sysData) {
         }
     });
 
-    // 2. Busca em Largura (BFS) Unificada
+    // 2. Unified Breadth-First Search (BFS)
     while(queue.length > 0) {
         const curr = queue.shift();
         
         let zonesToPropagate;
         
-        // 👇 A MÁGICA DO PEDÁGIO 👇
-        // Se a energia alcançou um Alimentador, ele assume a "paternidade" da onda daqui pra frente
+        // 👇 THE TOLL 👇
+        // If the energy reached a Feeder, it takes "parenthood" of the wave from here on
         if (feeders.includes(curr)) {
             zonesToPropagate = new Set([curr]);
-            nZ[curr] = curr; // O próprio alimentador assume sua cor característica
+            nZ[curr] = curr; // The feeder itself takes its characteristic color
             nodeFeeds[curr].add(curr); 
         } else {
             zonesToPropagate = nodeFeeds[curr];
@@ -46,21 +46,21 @@ export function analyzeTopology(branches, faultNodes, sysData) {
 
         if (adj[curr]) {
             adj[curr].forEach(({ node: neighbor, edgeId }) => {
-                if (sources.includes(neighbor)) return; // Nunca invade a Subestação Mãe de volta
+                if (sources.includes(neighbor)) return; // Never invades the parent Substation back
 
                 if (!nodeFeeds[neighbor]) {
-                    // Energia nova chega na barra
+                    // New energy arrives at the bus
                     nodeFeeds[neighbor] = new Set(zonesToPropagate);
                     nZ[neighbor] = Array.from(zonesToPropagate)[0];
                     eZ[edgeId] = nZ[neighbor];
                     queue.push(neighbor);
                 } else {
-                    // VÁLVULA DE RETENÇÃO (Efeito Salmão)
+                    // CHECK VALVE (Salmon Effect)
                     const neighborHasSource = Array.from(nodeFeeds[neighbor]).some(s => sources.includes(s));
                     const tryingToPropagateFeeder = Array.from(zonesToPropagate).some(f => feeders.includes(f));
                     
                     if (tryingToPropagateFeeder && neighborHasSource) {
-                        return; // Barreira topológica acionada!
+                        return; // Topological barrier triggered!
                     }
 
                     let isNewConflict = false;
@@ -76,7 +76,7 @@ export function analyzeTopology(branches, faultNodes, sysData) {
         }
     }
 
-    // 3. Determinar Nós em Loop
+    // 3. Determine Nodes in a Loop
     Object.keys(nodeFeeds).forEach(nStr => {
         const node = Number(nStr);
         const zones = Array.from(nodeFeeds[node]);
@@ -87,16 +87,16 @@ export function analyzeTopology(branches, faultNodes, sysData) {
             if (feeders.includes(z)) feederCount++;
         });
 
-        // Loop Topológico Verdadeiro: 2 fontes principais OU 2 alimentadores.
+        // True Topological Loop: 2 main sources OR 2 feeders.
         if (sourceCount >= 2 || feederCount >= 2) {
             loopN.add(node);
             
-            // Retroalimentação: puxa as raízes que causaram o choque para o amarelo também
+            // Feedback: pulls the roots that caused the clash into yellow too
             zones.forEach(z => loopN.add(z)); 
         }
     });
 
-    // 4. Determinar Arestas em Loop
+    // 4. Determine Edges in a Loop
     branches.forEach(b => {
         if (b.state === 1) {
             if (loopN.has(b.from) && loopN.has(b.to)) {
@@ -122,12 +122,12 @@ export function analyzeTopology(branches, faultNodes, sysData) {
     return { nodeFeeds, nodeZones: nZ, edgeZones: eZ, loopNodes: loopN, loopEdges: loopE, colorRoots };
 }
 
-// 👇 CÁLCULO DE CARGA (Com Contagem Hierárquica Múltipla) 👇
+// 👇 LOAD CALCULATION (With Multiple Hierarchical Counting) 👇
 export function calculateLoads(nodeFeeds, faultNodes, sysData) {
     const subs = {};
     const { sources = [], feeders = [], loads = {}, shunts = {} } = sysData || {};
     
-    // Inicializa os painéis (SUB e ALIM)
+    // Initializes the panels (SUB and FEEDER)
     const allSources = [...sources, ...feeders];
     allSources.forEach(s => {
         subs[s] = { p: 0, q: 0, nodes: 0 };
@@ -139,7 +139,7 @@ export function calculateLoads(nodeFeeds, faultNodes, sysData) {
             const feeds = nodeFeeds[id];
             
             if (feeds && feeds.size > 0) {
-                // Calcula P e Q da barra uma única vez
+                // Computes the bus P and Q only once
                 let nodeP = 0;
                 let nodeQ = 0;
                 
@@ -152,13 +152,13 @@ export function calculateLoads(nodeFeeds, faultNodes, sysData) {
                     nodeQ -= (shunts[id].steps * shunts[id].stepSize);
                 }
 
-                // 👇 A GD ABATE A CARGA EM kW ANTES DE SOMAR NO ALIMENTADOR 👇
+                // 👇 THE DG OFFSETS THE LOAD IN kW BEFORE ADDING IT TO THE FEEDER 👇
                 if (sysData.gd && sysData.gd[id] && sysData.gd[id].active) {
                     nodeP -= sysData.gd[id].pg;
                     nodeQ -= sysData.gd[id].qg;
                 }
                 
-                // 👇 A MÁGICA: Adiciona a barra em TODAS as fontes que a alimentam! 👇
+                // 👇 THE TRICK: adds the bus to ALL the sources that feed it! 👇
                 feeds.forEach(s => {
                     if (subs[s]) {
                         subs[s].nodes++; 

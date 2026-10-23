@@ -7,10 +7,10 @@ export async function fetchStreetRoute(points) {
     const url = `https://router.project-osrm.org/route/v1/driving/${coordsString}?geometries=geojson&overview=full`;
 
     try {
-        // Removido o AbortController. Agora o sistema espera a API responder o tempo que for necessário.
+        // AbortController removed. Now the system waits for the API to respond for as long as necessary.
         const response = await fetch(url);
         
-        if (!response.ok) throw new Error("Falha na API OSRM");
+        if (!response.ok) throw new Error("OSRM API failure");
         const data = await response.json();
         
         if (data.routes && data.routes.length > 0) {
@@ -18,7 +18,7 @@ export async function fetchStreetRoute(points) {
         }
         return null;
     } catch (error) {
-        console.warn(`Erro no roteamento OSRM.`, error);
+        console.warn(`OSRM routing error.`, error);
         return null;
     }
 }

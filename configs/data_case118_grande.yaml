@@ -1,5 +1,5 @@
-# Dataset GRANDE do IEEE 118 para o treino final do GENCO (modo PF, contingências até N-10): 10000 cenários de carga x 4 variantes = 40000 amostras.
-# Diferenças em relação a data_case118.yaml: mais amostras, k=10 (a restauração envolve muitas linhas fora), N-0 incluído (estado reparado), seed 42.
+# LARGE IEEE 118 dataset for the final GENCO training (PF mode, contingencies up to N-10): 10000 load scenarios x 4 variants = 40000 samples.
+# Differences from data_case118.yaml: more samples, k=10 (restoration involves many lines out), N-0 included (repaired state), seed 42.
 network:
   name: "case118_ieee"
   source: "pglib"
@@ -18,7 +18,7 @@ load:
 topology_perturbation:
   type: "random"
   k: 10
-  # probabilidade de 0,1,...,10 linhas/geradores fora (11 valores, soma 1): N-0 10%, N-1 13%, N-2 13%, N-3..N-10 8% cada
+  # probability of 0,1,...,10 lines/generators out (11 values, sum 1): N-0 10%, N-1 13%, N-2 13%, N-3..N-10 8% each
   outage_count_probabilities: [0.10, 0.13, 0.13, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08]
   n_topology_variants: 4
   elements: [branch, gen]

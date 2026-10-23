@@ -1,4 +1,4 @@
-# Estimativa de tempo do gridfm-datakit no IEEE 118 (poucas amostras, modo PF, contingências até N-2)
+# Time estimate of gridfm-datakit on IEEE 118 (few samples, PF mode, contingencies up to N-2)
 network:
   name: "case118_ieee"
   source: "pglib"

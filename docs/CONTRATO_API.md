@@ -1,23 +1,23 @@
-# Contrato de dados e API (interface ↔ backend)
+# Data and API contract (interface ↔ backend)
 
-> Versão 0.5 — 2026-10-12 (`/evaluate`, `/corrective`, `/screen` e `/recovery` implementados; ver §7 a §10).
-> A interface e o backend só conversam por este contrato; trocar o avaliador (AC → GENCO) **não** muda nada aqui.
+> Version 0.5 — 2026-10-12 (`/evaluate`, `/corrective`, `/screen` and `/recovery` implemented; see §7 to §10).
+> The interface and the backend only talk through this contract; swapping the evaluator (AC → GENCO) changes **nothing** here.
 
-## 1. Convenções
-- **Índices a partir de 0** na API, iguais à posição nas tabelas `bus` e `branch` do arquivo MATPOWER. `id` de ramo = linha da tabela `branch` (mesma convenção do `app/data.json` do painel de contingências).
-- **Numeração de barras na interface:** a interface mostra e usa o **número da barra do MATPOWER** (`BUS_I`, de 1 a 118 no IEEE 118), o que os engenheiros reconhecem (ex.: linha 38–65). A API usa o índice a partir de 0; cada barra traz `number` (`BUS_I`) para converter. O painel de contingências atual mostra os índices a partir de 0 (ex.: "37–64" para a linha 38–65); vale alinhar.
-- **Unidades:** potência ativa em **MW**, reativa em **MVAr**, aparente em **MVA**, tensão em **pu**, ângulo em **graus**, tempo em **minutos**, energia não suprida (ENS) em **MWh**.
-- **Carregamento** de um ramo = `max(S_origem, S_destino) / rateA` (razão; 1,0 = 100%), o mesmo cálculo usado nos scripts de contingência do GENCO. O backend calcula; não usar o `loading_percent` do pandapower (ele reclassifica ramos e converte o limite).
-- **Faltas em barra:** uma barra em falta retira a barra e **todos os ramos incidentes**; a carga e a geração dela se perdem.
-- **Energização:** só a **ilha que contém a barra de referência (REF)** é energizada e calculada. Ilhas sem a referência ficam desenergizadas e sua carga conta como perdida (coerente com o treino do GENCO, que evita ilhas; ilhas com geração própria ficam fora do escopo).
-- **Despacho de geração:** fixo; a perda de geradores ou de carga é absorvida pela barra de referência (e, se necessário, redistribuída proporcionalmente). Sem OPF.
+## 1. Conventions
+- **Indices from 0** in the API, equal to the position in the `bus` and `branch` tables of the MATPOWER file. Branch `id` = row of the `branch` table (same convention as the `app/data.json` of the contingency panel).
+- **Bus numbering in the interface:** the interface shows and uses the **MATPOWER bus number** (`BUS_I`, from 1 to 118 in IEEE 118), which engineers recognize (e.g. line 38–65). The API uses the index from 0; each bus carries `number` (`BUS_I`) to convert. The current contingency panel shows indices from 0 (e.g. "37–64" for line 38–65); worth aligning.
+- **Units:** active power in **MW**, reactive in **MVAr**, apparent in **MVA**, voltage in **pu**, angle in **degrees**, time in **minutes**, energy not supplied (ENS) in **MWh**.
+- **Loading** of a branch = `max(S_from, S_to) / rateA` (ratio; 1.0 = 100%), the same calculation used in the GENCO contingency scripts. The backend computes it; do not use pandapower's `loading_percent` (it reclassifies branches and converts the limit).
+- **Bus faults:** a faulted bus removes the bus and **all incident branches**; its load and generation are lost.
+- **Energization:** only the **island that contains the reference bus (REF)** is energized and computed. Islands without the reference are de-energized and their load counts as lost (consistent with the GENCO training, which avoids islands; islands with their own generation are out of scope).
+- **Generation dispatch:** fixed; the loss of generators or load is absorbed by the reference bus (and, if needed, redistributed proportionally). No OPF.
 
-## 2. Objetos
-**Topologia** (estado a avaliar):
+## 2. Objects
+**Topology** (state to evaluate):
 ```json
 { "branchOut": [12, 40], "busOut": [7] }
 ```
-**Rede** (`GET /grid/{nome}` ou `grid.json` estático):
+**Network** (`GET /grid/{name}` or static `grid.json`):
 ```json
 {
   "name": "case118_ieee", "baseMVA": 100,
@@ -26,15 +26,15 @@
   "gens":     [{"id":0,"bus":3,"pg":0,"pmin":0,"pmax":100,"qmin":-30,"qmax":30,"vm":1.0}]
 }
 ```
-`x`,`y` são o desenho do diagrama (gerado uma vez; o painel atual usa `kamada_kawai`).
+`x`,`y` are the diagram drawing (generated once; the current panel uses `kamada_kawai`).
 
 ## 3. Endpoints
-### `POST /evaluate` — estado elétrico de várias topologias
-Pedido:
+### `POST /evaluate` — electrical state of several topologies
+Request:
 ```json
 { "grid": "case118_ieee", "solver": "ac | dc | genco | auto", "topologies": [ {"branchOut":[],"busOut":[7]} ] }
 ```
-Resposta (um item por topologia, mesma ordem):
+Response (one item per topology, same order):
 ```json
 { "results": [ {
   "solver": "genco", "converged": true, "ms": 4.2,
@@ -45,77 +45,82 @@ Resposta (um item por topologia, mesma ordem):
   "violations": {"overload":[5,9], "voltage":[3]}
 } ] }
 ```
-`solver:"auto"` = GENCO na triagem; o backend informa em `solver` o que de fato usou.
-### `POST /verify` — igual a `/evaluate` com `solver:"ac"` (confirmação exata, pandapower).
-## 4. Modos da interface
-| Modo | Fonte dos dados |
+`solver:"auto"` = GENCO in the screening; the backend reports in `solver` what it actually used.
+### `POST /verify` — same as `/evaluate` with `solver:"ac"` (exact confirmation, pandapower).
+## 4. Interface modes
+| Mode | Data source |
 |---|---|
-| `dc` | DC local em JavaScript (transmissão), sempre disponível |
-| `backend` | Chamadas acima ao FastAPI local |
-| `replay` | JSON pré-calculado (mesmos formatos de resposta) servido no GitHub Pages |
+| `dc` | Local DC in JavaScript (transmission), always available |
+| `backend` | Calls above to the local FastAPI |
+| `replay` | Precomputed JSON (same response formats) served on GitHub Pages |
 
-## 7. `/evaluate` em detalhe (v0.2) e decisões
-- **Identificação (substitui o que está em §1 e nos exemplos):** na API as **barras são identificadas pelo número MATPOWER** (`BUS_I`) em `busOut`, `energized`, `lostBuses` e `buses[].id` (não pelo índice a partir de 0); os **ramos** seguem pelo índice da linha na tabela `branch` (a partir de 0) em `branchOut` e `branches[].id`. Assim o backend e a interface falam a mesma numeração.
-- **Pedido:** `grid` (nome do caso em `/cases`) **ou** `case` (tabelas MATPOWER `{baseMVA, bus, gen, branch}`, para casos importados; o despacho é rebalanceado como na interface se diferir da carga em mais de 10%); `solver` ∈ `ac | dc | auto | genco`; até 2000 topologias por pedido.
-- **Solvers:** `ac` (Newton-Raphson), `dc`; `auto` = AC por enquanto (será GENCO na triagem, Fase 5); `genco` responde **501** até a Fase 5. O campo `solver` da resposta informa o que foi usado.
-- **Resposta por topologia:** `converged`, `ms`, `energized`, `lostBuses`, `servedMW`, `lostMW`, `buses[{id, vm, va}]`, `branches[{id, pf, qf, pt, qt, loading}]` (apenas ramos ativos), `gens[{id, bus, pg, qg}]` e `violations{overload, voltage, qgen}` (`overload`: ramos com carregamento > 1,0; `voltage`: barras fora de [vmin, vmax]; `qgen`: geradores fora de [qmin, qmax]; os dois últimos só no AC). Se o AC não converge, `converged:false` e `error` descrevem o motivo.
-- **Erros:** 404 (caso inexistente), 422 (ramo/barra inexistente, caso inválido, falta `grid`/`case`), 413 (lotes grandes), 501 (`genco`).
+## 7. `/evaluate` in detail (v0.2) and decisions
+- **Identification (replaces what is in §1 and in the examples):** in the API **buses are identified by the MATPOWER number** (`BUS_I`) in `busOut`, `energized`, `lostBuses` and `buses[].id` (not by the index from 0); **branches** go by the row index in the `branch` table (from 0) in `branchOut` and `branches[].id`. This way the backend and the interface speak the same numbering.
+- **Request:** `grid` (case name in `/cases`) **or** `case` (MATPOWER tables `{baseMVA, bus, gen, branch}`, for imported cases; the dispatch is rebalanced as in the interface if it differs from the load by more than 10%); `solver` ∈ `ac | dc | auto | genco`; up to 2000 topologies per request.
+- **Solvers:** `ac` (Newton-Raphson), `dc`; `auto` = AC for now (it will be GENCO in the screening, Phase 5); `genco` answers **501** until Phase 5. The `solver` field of the response reports what was used.
+- **Response per topology:** `converged`, `ms`, `energized`, `lostBuses`, `servedMW`, `lostMW`, `buses[{id, vm, va}]`, `branches[{id, pf, qf, pt, qt, loading}]` (active branches only), `gens[{id, bus, pg, qg}]` and `violations{overload, voltage, qgen}` (`overload`: branches with loading > 1.0; `voltage`: buses outside [vmin, vmax]; `qgen`: generators outside [qmin, qmax]; the last two only in the AC). If the AC does not converge, `converged:false` and `error` describe the reason.
+- **Errors:** 404 (nonexistent case), 422 (nonexistent branch/bus, invalid case, missing `grid`/`case`), 413 (large batches), 501 (`genco`).
 
-## 8. Resposta corretiva (v0.3, Fase 3): `POST /corrective`
-> **Mudança de escopo (2026-10-09):** em transmissão (malha, sem ramos normalmente abertos) não há espaço para manobras de restauração. `/restore`, `/plan` e `/scenario` (§3) ficam **substituídos** por `/corrective`: o operador marca falhas em **linhas e/ou barras** e o sistema propõe o **redespacho da geração** e, se ainda houver violação, o **corte mínimo de carga** (qualquer carga pode ser cortada), verificado pelo AC. Violações de tensão são apenas reportadas.
+## 8. Corrective response (v0.3, Phase 3): `POST /corrective`
+> **Scope change (2026-10-09):** in transmission (meshed, no normally open branches) there is no room for restoration switching. `/restore`, `/plan` and `/scenario` (§3) are **replaced** by `/corrective`: the operator marks faults on **lines and/or buses** and the system proposes the **generation redispatch** and, if a violation remains, the **minimum load shedding** (any load can be shed), verified by the AC. Voltage violations are only reported.
 
-Pedido:
+Request:
 ```json
 { "grid": "case118_ieee",
   "faults": { "branchOut": [7], "busOut": [] },
   "options": { "maxIter": 8, "margin": 0.0 } }
 ```
-`grid` ou `case` (tabelas MATPOWER), como em `/evaluate`. `faults.busOut` usa o número MATPOWER; `faults.branchOut` o índice do ramo.
+`grid` or `case` (MATPOWER tables), as in `/evaluate`. `faults.busOut` uses the MATPOWER number; `faults.branchOut` the branch index.
 
-Resposta:
+Response:
 ```json
 { "grid": "case118_ieee", "faults": {"branchOut":[7],"busOut":[]}, "needsAction": true,
-  "pre": { ...resultado de /evaluate sem falhas... },
-  "postFault": { ...após as falhas, com a geração redistribuída pela folga (resposta automática)... },
-  "after": { ...após o plano (redespacho + corte), verificado pelo AC... },
+  "pre": { ...result of /evaluate without faults... },
+  "postFault": { ...after the faults, with the generation redistributed using the headroom (automatic response)... },
+  "after": { ...after the plan (redispatch + shedding), verified by the AC... },
   "plan": { "shed": [{"bus":15,"mw":90.0,"pct":1.0}], "redispatch": [{"gen":3,"bus":66,"pgBefore":38,"pgAfter":748}],
             "totalShedMW": 148.0, "totalRedispatchMW": 1078.9, "iterations": 2 },
   "summary": { "loadTotalMW": 4242, "isolatedMW": 0, "shedMW": 148.0, "servedMW": 4094, "servedPct": 0.965,
                "overloadsPost": 5, "overloadsAfter": 0, "convergedAfter": true, "ms": 210 } }
 ```
-- Cada estado (`pre`, `postFault`, `after`) tem o mesmo formato de um item de `/evaluate`, e `violations` ganhou `pgen` (geradores fora de [Pmin, Pmax]).
-- `needsAction=false` quando a resposta automática da geração já mantém os limites: o plano vem vazio e `after` = `postFault`.
-- **Como o plano é calculado:** (1) AC pós-falta com o desbalanço redistribuído pela folga dos geradores; (2) se restarem sobrecargas, um problema linear (HiGHS) minimiza a carga cortada (custo 1 por MW) com um custo pequeno de redespacho (1e-3 por MW), sujeito aos limites térmicos dos ramos (sensibilidades DC aplicadas sobre os fluxos do AC, com a folga de Q) e aos limites Pmin/Pmax dos geradores; (3) o AC verifica e, se sobrar sobrecarga, os limites dos ramos violados são apertados e o problema é resolvido de novo (até `maxIter`).
-- **Limites conhecidos:** o corte minimiza MW e por isso pode concentrar-se em poucas barras (100% da carga delas); não há prioridade entre cargas; violações de tensão não são corrigidas (sem controle de tensão/reativo); o redespacho não considera custos de geração; a inversão densa das sensibilidades serve para redes de até alguns milhares de barras.
-- Erros: 404 (caso inexistente), 422 (ramo/barra inexistente).
+- Each state (`pre`, `postFault`, `after`) has the same format as an `/evaluate` item, and `violations` gained `pgen` (generators outside [Pmin, Pmax]).
+- `needsAction=false` when the automatic generation response already keeps the limits: the plan comes empty and `after` = `postFault`.
+- `note` (optional) explains a plan that did not solve everything: `best-effort plan: N overload(s) remain…` (no redispatch and shedding respects all the line limits; the plan minimizes the shedding and the violations), `the AC power flow does not converge with the plan applied…` (the plan could not be confirmed) or `optimization has no solution…` (no plan; `after` = `postFault`). The interface must not say "no action needed" when `needsAction=true`.
+- `voltage` (optional, only in responses where the voltage adjustment ran; today only in the IEEE 118 replay, see `docs/TENSAO_GENCO_OPF.md`): `{model, applied, loops, violationsBefore, violationsAfter, maxExcessBeforePu, maxExcessAfterPu, qgenBefore, qgenAfter, overloadsAfter, shedBeforeMW, shedAfterMW, gens:[{gen, bus, vgBefore, vgAfter}]}`.
+  `violations*` count the buses outside the voltage range in the `after` stage; `applied=false` means that the adjustment did not improve the plan and the response is the original one. With `applied=true`, `plan`, `after` and `summary` are those of the plan redone with the new generator voltage; `pre`, `postFault` and `summary.overloadsPost` remain those of the original voltage.
+- **How the plan is computed:** (1) post-fault AC with the imbalance redistributed using the generators' headroom; (2) if overloads remain, a linear problem (HiGHS) minimizes the shed load (cost 1 per MW) with a small redispatch cost (1e-3 per MW), subject to the thermal limits of the branches (DC sensitivities applied over the AC flows, with the Q headroom) and to the generators' Pmin/Pmax limits; (3) the AC verifies and, if an overload remains, the limits of the violated branches are tightened and the problem is solved again (up to `maxIter`).
+- **Known limits:** the shedding minimizes MW and so may concentrate on a few buses (100% of their load); there is no priority between loads; the `/corrective` plan does not correct voltage violations (no voltage/reactive control; the Vg adjustment is an optional step in `app/voltage.py`, see `voltage` above); the redispatch does not consider generation costs; the dense inversion of the sensitivities serves networks of up to a few thousand buses.
+- Errors: 404 (nonexistent case), 422 (nonexistent branch/bus).
 
-## 9. Varredura N-1 (v0.4, Fase 4a): `POST /screen`
-Pedido: `{ "grid": "case118_ieee", "scope": "both" }` (`grid` ou `case`; `scope` = `both` | `lines` | `buses`; a barra de referência não entra).
+## 9. N-1 screening (v0.4, Phase 4a): `POST /screen`
+Request: `{ "grid": "case118_ieee", "scope": "both" }` (`grid` or `case`; `scope` = `both` | `lines` | `buses`; the reference bus is not included).
 
-Resposta:
+Response:
 ```json
 { "grid": "case118_ieee", "count": 303, "needAction": 210, "noAction": 93, "ms": 11900,
-  "contingencies": [ { "type": "line", "id": 7, "label": "linha 8–5", "converged": true, "overloads": 5, "voltage": 0,
+  "contingencies": [ { "type": "line", "id": 7, "label": "line 8–5", "converged": true, "overloads": 5, "voltage": 0,
                        "maxLoadingPct": 177.0, "isolatedMW": 0.0, "needsAction": true } ] }
 ```
-- Cada contingência é avaliada pelo AC **depois da resposta automática da geração** (redistribuição pela folga). `needsAction` = ainda há violação a corrigir (o plano completo vem de `/corrective`).
-- Ordenação: as que exigem ação primeiro, por número de sobrecargas e carregamento máximo. `id` = índice do ramo (`line`) ou número MATPOWER (`bus`).
-- Tempo: ~12 s para as 303 contingências do IEEE 118 (um núcleo).
+- Each contingency is evaluated by the AC **after the automatic generation response** (redistribution using the headroom). `needsAction` = a violation still has to be corrected (the full plan comes from `/corrective`).
+- Sorting: those that require action first, by number of overloads and maximum loading. `id` = branch index (`line`) or MATPOWER number (`bus`).
+- Time: ~12 s for the 303 contingencies of IEEE 118 (one core).
 
 
-## 10. Reparo e religação por blocos (v0.5, Fase 4b): `POST /recovery`
-Pedido:
+## 10. Repair and block reconnection (v0.5, Phase 4b): `POST /recovery`
+Request:
 ```json
 { "grid": "case118_ieee",
   "faults": { "branchOut": [7], "busOut": [68] },
   "repairOrder": [ {"type": "bus", "id": 68}, {"type": "line", "id": 7} ],
   "options": { "blockMW": 50, "repairHours": 2, "blockMinutes": 10 } }
 ```
-`repairOrder` (opcional) deve ser uma permutação das falhas; o padrão é linhas e depois barras. `repairHours` e `blockMinutes` são dados de entrada **sintéticos** (só entram no cálculo da ENS).
+`repairOrder` (optional) must be a permutation of the faults; the default is lines and then buses. `repairHours` and `blockMinutes` are **synthetic** input data (they only enter the ENS calculation).
 
-Resposta: `{ grid, faults, repairOrder:[{type,id,label}], options, events:[...], summary }`.
-- `events`: passo 0 = **plano inicial** (redespacho + corte mínimo, como em `/corrective`); depois, para cada reparo, um evento `repair` (topologia nova, ainda com a carga e o despacho do plano anterior), um `cut` se o novo plano pedir menos carga em alguma barra e os `reconnect` (blocos de até `blockMW`, escolhendo a cada passo o bloco que deixa menos sobrecargas e o menor carregamento máximo). Cada evento traz `kind`, `label`, `tHours`, `remaining` (falhas que restam), `shed` (`bus`, `mw`, `pct`), `servedMW`, `unservedMW`, `overloads`, `maxLoadingPct`, `converged`, `block` (nos `reconnect`) e `state` (estado AC completo, mesmo formato de um item de `/evaluate`).
-- `summary`: `ensMWh` (integral da carga não suprida no tempo), `totalHours`, `blocks`, `blocksWithOverload`, `eventsWithOverload`, `restored` (carga toda atendida, sem sobrecarga, no fim) e `ms`.
-- **Como funciona:** a cada reparo roda `plan_corrective` para as falhas que restam; a carga que o novo plano permite atender é religada em blocos. O despacho dos blocos é o do novo plano; a barra de referência absorve a diferença (redistribuí-la pelos geradores foi testado e piorou).
-- **Limite conhecido:** estados intermediários (logo após um reparo e alguns blocos) podem ter sobrecarga **transitória**; só o estado de cada plano é verificado como livre de sobrecarga. `blocksWithOverload` e `eventsWithOverload` informam quantos.
-- Erros: 422 (falha inexistente, `repairOrder` que não é permutação, sem falhas, barra de referência em falta), 404 (caso inexistente).
+Response: `{ grid, faults, repairOrder:[{type,id,label}], options, events:[...], summary }`.
+- `events`: step 0 = **initial plan** (redispatch + minimum shedding, as in `/corrective`); then, for each repair, a `repair` event (new topology, still with the load and dispatch of the previous plan), a `cut` if the new plan asks for less load at some bus and the `reconnect` events (blocks of up to `blockMW`, choosing at each step the block that leaves the fewest overloads and the lowest maximum loading). Each event carries `kind`, `label`, `tHours`, `remaining` (remaining faults), `shed` (`bus`, `mw`, `pct`), `servedMW`, `unservedMW`, `overloads`, `maxLoadingPct`, `converged`, `block` (in the `reconnect` events) and `state` (complete AC state, same format as an `/evaluate` item).
+- `summary`: `ensMWh` (integral of the unserved load over time), `totalHours`, `blocks`, `blocksWithOverload`, `eventsWithOverload`, `restored` (all load served, no overload, at the end) and `ms`.
+- **How it works:** after each repair it runs `plan_corrective` for the remaining faults; the load that the new plan allows serving is reconnected in blocks. The dispatch of the blocks is that of the new plan; the reference bus absorbs the difference (redistributing it among the generators was tested and made things worse).
+- **Known limit:** intermediate states (right after a repair and a few blocks) may have a **transient** overload; only the state of each plan is verified as overload-free. `blocksWithOverload` and `eventsWithOverload` report how many.
+- Errors: 422 (nonexistent fault, `repairOrder` that is not a permutation, no faults, faulted reference bus), 404 (nonexistent case).
+
+**Names of parallel lines.** When two or more lines connect the same two buses (IEEE 118 has 7 pairs: 42–49, 49–54, 49–66, 56–59, 77–80, 89–90 and 89–92), the `label` of `/screen` and `/recovery` carries the circuit letter in the order of the branches in the table: `line 49–54 A` (branch 74) and `line 49–54 B` (branch 75). Lines without a parallel keep no letter (`line 8–5`). The interface uses the same rule (`interface/src/utils/parallel.js`).

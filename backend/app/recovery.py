@@ -1,12 +1,12 @@
-"""Reparo e religação da carga por blocos (Fase 4b).
+"""Repair and block-by-block load reconnection (Phase 4b).
 
-Dado o conjunto de falhas e a ORDEM em que são reparadas, monta a linha do tempo:
-  plano inicial (redespacho + corte mínimo) -> reparo 1 -> religação da carga cortada em blocos (cada bloco verificado pelo AC)
-  -> reparo 2 -> ... -> rede restaurada.
+Given the set of faults and the ORDER in which they are repaired, builds the timeline:
+  initial plan (redispatch + minimum shedding) -> repair 1 -> reconnection of the shed load in blocks (each block verified by the AC)
+  -> repair 2 -> ... -> restored network.
 
-A cada reparo o plano é recalculado para as falhas que restam (`plan_corrective`); a carga que o novo plano permite atender é religada
-em blocos de, no máximo, `block_mw` MW, escolhendo a cada passo o bloco que deixa a rede menos carregada (menos sobrecargas, menor carregamento
-máximo). Os tempos de reparo e de manobra são dados de entrada (sintéticos), usados só para calcular a energia não suprida (ENS).
+After each repair the plan is recomputed for the remaining faults (`plan_corrective`); the load that the new plan allows serving is reconnected
+in blocks of at most `block_mw` MW, choosing at each step the block that leaves the network least loaded (fewest overloads, lowest maximum
+loading). The repair and switching times are input data (synthetic), used only to compute the energy not supplied (ENS).
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from .corrective import plan_corrective
 from .evaluate import evaluate
 from .network import Network, topology_masks
 
-MIN_MW = 0.01       # abaixo disto a diferença de carga é ignorada
+MIN_MW = 0.01       # below this the load difference is ignored
 
 
 def _split(items):
@@ -27,11 +27,11 @@ def _split(items):
 
 def _label(net: Network, item) -> str:
     t, k = item
-    return f"linha {int(net.bus_no[net.br_f[k]])}–{int(net.bus_no[net.br_t[k]])}" if t == "line" else f"barra {int(k)}"
+    return f"line {net.line_name(k)}" if t == "line" else f"bus {int(k)}"
 
 
 def _targets(net: Network, plan: dict, bo, bu):
-    """Carga a atender (MW por barra; zero nas ilhas) e despacho do plano `plan`."""
+    """Load to serve (MW per bus; zero in the islands) and dispatch of plan `plan`."""
     pd = net.pd.copy()
     for s in plan["plan"]["shed"]:
         pd[net.bus_index([s["bus"]])[0]] -= s["mw"]
@@ -47,8 +47,8 @@ def _qd(net: Network, pd):
 
 
 def _state(net: Network, bo, bu, pg_plan, pd):
-    """Estado intermediário: despacho do plano (otimizado para os limites) e carga parcial; a barra de referência absorve a diferença.
-    (Testei redistribuir esse desbalanço pelos geradores: piorou, pois desfaz o redespacho do plano.)"""
+    """Intermediate state: dispatch of the plan (optimized for the limits) and partial load; the reference bus absorbs the difference.
+    (I tried redistributing this imbalance among the generators: it got worse, because it undoes the plan's redispatch.)"""
     return evaluate(net, bo, bu, "ac", pg=pg_plan, pd=pd, qd=_qd(net, pd))
 
 
@@ -58,7 +58,7 @@ def _score(ev):
 
 
 def recover(net: Network, repairs, block_mw: float = 50.0, repair_hours: float = 2.0, block_minutes: float = 10.0) -> dict:
-    """`repairs`: lista [("line", índice) | ("bus", número)] na ordem de reparo (todas as falhas)."""
+    """`repairs`: list [("line", index) | ("bus", number)] in repair order (all the faults)."""
     t0 = time.perf_counter()
     total_pd = float(net.pd.sum())
     events: list[dict] = []
@@ -81,22 +81,22 @@ def recover(net: Network, repairs, block_mw: float = 50.0, repair_hours: float =
     bo, bu = _split(repairs)
     plan = plan_corrective(net, bo, bu)
     cur, pg = _targets(net, plan, bo, bu)
-    add("plan", "Plano inicial (redespacho e corte mínimo)", plan["after"], cur, bo, bu, t)
+    add("plan", "Initial plan (redispatch and minimum shedding)", plan["after"], cur, bo, bu, t)
 
     for k, item in enumerate(repairs):
         bo, bu = _split(repairs[k + 1:])
         t += repair_hours
-        # estado logo após o reparo: topologia nova, carga e despacho ainda os do plano anterior
+        # state right after the repair: new topology, load and dispatch still those of the previous plan
         ev = _state(net, bo, bu, pg, cur)
-        add("repair", f"Reparo: {_label(net, item)}", ev, cur, bo, bu, t)
+        add("repair", f"Repair: {_label(net, item)}", ev, cur, bo, bu, t)
 
         plan = plan_corrective(net, bo, bu)
         tgt, pg = _targets(net, plan, bo, bu)
         less = np.minimum(cur, tgt)
-        if (cur - less).max() > MIN_MW:                                        # o novo plano pede menos carga em alguma barra
+        if (cur - less).max() > MIN_MW:                                        # the new plan asks for less load at some bus
             cur = less
             ev = _state(net, bo, bu, pg, cur)
-            add("cut", "Ajuste do plano (corte adicional)", ev, cur, bo, bu, t)
+            add("cut", "Plan adjustment (additional shedding)", ev, cur, bo, bu, t)
 
         pending = {}
         for b in np.flatnonzero(tgt - cur > MIN_MW):
@@ -117,7 +117,7 @@ def recover(net: Network, repairs, block_mw: float = 50.0, repair_hours: float =
             if not pending[b]:
                 del pending[b]
             t += block_minutes / 60.0
-            add("reconnect", f"Religa {mw:.1f} MW na barra {int(net.bus_no[b])}", ev, cur, bo, bu, t, {"block": {"bus": int(net.bus_no[b]), "mw": round(mw, 3)}})
+            add("reconnect", f"Reconnects {mw:.1f} MW at bus {int(net.bus_no[b])}", ev, cur, bo, bu, t, {"block": {"bus": int(net.bus_no[b]), "mw": round(mw, 3)}})
 
     ens = sum((events[i + 1]["tHours"] - events[i]["tHours"]) * events[i]["unservedMW"] for i in range(len(events) - 1))
     blocks = [e for e in events if e["kind"] == "reconnect"]

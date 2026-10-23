@@ -1,0 +1,2924 @@
+{
+ "resumo": {
+  "rede": "case118_ieee",
+  "modelo": "case118_genco_opf_small_autores",
+  "pesos": "last.pt",
+  "contingencias": 43,
+  "msPorCenarioGenco": 34.3,
+  "tensaoResolvida": {
+   "planoOriginal": 0,
+   "G1_soVg": 41,
+   "G2_despachoEVg": 41
+  },
+  "powermodelsResolve": {
+   "soVg": 42,
+   "livre": 42
+  },
+  "powermodelsNoNossoAC": {
+   "P1": {
+    "casos": 42,
+    "tensaoResolvida": 42,
+    "carregamentoMaxMediano": 100.0,
+    "acimaDe100": 0
+   },
+   "P2": {
+    "casos": 42,
+    "tensaoResolvida": 42,
+    "carregamentoMaxMediano": 100.0,
+    "acimaDe100": 0
+   }
+  },
+  "laco": {
+   "casos": 43,
+   "tensaoResolvida": 41,
+   "semSobrecarga": 43,
+   "resolveTudo": 41,
+   "voltasMedias": 1.09,
+   "corteIgualOuMenor": 41,
+   "corteTotalMW": [
+    797.5,
+    759.3
+   ],
+   "reativoForaDoLimiteMedio": [
+    9.74,
+    0.37
+   ]
+  },
+  "novasSobrecargasG1": 39,
+  "carregamentoMaxG1": {
+   "acimaDe100": 39,
+   "acimaDe101": 32,
+   "acimaDe105": 1,
+   "maximo": 105.01
+  },
+  "carregamentoMaxPlano": 100.0,
+  "reativoForaDoLimiteG1": 0,
+  "naoConvergeuG1": 0,
+  "naoConvergeuG2": 0
+ },
+ "contingencias": [
+  {
+   "label": "line 8–5",
+   "cortePlanoMW": 148.02,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0107,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.52,
+    "reativoGeradores": 16,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.22,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 101.45,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.69,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 733.7,
+   "vgMudaMedioPu": 0.0132,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.69,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 136.17,
+    "corteOriginalMW": 148.02,
+    "redespachoMW": 899.8,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 5",
+   "cortePlanoMW": 147.25,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0107,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.52,
+    "reativoGeradores": 16,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.38,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.61,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.86,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 749.6,
+   "vgMudaMedioPu": 0.0136,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.7,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 136.91,
+    "corteOriginalMW": 147.25,
+    "redespachoMW": 890.5,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 9–10",
+   "cortePlanoMW": 127.87,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0048,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.83,
+    "reativoGeradores": 14,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 106.47,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 719.9,
+   "vgMudaMedioPu": 0.0119,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.9,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 110.01,
+    "corteOriginalMW": 127.87,
+    "redespachoMW": 1079.3,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 10",
+   "cortePlanoMW": 127.87,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0048,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.83,
+    "reativoGeradores": 14,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 106.47,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 719.7,
+   "vgMudaMedioPu": 0.0119,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.9,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 110.01,
+    "corteOriginalMW": 127.87,
+    "redespachoMW": 1079.3,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 37",
+   "cortePlanoMW": 78.26,
+   "plano": {
+    "converge": true,
+    "tensao": 2,
+    "maiorExcessoPu": 0.0142,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.76,
+    "reativoGeradores": 17,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": false,
+   "powermodelsViavelLivre": false,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 100.39,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 109.89,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 167.3,
+   "vgMudaMedioPu": 0.0114,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 76.96,
+    "corteOriginalMW": 78.26,
+    "redespachoMW": 232.3,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 38–37",
+   "cortePlanoMW": 79.34,
+   "plano": {
+    "converge": true,
+    "tensao": 2,
+    "maiorExcessoPu": 0.0058,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.93,
+    "reativoGeradores": 14,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 3,
+    "maiorCarregamentoPct": 102.86,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 120.64,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 512.8,
+   "vgMudaMedioPu": 0.0114,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.91,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 90.97,
+    "corteOriginalMW": 79.34,
+    "redespachoMW": 448.7,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 38",
+   "cortePlanoMW": 77.54,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.001,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 18,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 101.47,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 5,
+    "maiorCarregamentoPct": 113.27,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 323.5,
+   "vgMudaMedioPu": 0.0116,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.88,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 88.06,
+    "corteOriginalMW": 77.54,
+    "redespachoMW": 318.1,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 81–80",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0025,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.86,
+    "reativoGeradores": 11,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.33,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 101.46,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 126.3,
+   "vgMudaMedioPu": 0.0079,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.72,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 166.7,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 80",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.003,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.77,
+    "reativoGeradores": 11,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 101.98,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 4,
+    "maiorCarregamentoPct": 161.44,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 398.5,
+   "vgMudaMedioPu": 0.0101,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.83,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 122.8,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 25–27",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0008,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.53,
+    "reativoGeradores": 13,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 100.3,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.49,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 115.2,
+   "vgMudaMedioPu": 0.0104,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 126.2,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 23",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0008,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.5,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 3,
+    "maiorCarregamentoPct": 108.68,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 113.5,
+   "vgMudaMedioPu": 0.0093,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 195.6,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 77",
+   "cortePlanoMW": 11.34,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 9,
+    "potenciaGeradores": 1
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 100.68,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 1
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 109.35,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.91,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 9,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 1334.9,
+   "vgMudaMedioPu": 0.0092,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 1,
+    "voltas": 1,
+    "corteMW": 10.23,
+    "corteOriginalMW": 11.34,
+    "redespachoMW": 1343.1,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 110",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.83,
+    "reativoGeradores": 12,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.58,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 106.06,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 85.1,
+   "vgMudaMedioPu": 0.0084,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.72,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 83.2,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 17–18",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.003,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.85,
+    "reativoGeradores": 13,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 101.0,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 108.73,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 198.5,
+   "vgMudaMedioPu": 0.0095,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 187.7,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 90",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0009,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.97,
+    "reativoGeradores": 13,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.72,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 102.89,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 10,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 143.3,
+   "vgMudaMedioPu": 0.0083,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.89,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 82.6,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 23–32",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.91,
+    "reativoGeradores": 10,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.61,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 103.1,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 40.7,
+   "vgMudaMedioPu": 0.0088,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 91.8,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 68–116",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0011,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 10,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.63,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.34,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 146.2,
+   "vgMudaMedioPu": 0.0089,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.9,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 73.1,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 116",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0011,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 10,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.63,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.34,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 146.2,
+   "vgMudaMedioPu": 0.0082,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.9,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 73.1,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 30–38",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 11,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.87,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.53,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 77.6,
+   "vgMudaMedioPu": 0.0086,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.01,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 54.5,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 40",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0023,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.23,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.07,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 61.0,
+   "vgMudaMedioPu": 0.0077,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.93,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 37.4,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 39",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0019,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.62,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 102.75,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 33.8,
+   "vgMudaMedioPu": 0.0076,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 37.6,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 113",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0012,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.75,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.31,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 36.1,
+   "vgMudaMedioPu": 0.0084,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 35.6,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 37–39",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0019,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.38,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.44,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 29.4,
+   "vgMudaMedioPu": 0.0076,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.97,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 51.0,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 37–40",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0011,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.4,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.29,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 23.9,
+   "vgMudaMedioPu": 0.0075,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 47.3,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 39–40",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0009,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.55,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.72,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 24.9,
+   "vgMudaMedioPu": 0.0076,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 43.8,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 17",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0009,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 15,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 105.01,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 96.68,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 74.7,
+   "vgMudaMedioPu": 0.0131,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.97,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 43.2,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 15–17",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0021,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.72,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.84,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 9,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 26.9,
+   "vgMudaMedioPu": 0.0088,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 39.3,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 34–43",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0024,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.53,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.88,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 26.8,
+   "vgMudaMedioPu": 0.0077,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 38.0,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 15",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 2,
+    "maiorExcessoPu": 0.0021,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 103.59,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.27,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 75.8,
+   "vgMudaMedioPu": 0.0082,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.92,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 24.8,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 42",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 9,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 100.75,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 97.83,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 94.1,
+   "vgMudaMedioPu": 0.0088,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.92,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 2.4,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 53–54",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.008,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0005,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.64,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 102.28,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 38.0,
+   "vgMudaMedioPu": 0.0078,
+   "L": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 3,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 37.9,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 56",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 100.84,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 98.17,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 1,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 44.6,
+   "vgMudaMedioPu": 0.0081,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 5.8,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 34–37",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.007,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 12,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.77,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.25,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 31.2,
+   "vgMudaMedioPu": 0.0087,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.96,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 38.1,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 18",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.002,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 103.77,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 98.0,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 122.3,
+   "vgMudaMedioPu": 0.0084,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.93,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 26.7,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 34",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 3,
+    "maiorExcessoPu": 0.0076,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 103.59,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 101.74,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 59.1,
+   "vgMudaMedioPu": 0.0081,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.93,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 25.2,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 54",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0083,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.98,
+    "reativoGeradores": 8,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0067,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 100.76,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0067,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 98.37,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 56.1,
+   "vgMudaMedioPu": 0.0082,
+   "L": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0067,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.93,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 3,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 2.1,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 35",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0009,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 103.63,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 101.73,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 34.1,
+   "vgMudaMedioPu": 0.0078,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 26.5,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 16",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0008,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.34,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 103.38,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 37.9,
+   "vgMudaMedioPu": 0.0079,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 31.9,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 31",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0015,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.55,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 101.62,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 33.4,
+   "vgMudaMedioPu": 0.0081,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 33.4,
+    "nota": null
+   }
+  },
+  {
+   "label": "bus 33",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0006,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.99,
+    "reativoGeradores": 7,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.12,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 101.29,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 34.9,
+   "vgMudaMedioPu": 0.0078,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.94,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 30.3,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 16–17",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0008,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.81,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.15,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 27.2,
+   "vgMudaMedioPu": 0.0081,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 36.0,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 35–37",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0009,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 9,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.76,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 102.94,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 5,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 4,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 31.7,
+   "vgMudaMedioPu": 0.008,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 35.6,
+    "nota": null
+   }
+  },
+  {
+   "label": "line 17–113",
+   "cortePlanoMW": 0.0,
+   "plano": {
+    "converge": true,
+    "tensao": 1,
+    "maiorExcessoPu": 0.0013,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 3,
+    "potenciaGeradores": 0
+   },
+   "powermodelsViavelSoVg": true,
+   "powermodelsViavelLivre": true,
+   "G1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 2,
+    "maiorCarregamentoPct": 104.76,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "G2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 1,
+    "maiorCarregamentoPct": 104.54,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0
+   },
+   "P1": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 2,
+    "potenciaGeradores": 0
+   },
+   "P2": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 100.0,
+    "reativoGeradores": 6,
+    "potenciaGeradores": 0
+   },
+   "despachoGencoMudaMW": 34.2,
+   "vgMudaMedioPu": 0.0085,
+   "L": {
+    "converge": true,
+    "tensao": 0,
+    "maiorExcessoPu": 0.0,
+    "sobrecargas": 0,
+    "maiorCarregamentoPct": 99.95,
+    "reativoGeradores": 0,
+    "potenciaGeradores": 0,
+    "voltas": 1,
+    "corteMW": 0.0,
+    "corteOriginalMW": 0.0,
+    "redespachoMW": 35.8,
+    "nota": null
+   }
+  }
+ ]
+}

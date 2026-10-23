@@ -3,12 +3,12 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Importação no estilo moderno do React/Vite
+// Modern React/Vite-style import
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
-// Corrige o ícone do Leaflet que costuma quebrar no React
+// Fixes the Leaflet icon that tends to break in React
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl,
@@ -38,7 +38,7 @@ function parseGeoFile(content, filename) {
                 });
             }
         } catch (e) {
-            console.error("Erro no parse do JSON", e);
+            console.error("JSON parse error", e);
         }
     } else {
         const lines = content.split(/\r?\n/).filter(l => l.trim());
@@ -129,24 +129,24 @@ export default function GeoImportModal({ isOpen, onConfirm, onCancel, allNodes, 
     return (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', zIndex: 10000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ background: bg, color: fg, padding: '20px', borderRadius: '12px', width: '600px', maxWidth: '90%', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                <h3 style={{ margin: '0 0 15px 0', borderBottom: `1px solid ${border}`, paddingBottom: '10px' }}>🌍 Coordenadas Geográficas Ausentes</h3>
-                <p style={{ fontSize: '13px', opacity: 0.8, marginBottom: '20px' }}>O sistema atual não possui coordenadas geográficas suficientes para renderizar o mapa. Escolha uma opção:</p>
+                <h3 style={{ margin: '0 0 15px 0', borderBottom: `1px solid ${border}`, paddingBottom: '10px' }}>🌍 Geographic Coordinates Missing</h3>
+                <p style={{ fontSize: '13px', opacity: 0.8, marginBottom: '20px' }}>The current system does not have enough geographic coordinates to render the map. Choose an option:</p>
 
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                    <button onClick={() => setActiveTab('import')} style={{ flex: 1, padding: '8px', background: activeTab === 'import' ? '#00bcd4' : 'transparent', color: activeTab === 'import' ? '#000' : fg, border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer' }}>Importar Arquivo</button>
-                    <button onClick={() => setActiveTab('generate')} style={{ flex: 1, padding: '8px', background: activeTab === 'generate' ? '#00bcd4' : 'transparent', color: activeTab === 'generate' ? '#000' : fg, border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer' }}>Gerar Posições Fictícias</button>
+                    <button onClick={() => setActiveTab('import')} style={{ flex: 1, padding: '8px', background: activeTab === 'import' ? '#00bcd4' : 'transparent', color: activeTab === 'import' ? '#000' : fg, border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer' }}>Import File</button>
+                    <button onClick={() => setActiveTab('generate')} style={{ flex: 1, padding: '8px', background: activeTab === 'generate' ? '#00bcd4' : 'transparent', color: activeTab === 'generate' ? '#000' : fg, border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer' }}>Generate Fictitious Positions</button>
                 </div>
 
                 {activeTab === 'import' && (
                     <div style={{ minHeight: '200px' }}>
                         <div style={{ border: `2px dashed ${border}`, padding: '20px', textAlign: 'center', borderRadius: '8px', marginBottom: '15px' }}>
                             <input type="file" accept=".json,.csv,.txt" onChange={handleFileUpload} style={{ color: fg }} />
-                            <p style={{ fontSize: '12px', opacity: 0.6, marginTop: '10px' }}>Formatos aceitos: JSON, CSV ou TXT (node, lat, lng)</p>
+                            <p style={{ fontSize: '12px', opacity: 0.6, marginTop: '10px' }}>Accepted formats: JSON, CSV or TXT (node, lat, lng)</p>
                         </div>
                         {fileResult && (
                             <div style={{ fontSize: '13px', background: darkMode ? '#333' : '#f5f5f5', padding: '10px', borderRadius: '6px' }}>
                                 <p style={{ margin: '0 0 5px 0', color: coverage >= allNodes.length * 0.5 ? '#4caf50' : '#ff9800' }}>
-                                    <strong>{coverage}</strong> barras compatíveis encontradas (de {allNodes.length} totais).
+                                    <strong>{coverage}</strong> compatible buses found (out of {allNodes.length} total).
                                 </p>
                             </div>
                         )}
@@ -155,7 +155,7 @@ export default function GeoImportModal({ isOpen, onConfirm, onCancel, allNodes, 
 
                 {activeTab === 'generate' && (
                     <div style={{ minHeight: '200px' }}>
-                        <p style={{ fontSize: '12px', marginBottom: '10px' }}>Clique no mapa para definir o ponto central da rede:</p>
+                        <p style={{ fontSize: '12px', marginBottom: '10px' }}>Click on the map to set the center point of the network:</p>
                         <div style={{ height: '200px', width: '100%', borderRadius: '8px', overflow: 'hidden', marginBottom: '10px', border: `1px solid ${border}` }}>
                             <MapContainer center={[centerPos.lat, centerPos.lng]} zoom={12} style={{ height: '100%', width: '100%' }}>
                                 <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
@@ -170,9 +170,9 @@ export default function GeoImportModal({ isOpen, onConfirm, onCancel, allNodes, 
                 )}
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-                    <button onClick={onCancel} style={{ padding: '8px 16px', background: 'transparent', border: `1px solid ${border}`, color: fg, borderRadius: '6px', cursor: 'pointer' }}>Cancelar</button>
+                    <button onClick={onCancel} style={{ padding: '8px 16px', background: 'transparent', border: `1px solid ${border}`, color: fg, borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
                     <button onClick={handleConfirm} disabled={activeTab === 'import' && !fileResult} style={{ padding: '8px 16px', background: '#4caf50', border: 'none', color: '#fff', borderRadius: '6px', cursor: (activeTab === 'import' && !fileResult) ? 'not-allowed' : 'pointer', fontWeight: 'bold', opacity: (activeTab === 'import' && !fileResult) ? 0.5 : 1 }}>
-                        Aplicar Coordenadas
+                        Apply Coordinates
                     </button>
                 </div>
             </div>

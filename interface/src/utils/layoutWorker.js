@@ -1,9 +1,9 @@
 import { calculateForceLayout, calculateOrthogonalLayout, calculateVNSLayout, calculateHierarchicalLayout, classifyTopology, findIntersections } from './autoLayout';
 
 // =========================================================
-// TRAVA DO PONTO CENTRAL
-// Impede que o sistema se movimente para longe da tela,
-// mas RESPEITA rigorosamente a malha absoluta de 10px!
+// CENTER POINT LOCK
+// Prevents the system from drifting away from the screen,
+// but strictly RESPECTS the absolute 10px grid!
 // =========================================================
 function lockLayoutCenter(initialPos, calculatedPos, nodesArray) {
     if (!initialPos || Object.keys(initialPos).length === 0) return calculatedPos;
@@ -43,7 +43,7 @@ function lockLayoutCenter(initialPos, calculatedPos, nodesArray) {
 }
 
 // =========================================================
-// COMUNICAÇÃO COM O REACT E EXECUÇÃO
+// COMMUNICATION WITH REACT AND EXECUTION
 // ==========================================
 self.onmessage = async (e) => {
     const { type, nodesArray, branchesArray, sourcesArray, config, jobId } = e.data;
@@ -57,7 +57,7 @@ self.onmessage = async (e) => {
     try {
         let actualType = type;
 
-        // 1. MAPA DE ALIMENTADORES (BFS)
+        // 1. FEEDER MAP (BFS)
         const feederMap = {};
         if (config && config.feeders) {
             const queue = [...config.feeders];
@@ -87,17 +87,17 @@ self.onmessage = async (e) => {
         }
         config.feederMap = feederMap;
 
-        // Auto-classificação de topologia
+        // Topology auto-classification
         if (type === 'auto') {
             const analysis = classifyTopology(nodesArray, branchesArray, config);
             actualType = analysis.recommendedEngine;
-            if (config.onProgress) config.onProgress(0, `Topologia: ${analysis.type}`, `Motor: ${actualType}`);
+            if (config.onProgress) config.onProgress(0, `Topology: ${analysis.type}`, `Engine: ${actualType}`);
         }
 
         // ==========================================
-        // PREPARAÇÃO DA SELEÇÃO PARCIAL
-        // O motor recebe o sistema COMPLETO (para enxergar as paredes), 
-        // mas é guiado pelas flags no 'config'.
+        // PARTIAL SELECTION PREPARATION
+        // The engine receives the COMPLETE system (to see the walls), 
+        // but is guided by the flags in 'config'.
         // ==========================================
         const selectionFilter = config.selectedNodes && config.selectedNodes.length > 0
             ? new Set(config.selectedNodes.map(String))
@@ -106,19 +106,19 @@ self.onmessage = async (e) => {
         const fullPos = config.currentPos || {};
 
         if (selectionFilter) {
-            // Se há seleção, isola as linhas de fronteira (que conectam a seleção ao resto da rede)
+            // If there is a selection, isolates the boundary lines (which connect the selection to the rest of the network)
             const boundaryBranches = branchesArray.filter(b =>
                 selectionFilter.has(String(b.from)) !== selectionFilter.has(String(b.to))
             );
             config.boundaryBranches = boundaryBranches;
         }
 
-        // 👇 CORREÇÃO VITAL: O motor recebe TODOS os nós para não atropelar paredes invisíveis!
+        // 👇 VITAL FIX: the engine receives ALL the nodes so it does not run over invisible walls!
         let targetNodes = nodesArray;
         let targetBranches = branchesArray;
 
         // ==========================================
-        // EXECUÇÃO DOS MOTORES
+        // ENGINE EXECUTION
         // ==========================================
         let result;
 
@@ -131,17 +131,17 @@ self.onmessage = async (e) => {
         } else if (actualType === 'hierarchical') {
             result = await calculateHierarchicalLayout(targetNodes, targetBranches, sourcesArray, config);
         } else {
-            throw new Error(`Motor não reconhecido: ${actualType}`);
+            throw new Error(`Unrecognized engine: ${actualType}`);
         }
 
         // ==========================================
-        // PÓS-PROCESSAMENTO DA SELEÇÃO PARCIAL
-        // Garante que as barras não selecionadas não moveram nem 1 milímetro.
+        // PARTIAL SELECTION POST-PROCESSING
+        // Guarantees that the unselected buses did not move even 1 millimeter.
         // ==========================================
         if (selectionFilter) {
             const merged = { ...fullPos };
             Object.keys(result).forEach(id => {
-                // Sobrescreve APENAS os nós que podiam se mover
+                // Overwrites ONLY the nodes that were allowed to move
                 if (selectionFilter.has(String(id))) {
                     merged[id] = result[id];
                 }
@@ -150,19 +150,19 @@ self.onmessage = async (e) => {
         }
 
         // ==========================================
-        // TRAVA DO PONTO CENTRAL
-        // Impede a rede inteira de deslizar para fora do grid
+        // CENTER POINT LOCK
+        // Prevents the whole network from sliding off the grid
         // ==========================================
         if (config && fullPos && Object.keys(fullPos).length > 0) {
             result = lockLayoutCenter(fullPos, result, nodesArray);
         }
 
-        // Devolve o mapa pronto para a tela
+        // Returns the map ready for the screen
         self.postMessage({ type: 'success', jobId, result });
 
     } catch (error) {
-        // 👇 AGORA O WORKER MOSTRA A LINHA EXATA DO ERRO NO CONSOLE 👇
-        console.error("🚨 [WORKER] Falha interna no motor:", error);
+        // 👇 NOW THE WORKER SHOWS THE EXACT ERROR LINE IN THE CONSOLE 👇
+        console.error("🚨 [WORKER] Internal engine failure:", error);
         const detailedError = error.stack || error.message || String(error);
         self.postMessage({ type: 'error', jobId, error: detailedError });
     }

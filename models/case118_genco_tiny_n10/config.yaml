@@ -1,0 +1,51 @@
+# Final training of GENCO Tiny on IEEE 118 (40000 samples, up to 60 epochs, early stopping with patience 15). Use with --data_path data/case118_grande
+task:
+  task_name: PowerFlow
+data:
+  baseMVA: 100
+  mask_value: 0.0
+  normalization: HeteroDataMVANormalizer
+  networks:
+  - case118_ieee
+  scenarios:
+  - 40000
+  test_ratio: 0.1
+  val_ratio: 0.1
+  workers: 0
+  split_by_load_scenario_idx: true
+model:
+  attention_head: 8
+  edge_dim: 10
+  hidden_size: 12
+  input_bus_dim: 15
+  input_gen_dim: 6
+  output_bus_dim: 2
+  output_gen_dim: 1
+  num_layers: 12
+  type: GNS_heterogeneous
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  learning_rate: 0.0005
+  lr_decay: 0.7
+  lr_patience: 5
+training:
+  batch_size: 64
+  epochs: 60
+  loss_weights:
+  - 0.1
+  - 0.9
+  losses:
+  - LayeredWeightedPhysics
+  - MaskedBusMSE
+  loss_args:
+  - base_weight: 0.5
+  - {}
+  accelerator: gpu
+  devices: 1
+  strategy: auto
+seed: 0
+verbose: true
+callbacks:
+  patience: 15
+  tol: 0

@@ -1,81 +1,93 @@
-# Roteiro do treino final do GENCO (IEEE 118)
+# Final GENCO training script (IEEE 118)
 
-> Para quem vai fazer o treino mais pesado. Escrito em 2026-10-08, a partir do que já foi medido neste repositório.
-> Leia antes o `docs/ARQUITETURA.md`.
+> **STATUS (2026-10-19): training delivered** (39,761 samples, up to N-10, 42 epochs): weights in `models/case118_genco_tiny_n10/`, report in `docs/RELATORIO_TREINO_N10.md`, independent validation in `docs/GENCO_VARREDURA.md`. The script below is kept as a record of what was requested.
+>
+> For whoever does the heavier training. Written on 2026-10-08 and **updated on 2026-10-12** (the project scope changed from
+> "restoration by switching" to **corrective response to contingencies**; see `docs/ARQUITETURA.md`).
 
-## 1. Por que este treino
-A interface de restauração vai avaliar **muitas topologias** (a rede com várias linhas/barras fora e manobras de religamento) e precisa de um avaliador rápido e preciso perto dos limites de carregamento. O modelo atual foi um treino reduzido, bom para validar o fluxo de trabalho, mas pouco treinado para isso.
+## 1. Why this training
+The system evaluates **many contingencies** (the network with some lines/buses out: the N-1 screening of all lines and buses and the combinations the operator marks, typically N-1 to N-3) and needs a fast evaluator that is **accurate near the loading limits**. The current model is a reduced training: good for validating the workflow, but **weak exactly at the 100% limit** (see §2). The final plan is always confirmed by the AC; GENCO serves for screening.
 
-## 2. Ponto de partida (já medido, IEEE 118, GENCO Tiny)
-Os pesos desse treino reduzido já estão publicados em `models/case118_genco_tiny/` (veja o README da pasta). **A integração do GENCO na interface pode começar com eles** e trocar pelos pesos finais depois, sem mudar o contrato.
+## 2. Starting point (already measured, IEEE 118, GENCO Tiny)
+The weights of this reduced training are already published in `models/case118_genco_tiny/` (see the folder's README). **The GENCO integration in the interface can start with them** and swap in the final weights later, without changing the contract.
 
-| Item | Valor atual |
+| Item | Current value |
 |---|---|
-| Dados | 3.200 amostras (800 cenários de carga × 4 variantes), contingências até **N-2** (`configs/data_case118.yaml`) |
-| Treino | 100 épocas, lote 32, GPU RTX 5060: **34 min** (~22 s/época; CPU ~54 s/época) |
-| Perda de validação | 0,030 → **0,0038** |
-| Erro médio de carregamento de linha (320 cenários de teste) | **GENCO 1,94 pontos %** × DC 2,88 |
-| Detecção de sobrecarga (limiar 90%) | **GENCO 86%** × DC 67% (a 100%: 54% × 46%) |
-| Inferência | GPU 2,34 ms/cenário, CPU 7,43; AC exato 5,0; DC 1,07 |
+| Data | 3,200 samples (800 load scenarios × 4 variants), contingencies up to **N-2** (`configs/data_case118.yaml`) |
+| Training | 100 epochs, batch 32, RTX 5060 GPU: **34 min** (~22 s/epoch; CPU ~54 s/epoch) |
+| Validation loss | 0.030 → **0.0038** |
+| Mean line loading error (320 test scenarios) | **GENCO 1.94 % points** × DC 2.88 |
+| Overload detection (90% threshold) | **GENCO 86%** × DC 67% (at 100%: 54% × 46%) |
+| Inference | GPU 2.34 ms/scenario, CPU 7.43; exact AC 5.0; DC 1.07 |
 
-**Limitação para a restauração:** o modelo só viu até N-2. Os estados de restauração têm muitas linhas fora, e perto do limite térmico ele ainda perde sobrecargas.
+**External validation done by the project (Oct 12):** 177 line outages of IEEE 118 (AC-OPF base dispatch, one line out, the reference bus absorbing the imbalance, no redispatch), compared with the backend AC (`docs/GENCO_VARREDURA.md`):
 
-## 3. O que treinar (proposta; o responsável pode ajustar e deve registrar o que mudar)
-- **Modelo:** GENCO **Tiny** (como no paper). Se sobrar tempo, comparar com **Small** (H=24, ~5M parâmetros); registrar custo e ganho.
-- **Dados:** `configs/data_case118_grande.yaml` → **40.000 amostras** (10.000 cenários × 4 variantes), contingências até **N-10**, com N-0 a 10% (o estado reparado) e N-1/N-2 a 13% cada, `seed: 42`.
-- **Treino:** `configs/train118_grande.yaml` → até **60 épocas**, lote 64, parada antecipada com paciência 15, GPU.
-- **Por que N-10:** o paper treina até N-2 e testa até N-20 (o GENCO generaliza, mas com resíduo maior). Treinar com mais linhas fora cobre melhor os estados de restauração.
-- **Fora do escopo deste treino:** ilhas energizadas separadamente, OPF e outras redes (ver §7).
-
-### Orçamento de tempo (estimativa, a partir de 22 s/época com 2.560 amostras ≈ 8,6 ms/amostra/época na RTX 5060)
-| Amostras | Épocas | Tempo de treino estimado |
+| Metric | GENCO Tiny reduced | DC |
 |---|---|---|
-| 20.000 | 50 | ~2,4 h |
-| **40.000** | **60** | **~5,7 h** (recomendado) |
-| 100.000 | 50 | ~12 h |
+| Mean loading error | **2.08 % points** | 2.95 |
+| Lines ≥ 90% detected | **95%** (precision 97.5%) | 78% |
+| Lines ≥ 100% detected | **25%** | 13% |
+| Scenarios that require action (≥ 100%) detected, no margin | 58% | 27% |
+| Time per scenario (CPU, this project) | 49.5 ms (backend AC 15.4; DC 0.9) | |
 
-A geração dos dados levou ~164 s para 3.200 amostras com 16 processos (≈ 50 ms/amostra); 40.000 amostras devem levar ~35 min a 1 h (estimativa; N-k alto pode demorar mais). **Medir a primeira época e reavaliar o plano.**
+**Limitation:** near the limit the model still misses many overloads. This is hard by nature here: the IEEE 118 base case already has lines **exactly at the limit** (active OPF constraint), so an error of 1 to 2 % points flips the classification. The goal of the larger training is to improve the **detection at 100% in N-1 to N-3** and the error in those ranges.
 
-## 4. Passo a passo
-Ambiente: o mesmo da máquina com GPU (PyTorch 2.8 + CUDA 12.8; graphkit do branch `genco-paper-repro`; `tools/patch_graphkit_windows_gpu.py` aplicado; shim do `torch_scatter`). Variáveis: `MLFLOW_ALLOW_FILE_STORE=true`, `PYTHONIOENCODING=utf-8`. Rodar pelo Bash.
+## 3. What to train (proposal; the person in charge can adjust it and must record what changes)
+- **Model:** GENCO **Tiny** (as in the paper). If time remains, compare with **Small** (H=24, ~5M parameters); record cost and gain.
+- **Data:** `configs/data_case118_grande.yaml` → **40,000 samples** (10,000 scenarios × 4 variants), contingencies up to **N-10**, with N-0 at 10% (the repaired state) and N-1/N-2 at 13% each, `seed: 42`.
+- **Training:** `configs/train118_grande.yaml` → up to **60 epochs**, batch 64, early stopping with patience 15, GPU.
+- **Why N-10:** the paper trains up to N-2 and tests up to N-20 (GENCO generalizes, but with a larger residual). Training with more lines out covers combined contingencies better. **If time is short, prioritize N-1 to N-3** (it is what the interface uses most).
+- **Out of scope for this training:** separately energized islands, OPF and other networks (see §7).
+
+### Time budget (estimate, from 22 s/epoch with 2,560 samples ≈ 8.6 ms/sample/epoch on the RTX 5060)
+| Samples | Epochs | Estimated training time |
+|---|---|---|
+| 20,000 | 50 | ~2.4 h |
+| **40,000** | **60** | **~5.7 h** (recommended) |
+| 100,000 | 50 | ~12 h |
+
+Generating the data took ~164 s for 3,200 samples with 16 processes (≈ 50 ms/sample); 40,000 samples should take ~35 min to 1 h (estimate; high N-k may take longer). **Measure the first epoch and re-evaluate the plan.**
+
+## 4. Step by step
+Environment: the same as the machine with a GPU (PyTorch 2.8 + CUDA 12.8; graphkit from the `genco-paper-repro` branch; `tools/patch_graphkit_windows_gpu.py` applied; `torch_scatter` shim). Variables: `MLFLOW_ALLOW_FILE_STORE=true`, `PYTHONIOENCODING=utf-8`. Run it from Bash.
 ```bash
-# 1) dados (criam data/case118_grande/case118_ieee/raw)
+# 1) data (creates data/case118_grande/case118_ieee/raw)
 gridfm_datakit generate configs/data_case118_grande.yaml
 
-# 2) treino
+# 2) training
 gridfm_graphkit train --config configs/train118_grande.yaml --data_path data/case118_grande \
   --num_workers 0 --exp_name final118 --run_name tiny_n10
 
-# 3) avaliação com previsões salvas e métricas AC/DC de referência
+# 3) evaluation with saved predictions and reference AC/DC metrics
 gridfm_graphkit evaluate --config configs/train118_grande.yaml --data_path data/case118_grande --num_workers 0 \
   --model_path <run>/artifacts/model/best_model_state_dict.pt \
   --normalizer_stats <run>/artifacts/stats/normalizer_stats.pt \
   --compute_dc_ac_metrics --save_output --exp_name final118 --run_name tiny_n10_eval
 ```
-Se a perda de validação ainda estiver caindo ao fim das épocas, continuar com `finetune` (mesmos argumentos + `--model_path`).
+If the validation loss is still falling at the end of the epochs, continue with `finetune` (same arguments + `--model_path`).
 
-## 5. Como avaliar (relatório obrigatório)
-Reaproveitar a fórmula validada de fluxo por linha (`app/export_data.py`) e comparar **GENCO × DC × AC exato**, no conjunto de teste (split por cenário de carga), **separando por número de saídas** (N-0, N-1, N-2, N-3…N-5, N-6…N-10):
-1. Erro médio e máximo do carregamento de linha (pontos %).
-2. Detecção de sobrecarga nos limiares 80%, 90% e 100%: acertos, perdas e falsos alarmes.
-3. Erro de tensão (Vm, Va) e resíduo de balanço de potência.
-4. Tempo de inferência (GPU e CPU, por cenário, com lotes de 32/160/320) e o AC exato como referência.
+## 5. How to evaluate (mandatory report)
+Reuse the validated per-line flow formula (`app/export_data.py`) and compare **GENCO × DC × exact AC**, on the test set (split by load scenario), **separating by number of outages** (N-0, N-1, N-2, N-3…N-5, N-6…N-10):
+1. Mean and maximum line loading error (% points).
+2. Overload detection at the 80%, 90% and 100% thresholds: hits, misses and false alarms.
+3. Voltage error (Vm, Va) and power balance residual.
+4. Inference time (GPU and CPU, per scenario, with batches of 32/160/320) and the exact AC as a reference.
 
-**Metas sugeridas (propostas, não resultados):** erro médio de carregamento ≤ 1,0 ponto % no geral e ≤ 2,0 em N-6…N-10; detecção a 90% ≥ 95%. Se não forem atingidas, relatar o que foi obtido; o plano final é sempre confirmado por AC.
+**Suggested targets (proposals, not results):** mean loading error ≤ 1.0 % point overall and ≤ 2.0 on N-6…N-10; detection at 90% ≥ 95%. If they are not reached, report what was obtained; the final plan is always confirmed by the AC.
 
-## 6. O que entregar (e onde)
-1. **Pesos** `best_model_state_dict.pt` e **`normalizer_stats.pt`** (sem as estatísticas o modelo não funciona fora do treino), seguindo a convenção já usada neste repositório: pasta **`models/case118_genco_tiny_n10/`** (nome sugerido; o `.gitignore` já libera `models/**/*.pt`) com `config.yaml`, o arquivo de splits, e um `README.md` com SHA-256, dados, métricas e instruções de uso, no modelo de `models/case118_genco_tiny/README.md`. Não sobrescrever a pasta do treino reduzido. Se algum arquivo passar de ~50 MB (ex.: modelo Small), usar **Release do GitHub** ou **Hugging Face** e deixar o link no README da pasta.
-2. **Configurações exatas** usadas (os dois YAML + qualquer alteração) e a **semente**.
-3. **Versões:** commit do `gridfm-graphkit` (branch `genco-paper-repro`), versão do `gridfm-datakit`, PyTorch/CUDA.
-4. **Relatório de métricas** (§5), em `docs/` e com a tabela por número de saídas.
-5. **Dataset:** se possível publicar no Hugging Face (reprodutibilidade, critério do desafio); caso contrário, descrever como regenerar (config + seed).
-6. **Exemplo mínimo de inferência em memória** (um script que carregue pesos + normalização e preveja para uma lista de topologias **sem** ler do disco o dataset inteiro). É o que o backend precisa para chamar o GENCO a partir da busca de restauração. O `tools/measure_genco_inference.py` hoje usa o `evaluate` do graphkit.
-7. Atualizar a seção 4 e o registro do o histórico do projeto.
+## 6. What to deliver (and where)
+1. **Weights** `best_model_state_dict.pt` and **`normalizer_stats.pt`** (without the statistics the model does not work outside training), following the convention already used in this repository: folder **`models/case118_genco_tiny_n10/`** (suggested name; the `.gitignore` already allows `models/**/*.pt`) with `config.yaml`, the splits file, and a `README.md` with SHA-256, data, metrics and usage instructions, following `models/case118_genco_tiny/README.md`. Do not overwrite the reduced-training folder. If any file exceeds ~50 MB (e.g. the Small model), use a **GitHub Release** or **Hugging Face** and leave the link in the folder's README.
+2. **Exact configurations** used (the two YAML files + any change) and the **seed**.
+3. **Versions:** `gridfm-graphkit` commit (`genco-paper-repro` branch), `gridfm-datakit` version, PyTorch/CUDA.
+4. **Metrics report** (§5), in `docs/` and with the table by number of outages.
+5. **Dataset:** if possible publish it on Hugging Face (reproducibility, a challenge criterion); otherwise, describe how to regenerate it (config + seed).
+6. **Minimal in-memory inference example** (a script that loads weights + normalization and predicts for a list of topologies **without** reading the whole dataset from disk). It is what the backend needs to call GENCO in the screening. `tools/measure_genco_inference.py` currently uses graphkit's `evaluate`.
+7. **Tell the group** when the weights are in the repository. The **validation on the 177 line outages can be redone here in a few minutes, with inference only** (no training needed): `backend/tools/genco_screening.py` (see `docs/GENCO_VARREDURA.md`).
 
-**Prazos:** o backend começa a integrar o GENCO em **18/out** (Fase 5). **Entrega dos pesos até 18/out; limite absoluto 21/out** (depois disso a submissão usa o avaliador clássico e o GENCO fica como resultado parcial).
+**Deadlines:** the backend starts integrating GENCO on **Oct 18** (Phase 5). **Weights delivered by Oct 18; absolute limit Oct 21** (after that the submission uses the classical evaluator and GENCO stays as a partial result (the submission text already states the result of the reduced training)).
 
-## 7. Pontos em aberto (decidir com o grupo)
-- **Estados parciais/ilhados:** o datakit evita ilhas, então o GENCO nunca viu barras isoladas. A interface avalia só a ilha com a barra de referência; é preciso medir o erro nesses casos (conjunto de validação a gerar no backend com o pandapower) e, se ficar ruim, confirmar sempre no AC.
-- **Rede maior (ex.: GOC-500):** a medição atual mostrou que, no IEEE 118, o GENCO é só ~2× mais rápido que o AC e ~2× mais lento que o DC, e a triagem híbrida mandou ~99% dos cenários ao AC (não ganha tempo). O argumento de velocidade pode exigir uma rede maior ou avaliação em lotes grandes; decidir se vale treinar também uma rede maior ou se o argumento da submissão será a precisão.
-- **Redespacho de geração (OPF):** fora do escopo; o despacho é fixo.
-- **Small × Tiny:** só se houver tempo.
+## 7. Open points (decide with the group)
+- **Partial/islanded states:** the datakit avoids islands, so GENCO never saw isolated buses. The interface evaluates only the island with the reference bus; 9 of the 186 lines island buses and were left out of the validation (the backend AC handles them). If GENCO is used in those cases, measure the error and, if it turns out bad, always confirm with the AC.
+- **Larger network (e.g. GOC-500):** the current measurement showed that, on IEEE 118, GENCO is only ~2× faster than the AC and ~2× slower than the DC, and the hybrid screening sent ~99% of the scenarios to the AC (no time saved). The speed argument may require a larger network or evaluation in large batches; decide whether it is worth training a larger network too or whether the submission's argument will be accuracy.
+- **Generation redispatch (OPF):** out of scope; the dispatch is fixed.
+- **Small × Tiny:** only if there is time.

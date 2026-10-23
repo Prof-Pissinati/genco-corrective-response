@@ -1,13 +1,13 @@
-# GENCO Tiny treinado no IEEE 118 (treino reduzido)
+# GENCO Tiny trained on IEEE 118 (reduced training)
 
-Pesos do modelo **GENCO Tiny** (`GNS_heterogeneous`, `hidden_size: 12`, 12 camadas, ~1,3 M de parâmetros) para a rede **`case118_ieee`**, tarefa **PowerFlow**. Treinado pelo colaborador `leonardp315` com o `gridfm-graphkit` (branch `genco-paper-repro`).
+Weights of the **GENCO Tiny** model (`GNS_heterogeneous`, `hidden_size: 12`, 12 layers, ~1.3 M parameters) for the network **`case118_ieee`**, **PowerFlow** task. Trained by the collaborator `leonardp315` with `gridfm-graphkit` (branch `genco-paper-repro`).
 
-| Arquivo | Para quê |
+| File | What for |
 |---|---|
-| `best_model_state_dict.pt` | pesos do melhor ponto de validação (5,3 MB) |
-| `normalizer_stats.pt` | estatísticas do normalizador, **necessárias** na inferência |
-| `config.yaml` | configuração usada no treino (`configs/train118_gpu_100ep.yaml`) |
-| `case118_ieee_scenario_splits.json` | cenários de treino/validação/teste (por índice de cenário) |
+| `best_model_state_dict.pt` | weights of the best validation point (5.3 MB) |
+| `normalizer_stats.pt` | normalizer statistics, **needed** at inference |
+| `config.yaml` | configuration used in training (`configs/train118_gpu_100ep.yaml`) |
+| `case118_ieee_scenario_splits.json` | training/validation/test scenarios (by scenario index) |
 
 SHA-256:
 ```
@@ -15,16 +15,16 @@ SHA-256:
 9e0885eb0ff3bb7593937b5745b4933f29aba0d5a6a0a7feb8c2e8f2d17d9adc  normalizer_stats.pt
 ```
 
-## Como foi treinado
-- Dados: `configs/data_case118.yaml` (gridfm-datakit, modo PF, contingências até N-2, **3200 amostras**: 800 cenários de carga × 4 variantes de topologia, `seed: 0`). Split 2560/320/320.
-- Treino: 100 épocas, lote 32, GPU (RTX 5060), 34 min. Perda de validação 0,030 → 0,0038.
-- Teste (320 cenários nunca vistos): RMSE Vm ≈ 0,0013 p.u. (barras PQ), 0,014 p.u. (referência); RMSE Va ≈ 0,056 rad; resíduo de potência ativa médio ≈ 1,9 MW.
-- Comparação com DC e tempos: (erro médio de carregamento de linha: GENCO 1,9 × DC 2,9 pontos %; 2,3 ms/cenário na GPU).
+## How it was trained
+- Data: `configs/data_case118.yaml` (gridfm-datakit, PF mode, contingencies up to N-2, **3200 samples**: 800 load scenarios × 4 topology variants, `seed: 0`). Split 2560/320/320.
+- Training: 100 epochs, batch 32, GPU (RTX 5060), 34 min. Validation loss 0.030 → 0.0038.
+- Test (320 never-seen scenarios): Vm RMSE ≈ 0.0013 p.u. (PQ buses), 0.014 p.u. (reference); Va RMSE ≈ 0.056 rad; mean active-power residual ≈ 1.9 MW.
+- Comparison with the DC and timings: see section 4 of the project history (mean line loading error: GENCO 1.9 × DC 2.9 % points; 2.3 ms/scenario on the GPU).
 
-## Como usar
-Ambiente: Python 3.12, `torch<2.9`, `gridfm-graphkit` do branch `genco-paper-repro`, shim de `torch_scatter` (`tools/torch_scatter_shim/`). Em GPU no Windows, aplicar também `tools/patch_graphkit_windows_gpu.py`. Detalhes no `README.md` da raiz.
+## How to use
+Environment: Python 3.12, `torch<2.9`, `gridfm-graphkit` from the `genco-paper-repro` branch, `torch_scatter` shim (`tools/torch_scatter_shim/`). On GPU on Windows, also apply `tools/patch_graphkit_windows_gpu.py`. Details in the root `README.md`.
 
-Os dados precisam existir no formato do datakit (`data/case118/case118_ieee/raw`, gerados com `configs/data_case118.yaml`). Previsões (Vm, Va, Pg, Qg por barra) para os cenários de teste:
+The data must exist in datakit format (`data/case118/case118_ieee/raw`, generated with `configs/data_case118.yaml`). Predictions (Vm, Va, Pg, Qg per bus) for the test scenarios:
 
 ```bash
 export MLFLOW_ALLOW_FILE_STORE=true MLFLOW_DISABLE_AGENT_HINT=1 PYTHONIOENCODING=utf-8
@@ -32,12 +32,12 @@ gridfm_graphkit predict --config models/case118_genco_tiny/config.yaml \
   --model_path models/case118_genco_tiny/best_model_state_dict.pt \
   --normalizer_stats models/case118_genco_tiny/normalizer_stats.pt \
   --data_path data/case118 --num_workers 0 --output_path saida_predict
-# gera saida_predict/case118_ieee_predictions.parquet (colunas Vm_pred, Va_pred em rad, ...)
+# produces saida_predict/case118_ieee_predictions.parquet (columns Vm_pred, Va_pred in rad, ...)
 ```
 
-O **fluxo por linha** não vem direto do modelo: calcula-se a partir de `Vm_pred`/`Va_pred` e das admitâncias (`Yff`, `Yft`) do `branch_data` (função `genco_flows` em `app/export_data.py`; com as tensões reais reproduz o AC com erro < 0,01 MW). Para medir tempo de inferência: `tools/measure_genco_inference.py`.
+The **per-line flow** does not come directly from the model: it is computed from `Vm_pred`/`Va_pred` and the admittances (`Yff`, `Yft`) of `branch_data` (function `genco_flows` in `app/export_data.py`; with the real voltages it reproduces the AC with error < 0.01 MW). To measure inference time: `tools/measure_genco_inference.py`.
 
-## Limitações
-- **Treino reduzido** (o artigo usa 250 mil amostras e 200 épocas): melhora o DC, mas ainda perde sobrecargas perto do limite; usar com confirmação por AC.
-- Vale **só para o IEEE 118** (o GENCO é treinado por rede) e para a distribuição de cargas/topologias do dataset (N-0/N-1/N-2, cargas escaladas).
-- O datakit evita ilhas; topologias com ilhas desenergizadas estão **fora do treino**.
+## Limitations
+- **Reduced training** (the paper uses 250 thousand samples and 200 epochs): it improves on the DC, but still misses overloads near the limit; use with AC confirmation.
+- Valid **only for IEEE 118** (GENCO is trained per network) and for the load/topology distribution of the dataset (N-0/N-1/N-2, scaled loads).
+- The datakit avoids islands; topologies with de-energized islands are **outside the training**.

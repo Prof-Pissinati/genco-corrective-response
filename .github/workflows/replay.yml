@@ -1,7 +1,7 @@
-# Gera o demo estático (replay) da interface: um único HTML com resultados pré-calculados do IEEE 118.
-# Em cada push na main (e manualmente) publica o arquivo como artefato; "Run workflow" também o publica no GitHub Pages
-# (exige Pages habilitado: Settings > Pages > Source: GitHub Actions, e repositório público ou plano que permita).
-name: Replay (demo estatico)
+# Builds the static demo (replay) of the interface: a single HTML with precomputed results for IEEE 14, 30, 57 and 118.
+# On every push to main (and manually) it publishes the file as an artifact; "Run workflow" also publishes it to GitHub Pages
+# (requires Pages enabled: Settings > Pages > Source: GitHub Actions, and a public repository or a plan that allows it).
+name: Replay (static demo)
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_pages:
-        description: 'Publicar no GitHub Pages'
+        description: 'Publish to GitHub Pages'
         type: boolean
         default: false
 
@@ -30,7 +30,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build:replay
-      - name: Prepara a pasta do Pages
+      - name: Prepare the Pages folder
         run: mkdir -p pages && cp standalone/genco-replay.html pages/index.html
       - uses: actions/upload-artifact@v4
         with:

@@ -1,11 +1,11 @@
-"""Corrige o gridfm-graphkit (branch genco-paper-repro) para treinar em GPU no Windows.
+"""Fixes gridfm-graphkit (branch genco-paper-repro) to train on GPU on Windows.
 
-Problema: com accelerator=gpu o cli.py força DDPStrategy (feita para várias GPUs), que usa o backend NCCL, e o
-PyTorch para Windows não traz NCCL ("Distributed package doesn't have NCCL built in"). O backend gloo também falha
-aqui ("unsupported gloo device").
-Correção: com uma única GPU (devices == 1) usar SingleDeviceStrategy("cuda:0") em vez de DDP. Idempotente.
+Problem: with accelerator=gpu cli.py forces DDPStrategy (made for several GPUs), which uses the NCCL backend, and
+PyTorch for Windows does not ship NCCL ("Distributed package doesn't have NCCL built in"). The gloo backend also fails
+here ("unsupported gloo device").
+Fix: with a single GPU (devices == 1) use SingleDeviceStrategy("cuda:0") instead of DDP. Idempotent.
 
-Uso: python tools/patch_graphkit_windows_gpu.py <caminho/para/gridfm-graphkit>
+Usage: python tools/patch_graphkit_windows_gpu.py <path/to/gridfm-graphkit>
 """
 import sys
 from pathlib import Path
@@ -28,9 +28,9 @@ imp_old = "from lightning.pytorch.strategies import DDPStrategy"
 imp_new = "from lightning.pytorch.strategies import DDPStrategy, SingleDeviceStrategy"
 
 if "SingleDeviceStrategy(device" in src:
-    print(f"{cli}: já aplicado")
+    print(f"{cli}: already applied")
 elif old in src and imp_old in src:
     cli.write_text(src.replace(old, new).replace(imp_old, imp_new), encoding="utf-8")
-    print(f"{cli}: aplicado")
+    print(f"{cli}: applied")
 else:
-    sys.exit(f"{cli}: trecho esperado não encontrado (versão diferente do graphkit?)")
+    sys.exit(f"{cli}: expected snippet not found (different graphkit version?)")

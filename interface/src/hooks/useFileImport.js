@@ -10,7 +10,7 @@ export function useFileImport({
     applySystemData // 👈 A Engine
 }) {
 
-    // Importação de caso MATPOWER (.m) -> modo transmissão (.m) -> modo transmissão
+    // MATPOWER case (.m) import -> transmission mode
     const handleMatpowerFileUpload = useCallback((e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -21,7 +21,7 @@ export function useFileImport({
                 const sys = buildTransmissionSystem(mpc, { name: file.name.replace(/\.m$/i, '') });
 
                 if (setIsCalculatingLayout) setIsCalculatingLayout(true);
-                if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Desenhando Diagrama...", msg2: "Calculando layout da rede de transmissão" });
+                if (setLayoutProgress) setLayoutProgress({ passes: 0, msg1: "Drawing Diagram...", msg2: "Computing the transmission network layout" });
                 await new Promise(resolve => setTimeout(resolve, 50));
                 const nodes = mpc.bus.map(r => r[0]);
                 const autoPositions = await runAsyncLayout('force', nodes, sys.branches, sys.sources, {
@@ -33,11 +33,11 @@ export function useFileImport({
                 sys.positionsProject = autoPositions;
                 applySystemData(sys, `MATPOWER ${file.name}`);
                 showToast(sys.transmission.dispatchAdjusted
-                    ? `Caso ${file.name} importado (${nodes.length} barras). O despacho do arquivo não fecha com a carga e foi rebalanceado.`
-                    : `Caso ${file.name} importado (${nodes.length} barras).`, "success");
+                    ? `Case ${file.name} imported (${nodes.length} buses). The dispatch in the file does not match the load and was rebalanced.`
+                    : `Case ${file.name} imported (${nodes.length} buses).`, "success");
             } catch (err) {
                 if (setIsCalculatingLayout) setIsCalculatingLayout(false);
-                alert("❌ Erro ao processar o arquivo MATPOWER: " + err.message);
+                alert("❌ Error processing the MATPOWER file: " + err.message);
                 console.error(err);
             }
         };

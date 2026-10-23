@@ -1,14 +1,14 @@
-"""Exporta um dataset do gridfm-datakit (parquet) para app/data.json, lido pelo painel (app/index.html).
+"""Exports a gridfm-datakit dataset (parquet) to app/data.json, read by the panel (app/index.html).
 
-Uso (a partir da raiz do repositório):
+Usage (from the repository root):
     python app/export_data.py data/est118/case118_ieee/raw app/data.json
 
-Por cenário guarda, para cada linha: fluxo AC (MVA), fluxo DC (MW) e estado (1 = ligada, 0 = desligada).
-Com um terceiro argumento (parquet de previsões do `gridfm_graphkit evaluate --save_output`, colunas
-`scenario, bus, Vm_pred, Va_pred`), o painel passa a mostrar só os cenários de teste (que o modelo nunca viu) e
-calcula o fluxo previsto de cada linha pelas admitâncias (validado: com as tensões reais reproduz o AC com erro < 0,01 MW):
+Per scenario it stores, for each line: AC flow (MVA), DC flow (MW) and state (1 = connected, 0 = disconnected).
+With a third argument (predictions parquet from `gridfm_graphkit evaluate --save_output`, columns
+`scenario, bus, Vm_pred, Va_pred`), the panel shows only the test scenarios (which the model never saw) and
+computes the predicted flow of each line from the admittances (validated: with the real voltages it reproduces the AC with error < 0.01 MW):
     python app/export_data.py data/case118/case118_ieee/raw app/data.json <.../test/case118_ieee_predictions.parquet>
-Alternativamente, uma coluna `pf_genco` no branch_data também é aceita. Sem GENCO, o painel mostra "–".
+Alternatively, a `pf_genco` column in branch_data is also accepted. Without GENCO, the panel shows "–".
 """
 import json
 import math
@@ -42,13 +42,13 @@ buses = [{"id": int(b), "x": float(pos[b][0]), "y": float(pos[b][1])} for b in s
 BASE_MVA = 100.0
 pred = None
 if pred_file is not None:
-    # Previsões do GENCO (tabela por barra: Vm_pred, Va_pred em rad). Só existem para o conjunto de teste.
+    # GENCO predictions (per-bus table: Vm_pred, Va_pred in rad). They only exist for the test set.
     pred = pd.read_parquet(pred_file).sort_values(["scenario", "bus"])
     br = br[br.scenario.isin(pred.scenario.unique())]
 
 
 def genco_flows(sid, d):
-    """Fluxo aparente (MVA) em cada linha a partir das tensões previstas, com as admitâncias do branch_data."""
+    """Apparent flow (MVA) on each line from the predicted voltages, with the branch_data admittances."""
     b = pred[pred.scenario == sid]
     v = b.Vm_pred.to_numpy() * np.exp(1j * b.Va_pred.to_numpy())
     f, t = d.from_bus.to_numpy(), d.to_bus.to_numpy()
@@ -88,4 +88,4 @@ data = {
     "genco_available": has_genco,
 }
 out.write_text(json.dumps(data, separators=(",", ":")), encoding="utf-8")
-print(f"{out}: {len(buses)} barras, {len(lines)} linhas, {len(scenarios)} cenários, GENCO={'sim' if has_genco else 'não'}")
+print(f"{out}: {len(buses)} buses, {len(lines)} lines, {len(scenarios)} scenarios, GENCO={'yes' if has_genco else 'no'}")

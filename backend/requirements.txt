@@ -1,4 +1,4 @@
-# Requisitos para RODAR o backend (ambiente leve, funciona com o Python do sistema, inclusive 3.14).
+# Requirements to RUN the backend (lightweight environment, works with the system Python, including 3.14).
 fastapi
 uvicorn
 numpy

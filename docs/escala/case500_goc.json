@@ -1,0 +1,53 @@
+{
+ "rede": "case500_goc",
+ "barras": 500,
+ "linhas": 733,
+ "geradores": 224,
+ "cenarios": 60,
+ "pulados": {
+  "ilhamento": 10,
+  "AC não convergiu": 0
+ },
+ "seed": 0,
+ "casoBase": {
+  "converged": true,
+  "iterations": 5,
+  "maxDVm": 1.836308882730009e-13,
+  "maxDVaGraus": 2.4044144453228e-10
+ },
+ "modelo": "case500_goc_genco_tiny_autores",
+ "erro": {
+  "genco": {
+   "maePct": 2.423,
+   "p95Pct": 8.88,
+   "maxPct": 78.1,
+   "erroDoMaximoMedianoPct": 0.45
+  },
+  "dc": {
+   "maePct": 2.671,
+   "p95Pct": 8.74,
+   "maxPct": 81.2,
+   "erroDoMaximoMedianoPct": 2.38
+  }
+ },
+ "acPartidaPlana": {
+  "testados": 8,
+  "convergiram": 8,
+  "msMediano": 20.4
+ },
+ "msPorCenario": {
+  "acNosso": 14.4,
+  "dc": 1.18,
+  "gencoTotal": 64.2,
+  "gencoMontagemDoGrafo": 19.5,
+  "gencoModelo": 44.7,
+  "lote": 16
+ },
+ "maquina": {
+  "cpuLogicas": 12,
+  "plataforma": "Windows-11-10.0.26200-SP0",
+  "torch": "2.8.0+cpu",
+  "threadsTorch": 10
+ },
+ "totalS": 6.5
+}

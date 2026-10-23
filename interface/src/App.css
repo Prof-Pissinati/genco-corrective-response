@@ -41,7 +41,7 @@
   color: #888;
 }
 
-/* ESTILOS MODERNOS PARA OS BOTÕES DA SIDEBAR */
+/* MODERN STYLES FOR THE SIDEBAR BUTTONS */
 .sidebar-action-btn {
     display: flex;
     align-items: center;
@@ -57,7 +57,7 @@
     width: 100%;
 }
 
-/* Cores Semânticas */
+/* Semantic Colors */
 .btn-undo {
     border: 1px solid #6c757d; /* Cinza */
     color: #6c757d;
@@ -65,19 +65,19 @@
 .btn-undo:hover { background-color: #6c757d; color: #fff; }
 
 .btn-reset {
-    border: 1px solid #dc3545; /* Vermelho */
+    border: 1px solid #dc3545; /* Red */
     color: #dc3545;
 }
 .btn-reset:hover { background-color: #dc3545; color: #fff; }
 
 .btn-import {
-    border: 1px solid #198754; /* Verde */
+    border: 1px solid #198754; /* Green */
     color: #198754;
 }
 .btn-import:hover { background-color: #198754; color: #fff; }
 
 .btn-export {
-    border: 1px solid #0d6efd; /* Azul */
+    border: 1px solid #0d6efd; /* Blue */
     color: #0d6efd;
 }
 .btn-export:hover { background-color: #0d6efd; color: #fff; }
