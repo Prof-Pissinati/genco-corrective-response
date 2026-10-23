@@ -1,6 +1,6 @@
 # Builds the static demo (replay) of the interface: a single HTML with precomputed results for IEEE 14, 30, 57 and 118.
-# On every push to main (and manually) it publishes the file as an artifact; "Run workflow" also publishes it to GitHub Pages
-# (requires Pages enabled: Settings > Pages > Source: GitHub Actions, and a public repository or a plan that allows it).
+# On every push to main (and manually) it publishes the file as an artifact. In the public mirror (owner Prof-Pissinati) every push to main also publishes it to GitHub Pages;
+# elsewhere, "Run workflow" with deploy_pages does it (requires Pages enabled: Settings > Pages > Source: GitHub Actions, and a public repository or a plan that allows it).
 name: Replay (static demo)
 
 on:
@@ -37,12 +37,12 @@ jobs:
           name: genco-replay
           path: interface/standalone/genco-replay.html
       - uses: actions/upload-pages-artifact@v3
-        if: ${{ inputs.deploy_pages }}
+        if: ${{ inputs.deploy_pages || (github.event_name == 'push' && github.repository_owner == 'Prof-Pissinati') }}
         with:
           path: interface/pages
 
   deploy:
-    if: ${{ inputs.deploy_pages }}
+    if: ${{ inputs.deploy_pages || (github.event_name == 'push' && github.repository_owner == 'Prof-Pissinati') }}
     needs: build
     runs-on: ubuntu-latest
     permissions:

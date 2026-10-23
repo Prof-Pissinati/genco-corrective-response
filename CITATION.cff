@@ -8,9 +8,13 @@ authors:
   - given-names: "Rafael"
     family-names: "Pissinati de Souza"
     alias: "Prof-Pissinati"
+    email: "rafael.pissinati@ifro.edu.br"
+    affiliation: "School of Science and Technology, University of Trás-os-Montes and Alto Douro (UTAD), Vila Real, Portugal; Unesp – Ilha Solteira, LAPSE laboratory; IFRO – Porto Velho Calama, Control and Automation Engineering"
   - given-names: "Leonardo"
     family-names: "Pilarski"
     alias: "leonardp315"
+    email: "pilarski@utad.pt"
+    affiliation: "School of Science and Technology, University of Trás-os-Montes and Alto Douro (UTAD), Vila Real, Portugal; HumanISE, INESC TEC, UTAD Pole, Vila Real, Portugal"
 abstract: >-
   Interface and backend for the corrective response to contingencies (redispatch and minimum load shedding), N-1 screening,
   repair with block-by-block load reconnection and GENCO validation on the IEEE 14, 30, 57 and 118 systems.
