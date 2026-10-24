@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { THEME } from '../utils/theme.js';
+import { isOverloaded } from '../utils/loading.js';
 
 export const PALETTE_HUES = [210, 120, 30, 280, 180, 320, 85, 240, 150, 15];
 
@@ -14,8 +15,8 @@ export const getBaseColor = (id, allRoots, darkMode) => {
 
 // 👇 Receives the ready-made "topology" 👇
 // ---- Transmission color scheme (decision: loading > voltage; scale that does not depend on telling green from red) ----
-// Loading (% of rateA): blue -> sky blue -> near-white -> yellow -> orange -> red (>= 100%), without passing through green. The line width also grows with the load.
-const LOADING_STOPS = [[0, [74, 120, 194]], [50, [110, 185, 235]], [68, [236, 236, 226]], [82, [255, 210, 63]], [95, [255, 122, 26]], [100, [213, 0, 0]]];
+// Loading (% of rateA): blue -> sky blue -> near-white -> yellow -> orange -> deep orange (at the 100% limit), without passing through green. Red is reserved for an overload (above the limit, see utils/loading.js), so a line AT the limit is never red. The line width also grows with the load.
+const LOADING_STOPS = [[0, [74, 120, 194]], [50, [110, 185, 235]], [68, [236, 236, 226]], [82, [255, 210, 63]], [95, [255, 122, 26]], [100, [230, 81, 0]]];
 export function loadingColor(pct) {
     const p = Math.max(0, Math.min(100, pct || 0));
     for (let i = 1; i < LOADING_STOPS.length; i++) {
@@ -26,7 +27,7 @@ export function loadingColor(pct) {
             return `rgb(${c0.map((v, k) => Math.round(v + f * (c1[k] - v))).join(',')})`;
         }
     }
-    return 'rgb(213,0,0)';
+    return 'rgb(230,81,0)';
 }
 export function loadingWidth(pct) {
     const f = Math.max(0, Math.min(1, ((pct || 0) - 60) / 40));
@@ -81,7 +82,7 @@ export function useColorIntelligence({ faultNodes, activeSources, lineCurrents, 
         
         const current = lineCurrents[branch.id];
         if (!current || current.current < 0.001) return colors.de; 
-        if (current.percentage >= 100) return '#d50000'; 
+        if (isOverloaded(current.percentage)) return '#d50000'; 
         if (transmission) return loadingColor(current.percentage);
         if (loopEdges.has(branch.id)) return colors.loop; 
         

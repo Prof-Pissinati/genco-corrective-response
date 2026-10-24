@@ -1,0 +1,17 @@
+import { open, OUT, setup, applyLine85 } from './comum.mjs';
+const { browser, page } = await open(1920, 1500);
+await setup(page);
+await applyLine85(page);
+await page.click('[data-testid="corrective-panel"] >> text="With plan"');
+await page.waitForTimeout(1500);
+await page.$eval('[data-testid="corrective-panel"]', p => { p.style.height = '1380px'; p.style.maxHeight = '1400px'; });
+await page.waitForTimeout(500);
+await (await page.$('[data-testid="corrective-panel"]')).screenshot({ path: OUT + 'raw_F3_panel.png' });
+const sp = await page.$('[data-testid="screening-panel"]');
+await page.$eval('[data-testid="screening-panel"]', p => { p.style.height = '760px'; });
+await page.waitForTimeout(300);
+await sp.screenshot({ path: OUT + 'raw_F4_list.png' });
+await page.click('[data-testid="screening-tab-genco"]');
+await page.waitForTimeout(800);
+await sp.screenshot({ path: OUT + 'raw_F4_genco.png' });
+await page.close(); await browser.close();

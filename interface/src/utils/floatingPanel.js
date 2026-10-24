@@ -2,7 +2,7 @@
 // Pure functions and persistence for the floating windows (position, collapsed). No React dependency, so it can be tested in Node.
 
 const KEY = (id) => `genco.panel.${id}`;
-let zCounter = 900;
+let zCounter = 1100;   // above the diagram legend (1000), below the banners and modals
 
 /** Next z-index: the clicked window goes in front of the others. */
 export const nextPanelZ = () => ++zCounter;

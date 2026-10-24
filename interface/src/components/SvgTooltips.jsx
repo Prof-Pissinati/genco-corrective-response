@@ -1,4 +1,5 @@
 import React from 'react';
+import { isOverloaded as overloadedPct } from '../utils/loading';
 import { parallelGroups } from '../utils/parallel';
 import { voltageLevel, formatVoltage } from '../utils/voltage';
 
@@ -97,8 +98,8 @@ export default function SvgTooltips({
         const safePercent = isNaN(data.percentage) ? 0 : Math.max(0, data.percentage);
         const barWidth = 130;
         const fillWidth = barWidth * Math.min(safePercent, 100) / 100;
-        const fillColor = safePercent >= 100 ? '#d32f2f' : (safePercent > 80 ? '#ff9800' : '#4caf50');
-        const isOverloaded = safePercent > 100;
+        const fillColor = overloadedPct(safePercent) ? '#d32f2f' : (safePercent > 80 ? '#ff9800' : '#4caf50');
+        const isOverloaded = overloadedPct(safePercent);
 
         return (
             <g transform={`translate(${x}, ${y}) scale(${invScale})`} pointerEvents={isPinned ? "all" : "none"} className={isPinned ? "pinned-card" : "svg-tooltip"} data-id={branch.id} data-type="line" key={isPinned ? `pin-line-${branch.id}` : `hov-line-${branch.id}`}>
@@ -194,7 +195,7 @@ export default function SvgTooltips({
         const angle    = nodeInfo.angle !== undefined ? nodeInfo.angle.toFixed(2)  : '0.00';
         const vLevel  = voltageLevel(nodeInfo.v, busLimits ? busLimits[nodeId] || null : null);
         const vColor   = vLevel === 'bad' ? '#ff5252' : (vLevel === 'warn' ? '#ffd600' : '#4caf50');
-        const loadColor = loadingPercent > 100 ? '#f44336' : (loadingPercent > 80 ? '#ff9800' : '#4caf50');
+        const loadColor = overloadedPct(loadingPercent) ? '#f44336' : (loadingPercent > 80 ? '#ff9800' : '#4caf50');
 
         const titleColor = (isMainSource || isGen) ? '#00bcd4' : (isFeeder ? '#4caf50' : '#ff9800');
         const titleLabel = isMainSource ? `Substation ${nodeId}` : isGen ? `Generator ${nodeId}` : isFeeder ? `Feeder ${nodeId}` : `Bus ${nodeId}`;

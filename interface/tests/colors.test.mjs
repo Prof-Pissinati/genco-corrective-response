@@ -9,8 +9,8 @@ const lum = ([r, g, b]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 test('loading: extremes and reference points', () => {
     assert.deepEqual(rgb(loadingColor(0)), [74, 120, 194]);            // folgado: azul
     assert.deepEqual(rgb(loadingColor(82)), [255, 210, 63]);           // attention: yellow
-    assert.deepEqual(rgb(loadingColor(100)), [213, 0, 0]);             // limite: vermelho
-    assert.deepEqual(rgb(loadingColor(250)), [213, 0, 0]);             // acima de 100% satura
+    assert.deepEqual(rgb(loadingColor(100)), [230, 81, 0]);             // at the limit: deep orange (red is only for an overload)
+    assert.deepEqual(rgb(loadingColor(250)), [230, 81, 0]);             // above 100% it saturates (the overload red is applied by getEdgeColor)
     assert.deepEqual(rgb(loadingColor(-5)), rgb(loadingColor(0)));
     assert.deepEqual(rgb(loadingColor(undefined)), rgb(loadingColor(0)));
 });

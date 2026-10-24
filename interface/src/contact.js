@@ -20,7 +20,7 @@ export const CONTACT = {
         },
     ],
     email: '',
-    repoUrl: '',
+    repoUrl: 'https://github.com/Prof-Pissinati/genco-corrective-response',
     event: 'GENCO Challenge · GridFM Porto 2026',
     credit: 'Uses GENCO and OpenGridFM (IBM Research and collaborators; Apache 2.0).',
 };

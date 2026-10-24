@@ -63,14 +63,14 @@ export default function ScreeningPanel({ darkMode, busy, data, genco, verif = nu
                     </div>
                     <div style={{ border: `1px solid ${line}`, borderRadius: 6 }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead><tr style={{ color: muted, textAlign: 'right' }}>
+                            <thead><tr style={{ color: muted, textAlign: 'center' }}>
                                 <th style={{ ...thS, textAlign: 'left', padding: '3px 6px' }}>Fault</th><th style={thS}>Overl.</th><th style={thS}>Max.</th><th style={thS}>Isolated</th><th style={thS} title="GENCO estimate (state without redispatch)">GENCO*</th>
                             </tr></thead>
                             <tbody>
                                 {rows.map(c => {
                                     const g = c.type === 'line' ? gi.get(c.id) : null;
                                     return (
-                                        <tr key={`${c.type}-${c.id}`} onClick={() => onSelect(c)} style={{ cursor: 'pointer', textAlign: 'right', borderTop: `1px solid ${line}` }}
+                                        <tr key={`${c.type}-${c.id}`} onClick={() => onSelect(c)} style={{ cursor: 'pointer', textAlign: 'center', borderTop: `1px solid ${line}` }}
                                             title="Click to apply this fault and see the corrective response">
                                             <td style={{ textAlign: 'left', padding: '3px 6px', opacity: c.hasPlan === false ? 0.55 : 1 }}>{c.hasPlan ? <span style={{ color: '#00c853' }} title="precomputed plan">● </span> : null}{c.label}</td>
                                             <td style={{ color: c.overloads > 0 ? '#ff5252' : '#4caf50', fontWeight: 'bold' }}>{c.converged ? c.overloads : '—'}</td>

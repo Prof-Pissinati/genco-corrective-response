@@ -22,7 +22,7 @@ export const faultKey = (faults) => `c:${ids(faults?.branchOut)}|${ids(faults?.b
 /** Key of a repair order: [{type:'line'|'bus', id}] (order matters). */
 export const recoveryKey = (order) => `r:${(order || []).map(o => `${o.type}${o.id}`).join(',')}`;
 
-const MSG = 'Replay: only precomputed results are available. Pick a contingency marked with ● in the N-1 screening, or run the backend (README).';
+const MSG = 'Static demo: only precomputed results are available (this page has no server, a hosting limit, not a limit of the tool). Pick a contingency marked with ● in the N-1 screening, or run the backend (README) to analyze any fault live.';
 
 function check(data, request) {
     if (request.grid && request.grid !== data.case) throw new Error(`Replay mode: only case ${data.case} is available.`);

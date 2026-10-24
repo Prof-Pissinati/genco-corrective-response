@@ -21,3 +21,4 @@ desktop.ini
 
 # versao estatica gerada por "npm run build:replay" (CI publica; nao versionar)
 interface/standalone/
+entrega/

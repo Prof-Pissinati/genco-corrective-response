@@ -1303,7 +1303,7 @@ function App() {
                                 {shedNodes && (<div className="legend-item"><div className="legend-dot" style={{ background: 'transparent', border: '2px dashed #0a84ff', boxSizing: 'border-box' }}></div> Load shed (bus stays energized)</div>)}
                                 {redispatchNodes && (<div className="legend-item"><div className="legend-dot" style={{ background: '#ab47bc' }}></div> Redispatched generator</div>)}
                                 <div className="legend-item"><div className="legend-dot" style={{ background: THEME.light.fault }}></div> Fault/Overload</div>
-                                {transmission && (<div className="legend-item" title="Line loading as % of the thermal limit (rateA); the line also gets thicker with load"><div style={{ width: 54, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, rgb(74,120,194), rgb(110,185,235) 50%, rgb(236,236,226) 68%, rgb(255,210,63) 82%, rgb(255,122,26) 95%, rgb(213,0,0))' }}></div> Load 0 → 100%</div>)}
+                                {transmission && (<div className="legend-item" title="Line loading as % of the thermal limit (rateA); the line also gets thicker with load. Above 100% it turns red (overload)."><div style={{ width: 54, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, rgb(74,120,194), rgb(110,185,235) 50%, rgb(236,236,226) 68%, rgb(255,210,63) 82%, rgb(255,122,26) 95%, rgb(230,81,0))' }}></div> Load 0 → 100%</div>)}
                                 {voltageMode && (<div className="legend-item" title="Bus voltage: blue = low, light = 1.0 pu, red = high (case limits)"><div style={{ width: 54, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, rgb(33,102,172), rgb(236,236,236), rgb(178,24,43))' }}></div> Voltage (buses)</div>)}
                                 <div className="legend-item"><div className="legend-dot" style={{ background: THEME.light.loop }}></div> Loop</div>
                                 <div className="legend-item"><div className="legend-dot" style={{ background: THEME.light.de }}></div> De-energized</div>
@@ -1438,7 +1438,7 @@ function App() {
             )}
             {REPLAY && transmission && (
                 <div style={{ position: 'fixed', top: 8, left: '50%', transform: 'translateX(-50%)', zIndex: 950, background: 'rgba(255,143,0,0.95)', color: '#000', padding: '4px 12px', borderRadius: 14, fontSize: 12, fontWeight: 'bold' }}
-                    title="Results precomputed by the backend (AC). To analyze any fault, run the backend (README).">REPLAY · precomputed results ({networkOf(transmission.gridName)?.label || transmission.gridName}) · pick the faults in the N-1 screening 📊</div>
+                    title="This page is static: GitHub Pages has no server, so it replays results precomputed by the backend (AC). It is a hosting limit, not a limit of the tool: with the backend running (README) any fault is computed live.">STATIC DEMO · precomputed results ({networkOf(transmission.gridName)?.label || transmission.gridName}) · pick a fault in the N-1 screening 📊</div>
             )}
             {transmission && !recoveryOpen && (
                 <CorrectivePanel darkMode={darkMode} busy={correctiveBusy} data={corrective?.data || null} stage={corrective?.stage || 'pre'}

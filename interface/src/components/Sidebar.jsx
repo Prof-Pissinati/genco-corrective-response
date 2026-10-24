@@ -1,6 +1,7 @@
 import React from 'react';
 import { parallelGroups } from '../utils/parallel';
 import { voltageLevel, formatVoltage } from '../utils/voltage';
+import { isOverloaded } from '../utils/loading';
 
 // Function to convert power quantities automatically
 const formatPower = (kw, isMini = false) => {
@@ -758,8 +759,8 @@ export default function Sidebar({
                                                     {currentInfo.percentage > 15 ? `${currentInfo.percentage.toFixed(1)}%` : ''}
                                                 </div>
                                             </div>
-                                            <div style={{ textAlign: 'center', fontSize: '12px', marginTop: '8px', color: currentInfo.percentage >= 100 ? '#d50000' : (currentInfo.percentage > 80 ? '#ff9800' : (darkMode ? '#aaa' : '#666')), fontWeight: currentInfo.percentage > 80 ? 'bold' : 'normal' }}>
-                                                {currentInfo.percentage >= 100 ? '⚠️ OVERLOAD' : (currentInfo.percentage > 80 ? 'High Load' : 'Normal Operation')}
+                                            <div style={{ textAlign: 'center', fontSize: '12px', marginTop: '8px', color: isOverloaded(currentInfo.percentage) ? '#d50000' : (currentInfo.percentage > 80 ? '#ff9800' : (darkMode ? '#aaa' : '#666')), fontWeight: currentInfo.percentage > 80 ? 'bold' : 'normal' }}>
+                                                {isOverloaded(currentInfo.percentage) ? '⚠️ OVERLOAD' : (currentInfo.percentage > 80 ? 'High Load' : 'Normal Operation')}
                                             </div>
                                         </div>
                                     )}
