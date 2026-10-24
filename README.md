@@ -45,6 +45,7 @@ The operator marks **faulted lines and/or buses**; the system shows the pre-faul
 | `docs/TENSAO_PASSO0.md` and `docs/TENSAO_GENCO_OPF.md` | Voltage correction: what an AC-OPF would do (Step 0) and GENCO-OPF choosing the generator voltage (IEEE 118) |
 | `docs/REDES_ADICIONAIS.md` | The IEEE 14, 30 and 57 networks (besides 118): preparation, GENCO results and how to reproduce |
 | `docs/GENCO_CHECKPOINT_AUTORES.md` | The checkpoint published by the GENCO authors against our training (screening, several lines out and plan verifier) |
+| `docs/GENCO_COMPARADOR_NEWTON.md` | Classical baseline: Newton–Raphson from the base case against GENCO, for screening and plan verification (IEEE 118) |
 | `docs/GENCO_VERIFICACAO.md` | GENCO as a verifier of the corrective plans (states with redispatch and shedding that it did not see in training) |
 | `docs/RELATORIO_TREINO_N10.md` | Report of our final training (IEEE 118, up to N-10) |
 | `docs/ARQUITETURA.md` | Architecture and design decisions |

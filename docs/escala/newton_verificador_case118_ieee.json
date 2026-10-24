@@ -1,0 +1,35 @@
+{
+ "contingencies": 89,
+ "states": 623,
+ "insufficientPlans": 173,
+ "methods": {
+  "newton_1_step": {
+   "approvedByMistakeAt100": 7,
+   "highestThresholdWithNoMistake": 99,
+   "safePlansApprovedAtThatThreshold": {
+    "folga0": 4,
+    "folga3": 87,
+    "folga5": 88,
+    "folga8": 89,
+    "folga10": 89
+   },
+   "maxLoadingErrorMedian": 0.03,
+   "maxLoadingErrorP90": 0.436,
+   "maxLoadingErrorMax": 15.63
+  },
+  "newton_2_step": {
+   "approvedByMistakeAt100": 0,
+   "highestThresholdWithNoMistake": 100,
+   "safePlansApprovedAtThatThreshold": {
+    "folga0": 84,
+    "folga3": 89,
+    "folga5": 89,
+    "folga8": 89,
+    "folga10": 89
+   },
+   "maxLoadingErrorMedian": 0.0,
+   "maxLoadingErrorP90": 0.0,
+   "maxLoadingErrorMax": 0.44
+  }
+ }
+}

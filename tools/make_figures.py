@@ -452,6 +452,17 @@ def table_numbers(volt):
     for c in ("30", "57"):
         row(f"Thresholds fixed on the IEEE 118 applied to the IEEE {c} (authors' checkpoint): insufficient plans / approved by mistake GENCO at 99% / DC at 95%", f"{on[c]['genco']['insufficientPlans']} / {on[c]['genco']['approvedByMistakeAtFrozenThreshold']} / {on[c]['dc']['approvedByMistakeAtFrozenThreshold']}", src_vf)
     row("  cost of the extra point: 3-point-margin plans approved, GENCO (leave one out, integer steps)", f"{vf['integer']['genco']['leaveOneOut']['safeApprovedPct']['folga3']}% -> {vf['integer']['genco']['leaveOneOutMinusOnePoint']['safeApprovedPct']['folga3']}%", src_vf)
+    nw = load(ROOT / "docs" / "escala" / "newton_um_passo_case118_ieee.json")["methods"]
+    nv_all = load(ROOT / "docs" / "escala" / "newton_verificador_case118_ieee.json")
+    nv = nv_all["methods"]
+    src_n1 = "docs/escala/newton_um_passo_case118_ieee.json"
+    src_nv = "docs/escala/newton_verificador_case118_ieee.json"
+    row("Classical baseline, IEEE 118 screening (177 outages), mean loading error: Newton 1 step / 2 steps / GENCO / DC (pt)", f"{nw['newton_1_step']['maePct']} / {nw['newton_2_step']['maePct']} / {nw['genco_authors']['maePct']} / {nw['dc']['maePct']}", src_n1)
+    row("  lines at 100% or more found: Newton 1 step / 2 steps / GENCO / DC", f"{nw['newton_1_step']['recall100']}% / {nw['newton_2_step']['recall100']}% / {nw['genco_authors']['recall100']}% / {nw['dc']['recall100']}%", src_n1)
+    row("  time per scenario on CPU: Newton 1 step / 2 steps", f"{nw['newton_1_step']['msPerScenario']} / {nw['newton_2_step']['msPerScenario']} ms", src_n1)
+    row("Classical baseline as plan verifier: insufficient plans approved by mistake at 100%, Newton 1 step / 2 steps", f"{nv['newton_1_step']['approvedByMistakeAt100']} / {nv['newton_2_step']['approvedByMistakeAt100']} of {nv_all['insufficientPlans']}", src_nv)
+    row("  highest threshold with no mistake; 3-point-margin plans approved: Newton 1 step", f"{nv['newton_1_step']['highestThresholdWithNoMistake']}%; {nv['newton_1_step']['safePlansApprovedAtThatThreshold']['folga3']} of 89", src_nv)
+    row("  highest threshold with no mistake; 3-point-margin plans approved: Newton 2 steps", f"{nv['newton_2_step']['highestThresholdWithNoMistake']}%; {nv['newton_2_step']['safePlansApprovedAtThatThreshold']['folga3']} of 89", src_nv)
     rs = replay["recovery"]["r:line7"]["summary"]
     row("Replay IEEE 118, line 8-5 repaired: time to restore / energy not supplied / blocks reconnected", f"{rs['totalHours']:.2f} h / {rs['ensMWh']:.0f} MWh / {rs['blocks']}", "replay_case118_ieee.json  recovery[r:line7].summary")
     sc = screen["118"]["msPerScenario"]

@@ -1,0 +1,60 @@
+{
+ "scenarios": 177,
+ "skipped": 9,
+ "methods": {
+  "genco_authors": {
+   "maePct": 0.105,
+   "recall90": 99.5,
+   "recall100": 56.2,
+   "scenariosFlagged": {
+    "0": 129,
+    "5": 177,
+    "10": 177
+   }
+  },
+  "dc": {
+   "maePct": 2.955,
+   "recall90": 78.0,
+   "recall100": 13.4,
+   "scenariosFlagged": {
+    "0": 34,
+    "5": 177,
+    "10": 177
+   }
+  },
+  "newton_1_step": {
+   "maePct": 0.06,
+   "recall90": 99.2,
+   "recall100": 93.2,
+   "scenariosFlagged": {
+    "0": 177,
+    "5": 177,
+    "10": 177
+   },
+   "msPerScenario": 1.54
+  },
+  "newton_2_step": {
+   "maePct": 0.004,
+   "recall90": 99.9,
+   "recall100": 100.0,
+   "scenariosFlagged": {
+    "0": 177,
+    "5": 177,
+    "10": 177
+   },
+   "msPerScenario": 3.13
+  },
+  "newton_3_step": {
+   "maePct": 0.0,
+   "recall90": 100.0,
+   "recall100": 100.0,
+   "scenariosFlagged": {
+    "0": 177,
+    "5": 177,
+    "10": 177
+   },
+   "msPerScenario": 4.7
+  }
+ },
+ "scenariosCritical": 119
+}
