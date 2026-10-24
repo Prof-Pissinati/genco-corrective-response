@@ -51,6 +51,24 @@ of each line. "Approving" a plan = estimated maximum loading ≤ 100% of the lim
 ## With the authors' checkpoint
 The same test with the authors' GENCO Tiny gives an error per line of 0.21 % points (ours: 1.03) and approves 83 of 89 plans with a 3-point margin, but at 100% it approves 17 insufficient plans (ours, 0) because it has almost no bias; with a 99% threshold it approved none: see `docs/GENCO_CHECKPOINT_AUTORES.md`.
 
+## Held-out check of the threshold (authors' checkpoint)
+The safe thresholds above (99% for GENCO, 95% for the DC) were chosen on the same 89 contingencies they are evaluated on. `backend/tools/verificador_fora_da_amostra.py` repeats the choice on part of the contingencies and tests it on the rest, working from the per-state results of `interface/src/data/verificacao_planos_case118_ieee_autores.json` (no torch needed). The split is by contingency, because the plans of one contingency are not independent. Result in `docs/escala/verificador_fora_da_amostra_case118_ieee.json`.
+
+| Insufficient plans approved by mistake on held-out contingencies | GENCO | DC |
+|---|---|---|
+| Threshold in integer steps (as in the verification), leave one contingency out | 0 of 173 | 0 of 173 |
+| Same, chosen on a random half and tested on the other half (2,000 splits) | 0 of 174,888 | 45 of 175,016 (0.03%) |
+| Threshold tuned to the tenth of a point, random halves | 1,827 (1.04%; a mistake in 50% of the splits) | 2,005 (1.15%; 24% of the splits) |
+| Same, with one extra point of safety under the chosen threshold | 0 of 174,913 | 0 of 174,952 |
+
+- With integer steps the GENCO threshold is 99% in every split: the closest insufficient plan has an estimate of 99.35%, so it does not depend on which contingencies are used to choose it, and no insufficient plan of a held-out contingency was approved (leave one out, and 174,888 tested states over 2,000 random halves). The DC had 45 mistakes in 4 of the 2,000 splits.
+- A threshold fitted to the tenth of a point is fragile: it lets through about 1.04% of the insufficient plans of the other half (GENCO) and, in about half of the random splits, at least one. One extra point of safety removed every mistake, at a cost in approvals of the plans with a 3-point margin: 93.3% to 88.8% (leave one out, integer steps; DC: 1.1% to 0.0%).
+- Limits: one network, one checkpoint and plans that we built ourselves, whose states of the same contingency are correlated. The check shows that the threshold does not hinge on which contingencies choose it, not that it transfers to other networks or to plans of another origin.
+
+```bash
+python backend/tools/verificador_fora_da_amostra.py [--splits 2000]    # about 3 seconds, numpy only
+```
+
 ## Reproduce
 In the GENCO environment (`gridfm-graphkit` + `torch`), from the repository root (about 2 minutes on CPU):
 ```bash

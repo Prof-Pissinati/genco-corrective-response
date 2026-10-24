@@ -1,0 +1,311 @@
+{
+ "contingencies": 89,
+ "splits": 2000,
+ "seed": 0,
+ "steps": {
+  "integer": {
+   "genco": {
+    "thresholdOnAllData": 99.0,
+    "leaveOneOut": {
+     "thresholdMean": 99.0,
+     "thresholdMin": 99.0,
+     "thresholdMax": 99.0,
+     "thresholdP5": 99.0,
+     "thresholdP95": 99.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 93.3,
+      "folga5": 96.6,
+      "folga8": 98.9,
+      "folga10": 98.9
+     }
+    },
+    "half": {
+     "thresholdMean": 99.0,
+     "thresholdMin": 99.0,
+     "thresholdMax": 99.0,
+     "thresholdP5": 99.0,
+     "thresholdP95": 99.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 174888,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 93.3,
+      "folga5": 96.6,
+      "folga8": 98.9,
+      "folga10": 98.9
+     }
+    },
+    "leaveOneOutMinusOnePoint": {
+     "thresholdMean": 98.0,
+     "thresholdMin": 98.0,
+     "thresholdMax": 98.0,
+     "thresholdP5": 98.0,
+     "thresholdP95": 98.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 88.8,
+      "folga5": 95.5,
+      "folga8": 98.9,
+      "folga10": 98.9
+     }
+    },
+    "halfMinusOnePoint": {
+     "thresholdMean": 98.0,
+     "thresholdMin": 98.0,
+     "thresholdMax": 98.0,
+     "thresholdP5": 98.0,
+     "thresholdP95": 98.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 174913,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 88.7,
+      "folga5": 95.4,
+      "folga8": 98.8,
+      "folga10": 98.8
+     }
+    }
+   },
+   "dc": {
+    "thresholdOnAllData": 95.0,
+    "leaveOneOut": {
+     "thresholdMean": 95.0,
+     "thresholdMin": 95.0,
+     "thresholdMax": 95.0,
+     "thresholdP5": 95.0,
+     "thresholdP95": 95.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 1.1,
+      "folga5": 0.0,
+      "folga8": 0.0,
+      "folga10": 87.6
+     }
+    },
+    "half": {
+     "thresholdMean": 95.0,
+     "thresholdMin": 95.0,
+     "thresholdMax": 96.0,
+     "thresholdP5": 95.0,
+     "thresholdP95": 95.0,
+     "wrongApprovalsTotal": 45,
+     "insufficientTested": 175016,
+     "wrongApprovalRatePct": 0.03,
+     "shareOfSplitsWithWrongApproval": 0.002,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 1.1,
+      "folga5": 0.0,
+      "folga8": 0.0,
+      "folga10": 87.7
+     }
+    },
+    "leaveOneOutMinusOnePoint": {
+     "thresholdMean": 94.0,
+     "thresholdMin": 94.0,
+     "thresholdMax": 94.0,
+     "thresholdP5": 94.0,
+     "thresholdP95": 94.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 0.0,
+      "folga5": 0.0,
+      "folga8": 0.0,
+      "folga10": 2.2
+     }
+    },
+    "halfMinusOnePoint": {
+     "thresholdMean": 94.0,
+     "thresholdMin": 94.0,
+     "thresholdMax": 95.0,
+     "thresholdP5": 94.0,
+     "thresholdP95": 94.0,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 174952,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 0.0,
+      "folga5": 0.0,
+      "folga8": 0.0,
+      "folga10": 2.3
+     }
+    }
+   }
+  },
+  "tenth": {
+   "genco": {
+    "thresholdOnAllData": 99.3,
+    "leaveOneOut": {
+     "thresholdMean": 99.3,
+     "thresholdMin": 99.3,
+     "thresholdMax": 99.7,
+     "thresholdP5": 99.3,
+     "thresholdP95": 99.3,
+     "wrongApprovalsTotal": 1,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.58,
+     "shareOfSplitsWithWrongApproval": 0.011,
+     "safeApprovedPct": {
+      "folga0": 3.4,
+      "folga3": 93.3,
+      "folga5": 96.6,
+      "folga8": 98.9,
+      "folga10": 98.9
+     }
+    },
+    "half": {
+     "thresholdMean": 99.52,
+     "thresholdMin": 99.3,
+     "thresholdMax": 99.9,
+     "thresholdP5": 99.3,
+     "thresholdP95": 99.9,
+     "wrongApprovalsTotal": 1827,
+     "insufficientTested": 174888,
+     "wrongApprovalRatePct": 1.04,
+     "shareOfSplitsWithWrongApproval": 0.496,
+     "safeApprovedPct": {
+      "folga0": 8.3,
+      "folga3": 94.4,
+      "folga5": 97.2,
+      "folga8": 98.9,
+      "folga10": 98.9
+     }
+    },
+    "leaveOneOutMinusOnePoint": {
+     "thresholdMean": 98.3,
+     "thresholdMin": 98.3,
+     "thresholdMax": 98.7,
+     "thresholdP5": 98.3,
+     "thresholdP95": 98.3,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 89.9,
+      "folga5": 95.5,
+      "folga8": 98.9,
+      "folga10": 98.9
+     }
+    },
+    "halfMinusOnePoint": {
+     "thresholdMean": 98.53,
+     "thresholdMin": 98.3,
+     "thresholdMax": 98.9,
+     "thresholdP5": 98.3,
+     "thresholdP95": 98.9,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 174913,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 91.0,
+      "folga5": 96.0,
+      "folga8": 98.8,
+      "folga10": 98.8
+     }
+    }
+   },
+   "dc": {
+    "thresholdOnAllData": 95.1,
+    "leaveOneOut": {
+     "thresholdMean": 95.1,
+     "thresholdMin": 95.1,
+     "thresholdMax": 95.1,
+     "thresholdP5": 95.1,
+     "thresholdP95": 95.1,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 1.1,
+      "folga5": 1.1,
+      "folga8": 0.0,
+      "folga10": 88.8
+     }
+    },
+    "half": {
+     "thresholdMean": 95.21,
+     "thresholdMin": 95.1,
+     "thresholdMax": 96.0,
+     "thresholdP5": 95.1,
+     "thresholdP95": 95.9,
+     "wrongApprovalsTotal": 2005,
+     "insufficientTested": 175016,
+     "wrongApprovalRatePct": 1.15,
+     "shareOfSplitsWithWrongApproval": 0.235,
+     "safeApprovedPct": {
+      "folga0": 1.3,
+      "folga3": 1.3,
+      "folga5": 1.2,
+      "folga8": 0.3,
+      "folga10": 89.3
+     }
+    },
+    "leaveOneOutMinusOnePoint": {
+     "thresholdMean": 94.1,
+     "thresholdMin": 94.1,
+     "thresholdMax": 94.1,
+     "thresholdP5": 94.1,
+     "thresholdP95": 94.1,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 173,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 0.0,
+      "folga5": 0.0,
+      "folga8": 0.0,
+      "folga10": 3.4
+     }
+    },
+    "halfMinusOnePoint": {
+     "thresholdMean": 94.22,
+     "thresholdMin": 94.1,
+     "thresholdMax": 95.0,
+     "thresholdP5": 94.1,
+     "thresholdP95": 94.9,
+     "wrongApprovalsTotal": 0,
+     "insufficientTested": 174952,
+     "wrongApprovalRatePct": 0.0,
+     "shareOfSplitsWithWrongApproval": 0.0,
+     "safeApprovedPct": {
+      "folga0": 0.0,
+      "folga3": 0.1,
+      "folga5": 0.0,
+      "folga8": 0.0,
+      "folga10": 23.2
+     }
+    }
+   }
+  }
+ }
+}
