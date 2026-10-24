@@ -307,5 +307,94 @@
     }
    }
   }
+ },
+ "otherNetworks": {
+  "14": {
+   "contingencies": 1,
+   "genco": {
+    "frozenThresholdPct": 99.0,
+    "insufficientPlans": 2,
+    "approvedByMistakeAtFrozenThreshold": 0,
+    "approvedByMistakeAt100": 0,
+    "safePlansApproved": {
+     "folga0": 1,
+     "folga3": 1,
+     "folga5": 1,
+     "folga8": 1,
+     "folga10": 1
+    }
+   },
+   "dc": {
+    "frozenThresholdPct": 95.0,
+    "insufficientPlans": 2,
+    "approvedByMistakeAtFrozenThreshold": 0,
+    "approvedByMistakeAt100": 0,
+    "safePlansApproved": {
+     "folga0": 1,
+     "folga3": 1,
+     "folga5": 1,
+     "folga8": 1,
+     "folga10": 1
+    }
+   }
+  },
+  "30": {
+   "contingencies": 15,
+   "genco": {
+    "frozenThresholdPct": 99.0,
+    "insufficientPlans": 30,
+    "approvedByMistakeAtFrozenThreshold": 0,
+    "approvedByMistakeAt100": 7,
+    "safePlansApproved": {
+     "folga0": 2,
+     "folga3": 15,
+     "folga5": 15,
+     "folga8": 15,
+     "folga10": 15
+    }
+   },
+   "dc": {
+    "frozenThresholdPct": 95.0,
+    "insufficientPlans": 30,
+    "approvedByMistakeAtFrozenThreshold": 21,
+    "approvedByMistakeAt100": 23,
+    "safePlansApproved": {
+     "folga0": 15,
+     "folga3": 15,
+     "folga5": 15,
+     "folga8": 15,
+     "folga10": 15
+    }
+   }
+  },
+  "57": {
+   "contingencies": 61,
+   "genco": {
+    "frozenThresholdPct": 99.0,
+    "insufficientPlans": 4,
+    "approvedByMistakeAtFrozenThreshold": 0,
+    "approvedByMistakeAt100": 0,
+    "safePlansApproved": {
+     "folga0": 60,
+     "folga3": 61,
+     "folga5": 61,
+     "folga8": 61,
+     "folga10": 61
+    }
+   },
+   "dc": {
+    "frozenThresholdPct": 95.0,
+    "insufficientPlans": 4,
+    "approvedByMistakeAtFrozenThreshold": 0,
+    "approvedByMistakeAt100": 0,
+    "safePlansApproved": {
+     "folga0": 60,
+     "folga3": 61,
+     "folga5": 61,
+     "folga8": 61,
+     "folga10": 61
+    }
+   }
+  }
  }
 }

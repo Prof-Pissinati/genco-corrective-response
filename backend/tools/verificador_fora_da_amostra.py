@@ -70,6 +70,23 @@ def summarize(rows):
     return out
 
 
+def other_networks(thresholds):
+    """The thresholds fixed on the IEEE 118 (integer steps), applied without refitting to the other networks' verification results
+    (authors' checkpoint of each network). Few insufficient plans on the small networks: read the counts, not the rates."""
+    out = {}
+    for case in ("14", "30", "57"):
+        d = json.loads((ROOT / "interface" / "src" / "data" / f"verificacao_planos_case{case}_ieee_autores.json").read_text(encoding="utf-8"))
+        lines = d["lines"]
+        out[case] = {"contingencies": len(lines)}
+        for m, t in thresholds.items():
+            insuf = [l[v][m]["maxPct"] for l in lines for v in ("semPlano", "parcial") if l[v]["ac"]["maxPct"] > TOL]
+            out[case][m] = {"frozenThresholdPct": t, "insufficientPlans": len(insuf),
+                            "approvedByMistakeAtFrozenThreshold": sum(e <= t for e in insuf),
+                            "approvedByMistakeAt100": sum(e <= 100 for e in insuf),
+                            "safePlansApproved": {n: sum(l[n][m]["maxPct"] <= t for l in lines) for n in MARGINS}}
+    return out
+
+
 def main(splits, dst):
     global GRID
     data, n = load()
@@ -92,7 +109,13 @@ def main(splits, dst):
                     rs.append(evaluate(insuf, safe, p[: n // 2], p[n // 2:], shift))
                 r_step[m]["half" + tag] = summarize(rs)
         res["steps"][step_name] = r_step
+    res["otherNetworks"] = other_networks({m: res["steps"]["integer"][m]["thresholdOnAllData"] for m in ("genco", "dc")})
     Path(dst).write_text(json.dumps(res, indent=1), encoding="utf-8")
+    print("##### thresholds fixed on the IEEE 118, applied to other networks")
+    for case, r in res["otherNetworks"].items():
+        for m in ("genco", "dc"):
+            x = r[m]
+            print(f"  IEEE {case} {m.upper()} T={x['frozenThresholdPct']}%: insufficient {x['insufficientPlans']}, approved by mistake {x['approvedByMistakeAtFrozenThreshold']} (at 100%: {x['approvedByMistakeAt100']}); safe approved {x['safePlansApproved']} of {r['contingencies']}")
     for step_name, r_step in res["steps"].items():
         print(f"##### thresholds in {step_name} steps")
         for m in ("genco", "dc"):

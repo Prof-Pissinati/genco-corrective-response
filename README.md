@@ -6,6 +6,12 @@ Project for the **[GENCO Challenge](https://huggingface.co/spaces/gridfm/genco-c
 - The **GENCO** model and the **OpenGridFM** tools (`gridfm-datakit`, `gridfm-graphkit`) are mandatory.
 - Criteria: originality and impact, technical quality, exploration/extension of GENCO, narrative and reproducibility.
 
+## Quick start
+
+- **Nothing to install:** open the demo, https://prof-pissinati.github.io/genco-corrective-response/ (it replays results precomputed by the backend: GitHub Pages cannot run a server, a hosting limit and not a limit of the tool).
+- **The full tool, any fault, live (Windows):** double-click `start-local.bat` (the first time it prints the two commands that create the backend environment). Other systems: see "Full interface" below.
+- **Every figure and number of the contest post:** where each comes from is in `docs/FIGURES.md` and `docs/NUMBERS.md`. `python tools/make_figures.py` regenerates the plots and the table of numbers (needs matplotlib); `python backend/tools/verificador_fora_da_amostra.py` repeats the held-out check of the verifier threshold (numpy only, about 3 seconds).
+
 ## Idea
 
 Decision-support tool for **contingencies on transmission grids** (IEEE 14, 30, 57 and 118): the operator marks faulted lines and/or buses and the system proposes the generation **redispatch** and, if needed, the **minimum load shedding**, always confirmed by a classical AC power flow. **GENCO** enters as a fast evaluator for screening the contingencies and as a verifier of the plans (it improves on the DC; still weak near the limit, hence the AC confirmation), and, in OPF mode, it chooses the generators' reference voltage to fix voltage violations (IEEE 118). Architecture: `docs/ARQUITETURA.md`.

@@ -65,6 +65,18 @@ The safe thresholds above (99% for GENCO, 95% for the DC) were chosen on the sam
 - A threshold fitted to the tenth of a point is fragile: it lets through about 1.04% of the insufficient plans of the other half (GENCO) and, in about half of the random splits, at least one. One extra point of safety removed every mistake, at a cost in approvals of the plans with a 3-point margin: 93.3% to 88.8% (leave one out, integer steps; DC: 1.1% to 0.0%).
 - Limits: one network, one checkpoint and plans that we built ourselves, whose states of the same contingency are correlated. The check shows that the threshold does not hinge on which contingencies choose it, not that it transfers to other networks or to plans of another origin.
 
+### The same thresholds on the other networks (fixed on the IEEE 118)
+The thresholds fixed on the IEEE 118 (99% for GENCO, 95% for the DC) were applied, without refitting, to the verification results of the other networks, each with the authors' checkpoint for that network (`interface/src/data/verificacao_planos_case*_ieee_autores.json`). The same script computes it (`other_networks`), and the result is in the same JSON.
+
+| Network | Contingencies | Insufficient plans | GENCO at 99%: approved by mistake | DC at 95%: approved by mistake | Plans with a 3-point margin approved by GENCO |
+|---|---|---|---|---|---|
+| IEEE 30 | 15 | 30 | **0 of 30 (at 100%: 7)** | **21 of 30 (at 100%: 23)** | 15 of 15 |
+| IEEE 57 | 61 | 4 | 0 of 4 (at 100%: 0) | 0 of 4 (at 100%: 0) | 61 of 61 |
+| IEEE 14 | 1 | 2 | 0 of 2 (at 100%: 0) | 0 of 2 (at 100%: 0) | 1 of 1 |
+
+- On the IEEE 30, the GENCO threshold carried over without a mistake (0 of 30; at 100% it would have been 7) and approved every plan with a margin of 3 points or more, while the DC threshold did not carry over (21 of 30 approved by mistake).
+- The counts are small: 0 of 30 bounds the error rate at about 10% with 95% confidence (rule of three), and the IEEE 57 and IEEE 14 have only 4 and 2 insufficient plans, too few to say anything. Read it as consistent with the IEEE 118, not as a second proof.
+
 ```bash
 python backend/tools/verificador_fora_da_amostra.py [--splits 2000]    # about 3 seconds, numpy only
 ```

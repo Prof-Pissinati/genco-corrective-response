@@ -448,6 +448,9 @@ def table_numbers(volt):
     row("  chosen on a random half, tested on the other (2,000 splits): wrong approvals, GENCO / DC", f"{vf['integer']['genco']['half']['wrongApprovalsTotal']} of {vf['integer']['genco']['half']['insufficientTested']:,} / {vf['integer']['dc']['half']['wrongApprovalsTotal']} of {vf['integer']['dc']['half']['insufficientTested']:,}", src_vf)
     row("  threshold tuned to the tenth of a point: wrong approval rate, GENCO; splits with a mistake", f"{vf['tenth']['genco']['half']['wrongApprovalRatePct']}%; {vf['tenth']['genco']['half']['shareOfSplitsWithWrongApproval']*100:.0f}%", src_vf)
     row("  same with one extra point of safety: wrong approvals, GENCO / DC", f"{vf['tenth']['genco']['halfMinusOnePoint']['wrongApprovalsTotal']} / {vf['tenth']['dc']['halfMinusOnePoint']['wrongApprovalsTotal']}", src_vf)
+    on = load(ROOT / "docs" / "escala" / "verificador_fora_da_amostra_case118_ieee.json")["otherNetworks"]
+    for c in ("30", "57"):
+        row(f"Thresholds fixed on the IEEE 118 applied to the IEEE {c} (authors' checkpoint): insufficient plans / approved by mistake GENCO at 99% / DC at 95%", f"{on[c]['genco']['insufficientPlans']} / {on[c]['genco']['approvedByMistakeAtFrozenThreshold']} / {on[c]['dc']['approvedByMistakeAtFrozenThreshold']}", src_vf)
     row("  cost of the extra point: 3-point-margin plans approved, GENCO (leave one out, integer steps)", f"{vf['integer']['genco']['leaveOneOut']['safeApprovedPct']['folga3']}% -> {vf['integer']['genco']['leaveOneOutMinusOnePoint']['safeApprovedPct']['folga3']}%", src_vf)
     rs = replay["recovery"]["r:line7"]["summary"]
     row("Replay IEEE 118, line 8-5 repaired: time to restore / energy not supplied / blocks reconnected", f"{rs['totalHours']:.2f} h / {rs['ensMWh']:.0f} MWh / {rs['blocks']}", "replay_case118_ieee.json  recovery[r:line7].summary")
